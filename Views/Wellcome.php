@@ -33,6 +33,141 @@
     <?PHP include ("Menu.php"); ?>
 </section>
     
+    <section id = "main-content">
+        <section class="wrapper">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-laptop"></i> PRINCIPAL</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="principal.php">Inicio</a></li>
+                    <li><i class="fa fa-laptop"></i> Principal</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <div class="info-box blue-bg">
+                        <i class="fa fa-truck"></i>
+                        <div class="count"><?PHP
+                            // echo $t_pro;
+
+                            ?></div>
+                        <div class="title"> Proveedores</div>
+                    </div><!--/.info-box-->
+            </div><!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="info-box brown-bg">
+                    <i class="icon_piechart"></i>
+                    <div class="count"><span style="font-size: xx-small; "><?PHP
+                            //echo $ventastotales;
+                            ?> </span>
+                    </div>
+                    <div class="title"> Reportes de Ventas </div>
+                </div><!--/.info-box-->
+            </div><!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="info-box dark-bg">
+                    <i class="fa fa-money"></i>
+                    <div class="count"><?PHP
+                        //echo $gastototales;
+                        ?>$us.
+                    </div>
+                    <div class="title">Gastos y Entradas</div>
+                </div><!--/.info-box-->
+            </div><!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="info-box green-bg">
+                    <i class="fa fa-cubes"></i>
+                    <div class="count"><?PHP
+                        //echo $totalProducto;
+                        ?></div>
+                    <div class="title">Stock de los productos</div>
+                </div><!--/.info-box-->
+            </div><!--/.col-->
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-9 col-md-12">
+
+                <div class="panel panel-default">
+
+                    <div class="panel-heading">
+                        <h2><i class="fa fa-flag-o red"></i><strong>Venta Total del  Dia</strong></h2>
+
+                    </div>
+                    <div class="panel-body">
+                        <div class="dataTable_wrapper">
+                            <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <thead>
+                            <tr>
+
+                                    <th>PRODUCTO</th>
+                                    <th>CANTIDAD</th>
+                                    <th>PRECIO</th>
+                                    <th>TOTAL VENDIDO</th>
+                                    <th>FECHA</th>
+                            </tr>
+                            </thead>
+
+
+                            </table>
+
+
+                        </div>
+
+
+                    </div>
+
+                    
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+
+        <div class="col-md-3">
+        <div style="text-align: center;"><h3>Calendario</h3></div>
+
+        <div id="calendar" class="mb">
+                    <div class="panel green-panel no-margin">
+                        <div class="panel-body">
+                            <div id="date-popover" class="popover top"
+                                 style="cursor: pointer; disadding: block; margin-left: 33%; margin-top: -50px; width: 175px;">
+                                <div class="arrow"></div>
+                                <h3 class="popover-title" style="disadding: none;"></h3>
+                                <div id="date-popover-content" class="popover-content"></div>
+                            </div>
+                            <div id="my-calendar"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+        </div>
+
+        <div class="col1of2">
+                    <div class="datepicker-placeholder"></div>
+        </div>
+
+
+        </div>  
+
+        </section>
+    </section>
+
 <?PHP include ("LibraryJs.php"); ?>
 
 </body>
