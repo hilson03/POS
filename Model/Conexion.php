@@ -26,7 +26,6 @@ class conexion{
 
     }
 
-
    public function getMenuMain(){
 
         $query = $this->con->query("SELECT * FROM `menu`");
