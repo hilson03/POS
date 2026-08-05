@@ -43,13 +43,24 @@ class conexion{
 
     }
 
-
+//esta funcion atraves de una consulta trae toda la informacion de los usuarios.
     public function getAllUserData(){
         
         $query = $this->con->query("SELECT * FROM `usuarios`");
 
        
          return $query;
+
+    }
+
+
+    
+    public function getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario){
+
+    $query = $this->con->query("INSERT INTO `usuarios`(`id_usu`,`login`,`tipo`,`nombre`,`password`,`foto`)
+                            VALUES(NULL, '$usuario', '$tipo','$nombre','$password','$imagenUsuario')");
+
+    return $query;
 
     }
 

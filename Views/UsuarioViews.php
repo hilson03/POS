@@ -85,11 +85,11 @@ include('Head.php');
                                                     <section class="panel" class="col-lg-6">
                                                         <div>
                                                             <strong>
-                                                                Agregar Imagem del Usuario
+                                                                Agregar Imagen del Usuario
                                                             </strong>
                                                         </div>
                                                         <?php
-                                                           //include("UploadViewImageCreate.php");
+                                                           include("UploadViewImageCreate.php");
                                                         ?>
                                                     </section>
 
@@ -318,6 +318,8 @@ include('Head.php');
         </div>
 
     </section>
+
+    <?PHP include ("LibraryJs.php"); ?>
 </section>
 
 </body>

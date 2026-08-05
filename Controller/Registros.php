@@ -1,0 +1,63 @@
+<?php
+require("../Model/Conexion.php");
+require("Constans.php");
+
+if (!isset($_SESSION)){
+    session_start();
+}
+
+$usuarioLogin = $_POST['usuarioLogin'];
+$passwordLogin = $_POST['passwordLogin'];
+
+$con = new conexion();
+
+$allUsuarios = $con->getAllUserData();
+$menuMain = $con->getMenuMain();
+
+
+if(isset($_POST['nuevo_usuario'])){
+
+    $usuario = $_POST['login'];
+    $tipo = $_POST['tipo'];
+    $nombre = $_POST['nombre'];
+    $password = $_POST['password'];
+    
+
+
+    if($_FILES['userfile']['name'] != ""){
+       $ruta = "fotoproducto/";
+       opendir($ruta);
+
+       $imagenUsuario = $ruta . $_FILES['userfile']['name'];
+
+       $nombre_archivo = ADDRESS . $_FILES['userfile']['name'];
+       $tipo_archivo = $_FILES['userfile']['type'];
+       $tamano_archivo = $_FILES['userfile']['size'];
+
+       $nuevo_archivo = "fotoproducto/" . substr($tipo_archivo, 6, 4);
+
+
+       if (!((strpos($tipo_archivo, "gif") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "png")) && ($tamano_archivo < 5000000))) {
+            cuadro_error("La extensión o el tamaño de los archivos no es correcta, Se permiten archivos .gif o .jpg de 5 Mb máximo");
+
+        } else {
+            if (move_uploaded_file($_FILES['userfile']['tmp_name'], $nombre_archivo)) {
+                rename($nombre_archivo, $nuevo_archivo);
+                // se subio correctamente
+            } else {
+                cuadro_error("Ocurrió algún error al subir el archivo. No pudo guardarse");
+            }
+        }
+    } else {
+        $imagenUsuario = "fotoUsuario/user.png";
+    }
+
+
+
+
+    $registerNewUser = $con->getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario);
+
+}
+
+header("Location: Usuario.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+
