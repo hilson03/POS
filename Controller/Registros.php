@@ -59,5 +59,24 @@ if(isset($_POST['nuevo_usuario'])){
 
 }
 
+
+if (isset($_GET['idborrar'])) {
+
+        $idUsuario = $_GET['idborrar'];
+        $usuarioLogin = $_GET['usuarioLogin'];
+        $passwordLogin = $_GET['passwordLogin'];
+
+        $mensaje = "Se Elimino un usuario";
+        $alerta = "alert alert-danger";
+
+        $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+
+        $deleteUser = $con->deleteUsuario($idUsuario);
+
+
+
+    }
+
+
 header("Location: Usuario.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
 

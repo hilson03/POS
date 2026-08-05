@@ -54,7 +54,8 @@ class conexion{
     }
 
 
-    
+//esta funcion sirve para registrar nuevos usuarios con imagen
+//recordar ver como resolver lo de la imagen de perfil de usuario
     public function getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario){
 
     $query = $this->con->query("INSERT INTO `usuarios`(`id_usu`,`login`,`tipo`,`nombre`,`password`,`foto`)
@@ -64,4 +65,23 @@ class conexion{
 
     }
 
+
+    public function updateMensajeAlert($mensaje, $alerta)
+    {
+        $query = $this->con->query("UPDATE `alerta` SET `tipoAlerta` = '$alerta',
+                                                `mensaje` = '$mensaje'  WHERE `alerta`.`alertaId` = 1");
+        return $query;
+    }
+
+
+    public function deleteUsuario($idUsuario)
+    {
+
+        $query = $this->con->query("DELETE FROM usuarios Where id_usu=$idUsuario ");
+
+        return $query;
+    }
+
 }
+
+
