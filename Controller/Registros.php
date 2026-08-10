@@ -22,7 +22,10 @@ if(isset($_POST['nuevo_usuario'])){
     $nombre = $_POST['nombre'];
     $password = $_POST['password'];
     
+    $mensaje = "Se Añadio un nuevo Usuario";
+    $alerta = "alert alert-success";
 
+    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 
     if($_FILES['userfile']['name'] != ""){
        $ruta = "fotoproducto/";
@@ -59,6 +62,7 @@ if(isset($_POST['nuevo_usuario'])){
 
 }
 
+//esta parte permite borrar sin mas la informacion de un usuario
 
 if (isset($_GET['idborrar'])) {
 
@@ -73,6 +77,61 @@ if (isset($_GET['idborrar'])) {
 
         $deleteUser = $con->deleteUsuario($idUsuario);
 
+
+
+    }
+
+//aqui viene a dar la informacion cuando se actualizan los datos de usuario 
+
+if (isset($_POST['update_usuario'])) {
+
+        $idUsuarioData = $_POST['idUsuario'];
+        $login = $_POST['login'];
+        $tipo = $_POST['tipo'];
+        $nombre = $_POST['nombre'];
+        $password = $_POST['password'];
+        $imagen = $_POST['imagen'];
+
+        $usuarioLogin = $_POST['usuarioLogin'];
+        $passwordLogin = $_POST['passwordLogin'];
+
+        $mensaje = "Se Edito los datos de  un usuario";
+        $alerta = "alert alert-info";
+
+        $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+
+
+        if ($_FILES['userfileEdit']['name'] != "") {
+
+            $ruta = "fotoproducto/";
+            opendir($ruta);
+
+            $imagenUsuario = $ruta . $_FILES['userfileEdit']['name'];
+
+            $nombre_archivo = ADDRESS . $_FILES['userfileEdit']['name'];
+            $tipo_archivo = $_FILES['userfileEdit']['type'];
+            $tamano_archivo = $_FILES['userfileEdit']['size'];
+
+            $nuevo_archivo = "fotoproducto/" . substr($tipo_archivo, 6, 4);
+
+            if (!((strpos($tipo_archivo, "gif") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "png")) && ($tamano_archivo < 5000000))) {
+                cuadro_error("La extensión o el tamaño de los archivos no es correcta, Se permiten archivos .gif o .jpg de 5 Mb máximo");
+    
+            }else {
+                if (move_uploaded_file($_FILES['userfileEdit']['tmp_name'], $nombre_archivo)) {
+                    rename($nombre_archivo, $nuevo_archivo);
+                } else {
+                    cuadro_error("Ocurrió algún error al subir el archivo. No pudo guardarse");
+                }
+            }
+
+        }else {
+            $imagenUsuario = $imagen;
+        }
+
+        $updateUser = $con->updateUsuario($login, $tipo, $nombre, $password, $imagenUsuario, $idUsuarioData);
+
+        
 
 
     }

@@ -36,6 +36,13 @@ foreach ($searchUser as $user) {
     # code...
 }
 
+$tipoDeAlerta = $con->getMensajeAlerta();
+
+foreach ($tipoDeAlerta as $tipoAlerta) {
+    $alerta = $tipoAlerta['tipoAlerta'];
+    $mensaje = $tipoAlerta['mensaje'];
+}
+
 
 
 

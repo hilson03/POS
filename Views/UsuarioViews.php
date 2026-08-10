@@ -37,8 +37,8 @@ include('Head.php');
         <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header"><i class="fa fa-laptop"></i> PRINCIPAL</h3>
-                    <div class="" role="alert">
-                    <strong></strong>
+                    <div class="<?PHP echo $alerta; ?>" role="alert">
+                    <strong><?PHP echo $mensaje; ?></strong>
                     </div>
 
                     <ol class="breadcrumb">
@@ -233,7 +233,7 @@ include('Head.php');
                                                             <section class="panel" class="col-lg-6">
                                                                 <div><strong>Cambiar Imagen de usuario</strong></div>
                                                                 <?php 
-                                                                //include("UploadViewImageEdit.php");
+                                                                include("UploadViewImageEdit.php");
                                                                 ?>
                                                             </section>
 

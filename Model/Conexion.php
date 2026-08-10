@@ -66,6 +66,45 @@ class conexion{
     }
 
 
+    public function deleteUsuario($idUsuario)
+    {
+
+        $query = $this->con->query("DELETE FROM usuarios Where id_usu=$idUsuario ");
+
+        return $query;
+    }
+
+    //esta consulta permite actualizar la informacion del usuario
+    public function updateUsuario($login, $tipo, $nombre, $password, $foto, $idUsuario)
+    {
+
+        $query = $this->con->query("UPDATE `usuarios`
+        SET `login` = '$login',
+             `tipo` = '$tipo',
+              `nombre` = '$nombre',
+               `password` = '$password',
+               `foto` = '$foto' WHERE `usuarios`.`id_usu` = $idUsuario");
+
+        return $query;
+    }
+
+
+    public function getMensajeAlerta()
+    {
+
+        $query = $this->con->query("SELECT * FROM `alerta`");
+
+        $retorno = [];
+
+        $i = 0;
+        while ($fila = $query->fetch_assoc()) {
+            $retorno[$i] = $fila;
+            $i++;
+        }
+        return $retorno;
+
+    }
+//esta funcion sirve para ver un mensaje de alerta ya se por que se creo, actualizo o elimino un usuario.
     public function updateMensajeAlert($mensaje, $alerta)
     {
         $query = $this->con->query("UPDATE `alerta` SET `tipoAlerta` = '$alerta',
@@ -74,13 +113,6 @@ class conexion{
     }
 
 
-    public function deleteUsuario($idUsuario)
-    {
-
-        $query = $this->con->query("DELETE FROM usuarios Where id_usu=$idUsuario ");
-
-        return $query;
-    }
 
 }
 
