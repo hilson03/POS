@@ -42,7 +42,7 @@ include('Head.php');
                     </div>
 
                     <ol class="breadcrumb">
-                    
+                        <?PHP include ("MenuOpcionesConfiguracion.php");?>
                     </ol>
                 </div>
             </div>

@@ -112,6 +112,30 @@ class conexion{
         return $query;
     }
 
+//esta funciones sirven para obtener datos de facturas y actualizarlos al mismo tiempo
+    public function getDataFactura(){
+
+        $query = $this->con->query("SELECT * FROM `datos`");
+        return $query;
+
+    }
+
+
+    public function updateDataFactura($iddatos,$propietario, $razon, $direccion, $nro, $telefono){
+
+        $query = $this->con->query("UPDATE `datos` SET `propietario` = '$propietario',
+        `razon` = '$razon',
+        `direccion` = '$direccion',
+         `nro` = '$nro',
+         `telefono` = '$telefono'
+          WHERE `datos`.`iddatos` = $iddatos");
+
+            return $query;
+
+
+    }
+
+
 
 
 }
