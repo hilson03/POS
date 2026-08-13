@@ -136,6 +136,50 @@ class conexion{
     }
 
 
+//metodo para que puedan funcionar el cambio de moneda
+
+    public function getMoneda()
+        {
+            $query = $this->con->query("SELECT * FROM `moneda`");
+            return $query;
+        }
+
+    public function updateDataMoneda($idMoneda, $pais, $tipoMoneda, $contexto){
+
+        $query = $this->con->query("UPDATE `moneda` SET
+        `pais` = '$pais',
+        `tipoMoneda` = '$tipoMoneda',
+        `contexto` = '$contexto' WHERE `moneda`.`idMoneda` = $idMoneda ");
+        
+        return $query;
+
+    }
+
+//Metodos para cambiar idiomas
+    public function getIdioma()
+    {
+        $query = $this->con->query("SELECT * FROM `idioma`");
+        return $query;
+    }
+
+    public function updateDataIdioma($idioma, $idIdioma)
+    {
+
+        $query = $this->con->query("UPDATE `idioma`
+                                          SET `idioma` = '$idioma'
+                                          WHERE `idioma`.`idIdioma` = $idIdioma");
+        return $query;
+    }
+
+    public function updateIdiomaSistem($opcionMenu, $idIdioma)
+    {
+        $query = $this->con->query("UPDATE `menu`
+                                          SET `opcion` = '$opcionMenu'
+                                          WHERE `menu`.`idmenu` = $idIdioma ");
+        return $query;
+    }
+
+
 
 
 }
