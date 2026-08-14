@@ -43,7 +43,7 @@ class conexion{
 
     }
 
-//esta funcion atraves de una consulta trae toda la informacion de los usuarios.
+//***************************esta funcion atraves de una consulta trae toda la informacion de los usuarios.******************************
     public function getAllUserData(){
         
         $query = $this->con->query("SELECT * FROM `usuarios`");
@@ -54,7 +54,7 @@ class conexion{
     }
 
 
-//esta funcion sirve para registrar nuevos usuarios con imagen
+//***********************esta funcion sirve para registrar nuevos usuarios con imagen******************
 //recordar ver como resolver lo de la imagen de perfil de usuario
     public function getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario){
 
@@ -74,7 +74,7 @@ class conexion{
         return $query;
     }
 
-    //esta consulta permite actualizar la informacion del usuario
+    //*********************esta consulta permite actualizar la informacion del usuario********************************
     public function updateUsuario($login, $tipo, $nombre, $password, $foto, $idUsuario)
     {
 
@@ -104,7 +104,7 @@ class conexion{
         return $retorno;
 
     }
-//esta funcion sirve para ver un mensaje de alerta ya se por que se creo, actualizo o elimino un usuario.
+//*************esta funcion sirve para ver un mensaje de alerta ya se por que se creo, actualizo o elimino un usuario.**********
     public function updateMensajeAlert($mensaje, $alerta)
     {
         $query = $this->con->query("UPDATE `alerta` SET `tipoAlerta` = '$alerta',
@@ -112,7 +112,7 @@ class conexion{
         return $query;
     }
 
-//esta funciones sirven para obtener datos de facturas y actualizarlos al mismo tiempo
+//******************esta funciones sirven para obtener datos de facturas y actualizarlos al mismo tiempo*******************
     public function getDataFactura(){
 
         $query = $this->con->query("SELECT * FROM `datos`");
@@ -136,7 +136,7 @@ class conexion{
     }
 
 
-//metodo para que puedan funcionar el cambio de moneda
+//******************************metodo para que puedan funcionar el cambio de moneda****************************
 
     public function getMoneda()
         {
@@ -155,7 +155,7 @@ class conexion{
 
     }
 
-//Metodos para cambiar idiomas
+//*************************************Metodos para cambiar idiomas*********************************************
     public function getIdioma()
     {
         $query = $this->con->query("SELECT * FROM `idioma`");
@@ -178,6 +178,89 @@ class conexion{
                                           WHERE `menu`.`idmenu` = $idIdioma ");
         return $query;
     }
+//Funciones de proveedores que nos permiten obtener, crear, actualizar y borrar proveedores de la base de datos************************
+     public function getAllProveedor()
+    {
+
+        $query = $this->con->query("SELECT * FROM proveedor ");
+
+        return $query;
+    }
+
+    public function registerNewProveedor($proveedor, $responsable, $direccion, $telefono, $fechaRegistro)
+    {
+
+        $query = $this->con->query("INSERT INTO `proveedor` (`idproveedor`, `proveedor`, `responsable`, `fechaRegistro`, `direccion`, `telefono`, `estado`, `fechaAviso`, `valor`, `valorCobrado`, `saldo`)
+        VALUES (NULL, '$proveedor', '$responsable', '$fechaRegistro', '$direccion', '$telefono', '', '$fechaRegistro', 0, 0, '') ");
+
+        return $query;
+    }
+
+
+    public function deleteProveedor($idProveedor)
+    {
+        $query = $this->con->query("Delete from proveedor where idproveedor=$idProveedor ");
+
+        return $query;
+    }
+
+    public function updateProveedor($idProveedor, $proveedor, $responsable, $direccion, $telefono, $fechaRegistro)
+    {
+
+        $query = $this->con->query("UPDATE `proveedor` SET `proveedor` = '$proveedor',
+                                            `responsable` = '$responsable',
+                                            `fechaRegistro` = '$fechaRegistro',
+                                            `direccion` = '$direccion',
+                                             `telefono` = '$telefono' WHERE `proveedor`.`idproveedor` = $idProveedor");
+
+        return $query;
+    }
+
+//funcion sql para obtener una lista de todos los clientes tambien para crear, modificar y borrar
+    public function getAllCliente()
+    {
+
+        $query = $this->con->query("SELECT * FROM cliente ");
+
+        return $query;
+    }
+
+
+    public function registerNewCliente($imagen, $nombre, $apellido, $direccion, $telefonoFijo, $telefonoCelular, $email, $fechaRegistro, $ci)
+    {
+
+        $query = $this->con->query("INSERT INTO `cliente` (`idcliente`, `foto`, `nombre`, `apellido`, `direccion`, `telefonoFijo`, `telefonoCelular`, `email`, `contactoReferencia`, `telefonoReferencia`, `observaciones`, `fechaRegistro`, `ci`)
+                                     VALUES (NULL, '$imagen', '$nombre', '$apellido', '$direccion', '$telefonoFijo', '$telefonoCelular', '$email', '', '', '', '$fechaRegistro', '$ci')");
+
+        return $query;
+    }
+
+    public function updateClient($idcliente, $imagen, $nombre, $apellido, $direccion, $telefonoFijo, $telefonoCelular, $email, $fechaRegistro, $ci)
+    {
+
+        $query = $this->con->query("UPDATE `cliente` SET
+                                                `foto` = '$imagen',
+                                                `nombre` = '$nombre',
+                                                `apellido` = '$apellido',
+                                                `direccion` = '$direccion',
+                                                `telefonoFijo` = '$telefonoFijo',
+                                                `telefonoCelular` = '$telefonoCelular',
+                                                `email` = '$email',
+                                                `fechaRegistro` = '$fechaRegistro',
+                                                `ci` = '$ci' WHERE `cliente`.`idcliente` = $idcliente");
+
+        return $query;
+    }
+
+
+     public function deleteClient($idClient)
+    {
+        $query = $this->con->query("Delete from cliente where idcliente=$idClient ");
+
+        return $query;
+    }
+
+
 
 
 
