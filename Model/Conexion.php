@@ -260,6 +260,119 @@ class conexion{
         return $query;
     }
 
+//******************************funcion SQL permite traer todos los productos*******************************************
+    public function getAllProducto()
+    {
+
+        $query = $this->con->query("SELECT * FROM producto");
+
+        return $query;
+    }
+
+
+    public function getAllTipoProducto()
+    {
+        $query = $this->con->query("SELECT * FROM tipoproducto");
+
+        return $query;
+    }
+
+
+    public function registerNewProducto($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra)
+    {
+
+        $query = $this->con->query("INSERT INTO `producto` (`idproducto`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`, `precioVenta`, `tipo`, `proveedor`, `precioCompra`)
+                                          VALUES (NULL, '$imagen', '$codigo', '$nombreProducto', '$cantidad', '$fechaRegistro', '$precioVenta', '$tipo', '$proveedor', '$precioCompra')");
+
+        return $query;
+    }
+
+    public function deleteProduct($idproducto)
+    {
+        $query = $this->con->query("Delete from producto where idproducto=$idproducto");
+
+        return $query;
+    }
+
+     public function updateProduct($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra, $idproducto)
+    {
+
+        $query = $this->con->query("UPDATE `producto` SET `imagen` = '$imagen',
+                                                     `codigo` = '$codigo',
+                                                     `nombreProducto` = '$nombreProducto',
+                                                     `cantidad` = '$cantidad',
+                                                     `fechaRegistro` = '$fechaRegistro',
+                                                     `precioVenta` = '$precioVenta',
+                                                     `tipo` = '$tipo',
+                                                      `proveedor` = '$proveedor',
+                                                      `precioCompra` = '$precioCompra' WHERE `producto`.`idproducto` = $idproducto");
+
+        return $query;
+    }
+
+//*****************************************Funcion SQL para registrar nuevos tipos de producto******************************************
+    public function registerNewTipoProduct($tipoProducto)
+    {
+        $query = $this->con->query("INSERT INTO `tipoproducto` (`idtipoproducto`, `tipoproducto`)
+                                          VALUES (NULL, '$tipoProducto')");
+
+        return $query;
+
+    }
+
+    public function deleteTipoProduct($tipoProductoId)
+    {
+        $query = $this->con->query("Delete from tipoproducto where idtipoproducto=$tipoProductoId");
+
+        return $query;
+    }
+
+
+    public function updateTipoProducto($tipoProductoId, $tipoproducto)
+    {
+        $query = $this->con->query("UPDATE `tipoproducto` SET `tipoproducto` = '$tipoproducto'
+                                          WHERE `tipoproducto`.`idtipoproducto` = $tipoProductoId");
+
+        return $query;
+    }
+
+    //************************funcion SQL para traer los inventarios, crearlos, Modificarlos y borrarlos*******************************
+     public function getAllActivos()
+    {
+        $query = $this->con->query("SELECT * FROM activos ");
+
+        return $query;
+    }
+
+    public function registerNewActivo($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro)
+    {
+
+        $query = $this->con->query("INSERT INTO `activos` (`idactivo`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`)
+                                          VALUES (NULL, '$imagen', '$codigo', '$nombreProducto', '$cantidad', '$fechaRegistro')");
+
+        return $query;
+    }
+
+    public function deleteActivo($idproducto)
+    {
+        $query = $this->con->query("Delete from activos where idactivo=$idproducto");
+
+        return $query;
+    }
+
+    public function updateActivo($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $idproducto)
+    {
+
+        $query = $this->con->query("UPDATE `activos` SET `imagen` = '$imagen',
+                                                     `codigo` = '$codigo',
+                                                     `nombreProducto` = '$nombreProducto',
+                                                     `cantidad` = '$cantidad',
+                                                     `fechaRegistro` = '$fechaRegistro'
+                                                      WHERE `activos`.`idactivo` = $idproducto");
+
+        return $query;
+    }
+
 
 
 
