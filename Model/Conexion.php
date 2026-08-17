@@ -372,7 +372,22 @@ class conexion{
 
         return $query;
     }
+//*************************************metodo para obtener todos los tipos de monedas**************************************
+    public function getTipoMoneda()
+    {
 
+        $query = $this->con->query("SELECT * FROM `moneda`");
+
+        $retorno = [];
+
+        $i = 0;
+        while ($fila = $query->fetch_assoc()) {
+            $retorno[$i] = $fila;
+            $i++;
+        }
+        return $retorno;
+
+    }
 
 
 
