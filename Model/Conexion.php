@@ -9,6 +9,7 @@ class conexion{
         $server = 'localhost';
         $database = 'icontpos';
         $this-> con = new mysqli($server, $user, $password, $database); 
+        $this->con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"); 
     }
 
     public function getUser($usuario, $password){
@@ -388,6 +389,23 @@ class conexion{
         return $retorno;
 
     }
+//consulta para hacer una preVenta
+
+    public function getPreventa()
+    {
+        $query = $this->con->query("SELECT idPreventa,imagen,producto,COUNT(producto) as cantidad, SUM(precio) as totalPrecio,idProducto,pventa,idUser,precio,tipo
+                                            FROM `preventa`
+                                            GROUP BY producto,idProducto,tipo
+                                            ORDER BY idPreventa ASC");
+        return $query;
+    }
+
+     public function getTotalPreventa()
+    {
+        $query = $this->con->query("SELECT Sum(precio) as total , idUser FROM `preventa`");
+        return $query;
+    }
+
 
 
 
