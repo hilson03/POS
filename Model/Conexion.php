@@ -406,6 +406,58 @@ class conexion{
         return $query;
     }
 
+    /******************Funcion SQL para traer datos de usuario relacionados con el pedido modificar o eliminar*****************************/ 
+
+    public function getOnlyUserData($idUser)
+    { $query = $this->con->query("SELECT * FROM usuarios where id_usu=$idUser");
+        $retorno = [];
+        $i = 0;
+        while ($fila = $query->fetch_assoc()) {
+            $retorno[$i] = $fila;
+            $i++;
+        }
+        return $retorno;
+    }
+
+
+    public function getProductoElegido($idproducto)
+    {
+
+        $query = $this->con->query("SELECT * FROM `producto` where idproducto='$idproducto'");
+
+        $retorno = [];
+
+        $i = 0;
+        while ($fila = $query->fetch_assoc()) {
+            $retorno[$i] = $fila;
+            $i++;
+        }
+        return $retorno;
+
+    }
+
+    public function insertarPreventaProducto($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo)
+    {
+        $query = $this->con->query("INSERT INTO `preventa` (`idPreventa`, `imagen`, `producto`, `precio`, `idProducto`, `pventa`, `idUser`, `tipo`)
+                                          VALUES (NULL, '$imagen', '$producto', '$precio', '$idProducto', '$pventa', '$idUser', '$tipo')");
+
+        return $query;
+    }
+
+    public function deleteOnlyPreventa($idProducto, $tipo)
+    {
+        $query = $this->con->query("Delete from preventa where idproducto='$idProducto'  and  tipo='$tipo'");
+        return $query;
+    }
+
+    public function deleteAllPreventa()
+    {
+        $query = $this->con->query("TRUNCATE `preventa`");
+        return $query;
+    }
+
+
+
 
 
 
