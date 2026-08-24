@@ -494,7 +494,112 @@ class conexion{
         return $query;
     }
 
+    public function getClienteDatos($nitClient)
+    {
+        $query = $this->con->query("select * from cliente where ci = $nitClient ");
+        $retorno = [];
 
+        $i = 0;
+        while ($fila = $query->fetch_assoc()) {
+            $retorno[$i] = $fila;
+            $i++;
+        }
+        return $retorno;
+    }
+
+      public function getDatosFactura()
+    {
+        $query = $this->con->query("SELECT * FROM `datos`");
+        return $query;
+    }
+
+    public function getDatosDosificacion()
+    {
+        $query = $this->con->query("SELECT * FROM `dosificacion`");
+        return $query;
+    }
+
+     public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente)
+    {
+        $query = $this->con->query("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`)
+                                            VALUES (NULL , '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idcliente', 'Local');");
+        return $query;
+    }
+
+
+    public function getDataCliente()
+    {
+        $query = $this->con->query("SELECT * FROM `clientedato` order by idcliente DESC  limit 1");
+        return $query;
+    }
+
+    public function getPedidoTotalForFactura()
+    {
+        $query = $this->con->query("SELECT idpreventa,imagen,producto,precio, count( idproducto ) AS cantidad, precio*count( idproducto ) as totalPrecio, idproducto, pventa ,tipo FROM `preventa`  GROUP BY idproducto");
+        return $query;
+    }
+
+    public function getNumFicha($dateInicial, $dateFinal)
+    {
+        $query = $this->con->query("SELECT (COUNT(*) +1 ) as numficha FROM `ventatotal` WHERE fecha >= '$dateInicial 00:00:00' and fecha <= '$dateFinal 23:59:00'");
+        return $query;
+    }
+
+/***************************************************Funciones SQL para registrar una venta ************************************************/
+
+    public function registrarVenta($nombre, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta)
+    {
+        $query = $this->con->query("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`)
+                                            VALUES (NULL, '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idClientei', '$codigoControl')");
+        return $query;
+    }
+
+    public function getDatosVenta()
+    {
+        $query = $this->con->query("SELECT * FROM `ventatotal`");
+        return $query;
+    }
+
+
+     public function registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado)
+    {
+        $query = $this->con->query("INSERT INTO `datosventa` (`idDatosVentas`, `cantidad`, `descripcion`, `precio`, `total`, `tipo`, `fechaVenta`, `codigoControl`, `idVentas`, `estado`)
+                                      VALUES (NULL, '$cantidad', '$descripcion', '$precio', '$total', '$tipo', '$fechaVenta', '$codigoControl', '$idVentas', '$estado')");
+        return $query;
+    }
+
+    public function registrarDatosVentaTotal($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado,$comentario)
+    {
+        $query = $this->con->query("INSERT INTO `datosventatotal` (`idVentas`, `cliente`, `cantidad`, `precio`, `total`, `codigoControl`, `fechaVenta`, `estado`, `comentario`)
+                                       VALUES (NULL, '$cliente', '$cantidad', '$precio', '$total', '$codigoControl', '$fechaVenta', '$estado','$comentario')");
+        return $query;
+    }
+
+     public function registrarDatosClienteVenta($fechaVenta, $nitci, $cliente, $codigoControl, $idVentas, $estado)
+    {
+        $query = $this->con->query("INSERT INTO `datosclienteventa` (`idClienteVenta`, `fechaVenta`, `nitCliente`, `cliente`, `codigoControl`, `idVentas`, `estado`)
+                                             VALUES (NULL, '$fechaVenta', '$nitci', '$cliente', '$codigoControl', '$idVentas', '$estado')");
+        return $query;
+    }
+
+    public function registrarDatosFacturaVenta($nit, $factura, $numeroAutorizacion, $codigoControl, $idVentas, $estado)
+    {
+        $query = $this->con->query("INSERT INTO `datosfacturaventa` (`idDatosFactura`, `nit`, `factura`, `numeroAutorizacion`, `codigoControl`, `idVentas`, `estado`)
+                                              VALUES (NULL, '$nit', '$factura', '$numeroAutorizacion', '$codigoControl', '$idVentas', '$estado')");
+        return $query;
+    }
+
+    public function cleanClientData()
+    {
+        $query = $this->con->query("truncate `clientedato`");
+        return $query;
+    }
+
+     public function cleanRegistroPreventa()
+    {
+        $query = $this->con->query("truncate `preventa`");
+        return $query;
+    }
 
 
 
