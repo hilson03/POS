@@ -602,6 +602,115 @@ class conexion{
     }
 
 
+    public function updateOpcionElegida($colorElegido,$idMenu)
+    {
+
+        $query = $this->con->query("UPDATE `menu` SET `color` = '$colorElegido' WHERE `idmenu` = $idMenu ");
+
+        return $query;
+    }
+
+    public function updateOpcionDefecto($colorDefecto,$idMenu)
+    {
+        $query = $this->con->query("UPDATE `menu` SET `color` = '$colorDefecto' WHERE `idmenu` != $idMenu ");
+
+        return $query;
+    }
+
+    public function getAllGastos()
+    {
+
+        $query = $this->con->query("SELECT * FROM `gastos` order by idgastos desc");
+        return $query;
+    }
+
+    public function registerNewAccount($tipo, $descripcion, $entrada, $fechaRegistro, $usuario, $salida)
+    {
+
+        $query = $this->con->query("INSERT INTO `gastos` (`idgastos`, `descripcion`, `entrada`, `usuario`, `salida`, `tipo`,`fechaRegistro`)
+                                            VALUES (NULL, '$descripcion', '$entrada', '$usuario', '$salida', '$tipo','$fechaRegistro')");
+        return $query;
+    }
+
+     public function deleteAccount($idCuenta)
+    {
+        $query = $this->con->query("DELETE FROM `gastos` WHERE `idgastos` = $idCuenta");
+        return $query;
+    }
+
+    public function updateAccount($tipo, $descripcion, $entrada, $fechaRegistro, $usuario, $salida, $idCuenta)
+    {
+
+        $query = $this->con->query("UPDATE `gastos` SET `descripcion` = '$descripcion',
+                                                                `entrada` = '$entrada',
+                                                                `fechaRegistro` = '$fechaRegistro',
+                                                                 `usuario` = '$usuario',
+                                                                 `salida` = '$salida',
+                                                                 `tipo` = '$tipo' WHERE `idgastos` = $idCuenta");
+        return $query;
+    }
+
+    public function getAllPedido()
+    {
+        $query = $this->con->query('SELECT * FROM pedido order by idpedido desc ');
+        return $query;
+    }
+
+    public function registerNewPedido($descripcion, $total, $empresa, $usuario, $fechaRegistro)
+    {
+        $query = $this->con->query("INSERT INTO `pedido` (`idPedido`, `descripcion`, `total`, `proveedor`, `usuario`, `fechaRegistro`)
+                                            VALUES (NULL, '$descripcion', '$total', '$empresa', '$usuario', '$fechaRegistro')");
+        return $query;
+    }
+
+    public function deletePedido($idPedido)
+    {
+        $query = $this->con->query("DELETE FROM pedido WHERE idPedido=$idPedido");
+        return $query;
+    }
+
+    public function updatePedido($descripcion, $total, $proveedor, $usuarioLogin, $fechaRegistro, $idPedido)
+    {
+        $query = $this->con->query("UPDATE `pedido` SET `descripcion` = '$descripcion',
+                                                    `total` = '$total', `proveedor` = '$proveedor',
+                                                     `usuario` = '$usuarioLogin', `fechaRegistro` = '$fechaRegistro'
+                                                      WHERE `pedido`.`idPedido` = $idPedido ");
+        return $query;
+    }
+
+    public function getAllVentas()
+    {
+        $query = $this->con->query('SELECT * FROM datosventatotal where estado=\'NoConsolidado\' order by idVentas ASC ');
+        return $query;
+    }
+
+    public function updateDatosclienteventa($codigoControl)
+    {
+        $query = $this->con->query("UPDATE `datosclienteventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
+        return $query;
+    }
+
+
+    public function updateDatosfacturaventa($codigoControl)
+    {
+        $query = $this->con->query("UPDATE `datosfacturaventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
+        return $query;
+    }
+
+    public function updateDatosventa($codigoControl)
+    {
+        $query = $this->con->query("UPDATE `datosventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
+        return $query;
+    }
+
+    public function updateDatosventatotal($codigoControl)
+    {
+        $query = $this->con->query("UPDATE `datosventatotal` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
+        return $query;
+    }
+
+
+
 
 }
 
