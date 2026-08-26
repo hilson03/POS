@@ -709,7 +709,21 @@ class conexion{
         return $query;
     }
 
+    /************************Funciones SQL para sacar los reportes de ventas por dia, semana, mes y anio*******************************/
 
+    public function getVentasDia($fechaInicial,$fechaFinal)
+    {
+        $query = $this->con->query("SELECT * FROM `datosventatotal` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
+        return $query;
+    }
+
+
+    public function getVentasTotalesDia($fechaInicial,$fechaFinal)
+    {
+        $query = $this->con->query("SELECT SUM(total) as totalVentas FROM `datosventatotal` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
+        return $query;
+    }
+    
 
 
 }
