@@ -1,5 +1,5 @@
 <?php
-require('../Model/Conexion.php');
+require_once('../Model/Conexion.php');
 require('Constans.php');
 
 

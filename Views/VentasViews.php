@@ -149,7 +149,7 @@ include('Head.php');
 
                             <div id="resultado">
                              <?PHP
-                               include ("Pedido.php");
+                               include (__DIR__ . "/Pedido.php");
                              ?>
                             </div>
 
