@@ -15,6 +15,11 @@ $con = new Conexion();
 $searchUser = $con->getUser($usuario, $password);
 $allUsuarios = $con->getAllUserData();
 
+$tipo = '';
+$id_usuario = '';
+$nombres = '';
+$foto = '';
+
 foreach ($searchUser as $user) {
     $tipo = $user['tipo'];
     $id_usuario = $user['id_usu'];

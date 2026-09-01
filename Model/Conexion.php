@@ -723,7 +723,39 @@ class conexion{
         $query = $this->con->query("SELECT SUM(total) as totalVentas FROM `datosventatotal` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
         return $query;
     }
-    
+
+    public function getVentasProductoByDia($fechaInicial,$fechaFinal)
+    {
+        $query = $this->con->query("SELECT * FROM `datosventa` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
+        return $query;
+    }
+
+    public function getVentasProductoTotalesDia($fechaInicial,$fechaFinal)
+    {
+        $query = $this->con->query("SELECT SUM(total) as totalVentas FROM `datosventa` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
+        return $query;
+    }
+
+    public function getVentasMensuales()
+    {
+
+        $query = $this->con->query("SELECT MonthName(fechaVenta) as mes FROM datosventatotal GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
+        return $query;
+    }
+
+    public function getSumaTotalVentasByMes($mes, $anio)
+    {
+        $query = $this->con->query("SELECT SUM(cantidad * precio) as totalVentas FROM datosventatotal WHERE MONTH(fechaVenta) = '$mes' AND YEAR(fechaVenta) = '$anio'");
+        return $query;
+    }
+
+
+    public function getTotalVentasByMes($mes, $anio)
+    {
+        $query = $this->con->query("SELECT SUM(cantidad * precio) as total, DAY(fechaVenta) as dia FROM datosventatotal WHERE MONTH(fechaVenta) = '$mes' AND YEAR(fechaVenta) = '$anio' GROUP BY DAY(fechaVenta) ORDER BY DAY(fechaVenta) ASC");
+        return $query;
+    }
+
 
 
 }
