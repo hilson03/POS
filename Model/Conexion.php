@@ -756,6 +756,69 @@ class conexion{
         return $query;
     }
 
+    public function getGatosDeLaEmpresa($fechaVentasI, $fechaVentasF)
+    {
+        $query = $this->con->query("SELECT  *
+                                           FROM `gastos`
+                                           WHERE fechaRegistro
+                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
+        return $query;
+    }
+
+    public function getEntradasDeLaEmpresa($fechaVentasI, $fechaVentasF)
+    {
+        $query = $this->con->query("SELECT  SUM(entrada) as totalEntrada
+                                           FROM `gastos`
+                                           WHERE fechaRegistro
+                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
+        return $query;
+    }
+
+
+    public function getTotalGatosDeLaEmpresa($fechaVentasI, $fechaVentasF)
+    {
+        $query = $this->con->query("SELECT  SUM(salida) as totalSalida
+                                           FROM `gastos`
+                                           WHERE fechaRegistro
+                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
+        return $query;
+    }
+
+
+    public function getUtilidadDeLaEmpresa($fechaVentasI, $fechaVentasF)
+    {
+        $query = $this->con->query("SELECT  (SUM(entrada) - SUM(salida)) as utilidad
+                                           FROM `gastos`
+                                           WHERE fechaRegistro
+                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
+        return $query;
+    }
+
+    public function getTotalVentasByYear($anio)
+    {
+        $query = $this->con->query("SELECT SUM(cantidad * precio) as totalVentas FROM datosventatotal WHERE  YEAR(fechaVenta) = '$anio'");
+        return $query;
+    }
+
+    public function getTotalVentasByAnio($anio)
+    {
+        $query = $this->con->query("SELECT SUM(cantidad * precio) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE  YEAR(fechaVenta) = '$anio'   GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
+        return $query;
+    }
+
+    public function getTotalVentas6Meses()
+    {
+       $query = $this->con->query("SELECT SUM(cantidad * precio) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW() GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
+        return $query;
+    }
+
+    public function getGrandTotalVentas6Meses()
+    {
+        $query = $this->con->query("SELECT SUM(cantidad * precio) as totalVentas FROM datosventatotal WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW()");
+        return $query;
+    }
+
+
 
 
 }
