@@ -33,8 +33,7 @@ if (isset($_POST['update_data_idioma'])) {
             array('21', 'Cuentas'),
             array('22', 'Pedidos'),
             array('23', 'Consolidar'),
-            array('24', 'Reporte'),
-            array('25', 'Reportes Graficos')
+            array('24', 'Reporte')
         );
 
         foreach ($idiomaConfiguration as $idiomaElegido) {
@@ -58,8 +57,7 @@ if (isset($_POST['update_data_idioma'])) {
             array('21', 'Contas'),
             array('22', 'Pedidos'),
             array('23', 'Consolidar'),
-            array('24', 'Relatório'),
-            array('25', 'Relatórios Gráficos')
+            array('24', 'Relatório')
         );
 
         foreach ($idiomaConfiguration as $idiomaElegido) {
@@ -83,8 +81,7 @@ if (isset($_POST['update_data_idioma'])) {
             array('21', 'Accounts'),
             array('22', 'Orders'),
             array('23', 'Consolidate'),
-            array('24', 'Report'),
-            array('25', 'Graphic Reports')
+            array('24', 'Report')
         );
 
         foreach ($idiomaConfiguration as $idiomaElegido) {
