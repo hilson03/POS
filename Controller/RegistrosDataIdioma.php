@@ -31,7 +31,6 @@ if (isset($_POST['update_data_idioma'])) {
             array('19', 'Inventario'),
             array('20', 'Ventas'),
             array('21', 'Cuentas'),
-            array('22', 'Pedidos'),
             array('23', 'Consolidar'),
             array('24', 'Reporte')
         );
@@ -55,7 +54,6 @@ if (isset($_POST['update_data_idioma'])) {
             array('19', 'Inventário'),
             array('20', 'Vendas'),
             array('21', 'Contas'),
-            array('22', 'Pedidos'),
             array('23', 'Consolidar'),
             array('24', 'Relatório')
         );
@@ -79,7 +77,6 @@ if (isset($_POST['update_data_idioma'])) {
             array('19', 'Inventory'),
             array('20', 'Sales'),
             array('21', 'Accounts'),
-            array('22', 'Orders'),
             array('23', 'Consolidate'),
             array('24', 'Report')
         );

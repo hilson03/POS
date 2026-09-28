@@ -650,33 +650,12 @@ class conexion{
         return $query;
     }
 
-    public function getAllPedido()
-    {
-        $query = $this->con->query('SELECT * FROM pedido order by idpedido desc ');
-        return $query;
-    }
 
-    public function registerNewPedido($descripcion, $total, $empresa, $usuario, $fechaRegistro)
-    {
-        $query = $this->con->query("INSERT INTO `pedido` (`idPedido`, `descripcion`, `total`, `proveedor`, `usuario`, `fechaRegistro`)
-                                            VALUES (NULL, '$descripcion', '$total', '$empresa', '$usuario', '$fechaRegistro')");
-        return $query;
-    }
+/*******En esta parte se borro todas las consultas sql que eran referentes a el 
+modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria*********/
+    
+    
 
-    public function deletePedido($idPedido)
-    {
-        $query = $this->con->query("DELETE FROM pedido WHERE idPedido=$idPedido");
-        return $query;
-    }
-
-    public function updatePedido($descripcion, $total, $proveedor, $usuarioLogin, $fechaRegistro, $idPedido)
-    {
-        $query = $this->con->query("UPDATE `pedido` SET `descripcion` = '$descripcion',
-                                                    `total` = '$total', `proveedor` = '$proveedor',
-                                                     `usuario` = '$usuarioLogin', `fechaRegistro` = '$fechaRegistro'
-                                                      WHERE `pedido`.`idPedido` = $idPedido ");
-        return $query;
-    }
 
     public function getAllVentas()
     {
