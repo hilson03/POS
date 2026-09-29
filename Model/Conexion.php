@@ -179,43 +179,8 @@ class conexion{
                                           WHERE `menu`.`idmenu` = $idIdioma ");
         return $query;
     }
-//Funciones de proveedores que nos permiten obtener, crear, actualizar y borrar proveedores de la base de datos************************
-     public function getAllProveedor()
-    {
-
-        $query = $this->con->query("SELECT * FROM proveedor ");
-
-        return $query;
-    }
-
-    public function registerNewProveedor($proveedor, $responsable, $direccion, $telefono, $fechaRegistro)
-    {
-
-        $query = $this->con->query("INSERT INTO `proveedor` (`idproveedor`, `proveedor`, `responsable`, `fechaRegistro`, `direccion`, `telefono`, `estado`, `fechaAviso`, `valor`, `valorCobrado`, `saldo`)
-        VALUES (NULL, '$proveedor', '$responsable', '$fechaRegistro', '$direccion', '$telefono', '', '$fechaRegistro', 0, 0, '') ");
-
-        return $query;
-    }
-
-
-    public function deleteProveedor($idProveedor)
-    {
-        $query = $this->con->query("Delete from proveedor where idproveedor=$idProveedor ");
-
-        return $query;
-    }
-
-    public function updateProveedor($idProveedor, $proveedor, $responsable, $direccion, $telefono, $fechaRegistro)
-    {
-
-        $query = $this->con->query("UPDATE `proveedor` SET `proveedor` = '$proveedor',
-                                            `responsable` = '$responsable',
-                                            `fechaRegistro` = '$fechaRegistro',
-                                            `direccion` = '$direccion',
-                                             `telefono` = '$telefono' WHERE `proveedor`.`idproveedor` = $idProveedor");
-
-        return $query;
-    }
+/**Funciones de proveedores que nos permiten obtener, crear, actualizar y borrar proveedores de la base de datos
+fueron borradas ya que el cliente no necesitaba ese modulo en esta version del POS************************/
 
 //funcion sql para obtener una lista de todos los clientes tambien para crear, modificar y borrar
     public function getAllCliente()

@@ -25,7 +25,6 @@ if (isset($_POST['update_data_idioma'])) {
         $idiomaConfiguration = array(
             array('14', 'Principal'),
             array('15', 'Configuracion'),
-            array('16', 'Proveedores'),
             array('17', 'Clientes'),
             array('18', 'Productos'),
             array('19', 'Inventario'),
@@ -48,7 +47,6 @@ if (isset($_POST['update_data_idioma'])) {
         $idiomaConfiguration = array(
             array('14', 'Diretor'),
             array('15', 'Configuração'),
-            array('16', 'Vendedores'),
             array('17', 'Clientes'),
             array('18', 'Produtos'),
             array('19', 'Inventário'),
@@ -71,7 +69,6 @@ if (isset($_POST['update_data_idioma'])) {
         $idiomaConfiguration = array(
             array('14', 'Main'),
             array('15', 'Setting'),
-            array('16', 'vendors'),
             array('17', 'Customers'),
             array('18', 'Products'),
             array('19', 'Inventory'),
