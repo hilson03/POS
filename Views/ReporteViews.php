@@ -78,16 +78,6 @@ include('Head.php');
                             data-original-title="Buscar Reporte por mes"><span
                                 class="icon_datareport"></span> REPORTE POR MES
                     </button>
-                    <button href="#utilidad" title="" data-placement="left" data-toggle="modal"
-                            class="btn btn-danger tooltips" type="button"
-                            data-original-title="Utilidad"><span
-                                class="icon_datareport"></span> UTILIDAD
-                    </button>
-                    <button href="#Gastos" title="" data-placement="left" data-toggle="modal"
-                            class="btn btn-danger tooltips" type="button"
-                            data-original-title="Gstos de la emrpesa"><span
-                                class="icon_datareport"></span> GASTOS DE LA EMPRESA
-                    </button>
                 </div>
 
                 <br>

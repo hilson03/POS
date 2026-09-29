@@ -8,12 +8,5 @@ if(isset($_GET['productos'])){
     require('../Views/ReporteProductosPdf.php');
 }
 
-if(isset($_GET['inventario'])){
-    $allactivo =$con->getAllActivos();
-    require('../Views/ReporteInventarioPdf.php');
-}
-
-
-
 
 ?>

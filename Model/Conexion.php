@@ -303,41 +303,9 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
     //************************funcion SQL para traer los inventarios, crearlos, Modificarlos y borrarlos*******************************
-     public function getAllActivos()
-    {
-        $query = $this->con->query("SELECT * FROM activos ");
+    
 
-        return $query;
-    }
-
-    public function registerNewActivo($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro)
-    {
-
-        $query = $this->con->query("INSERT INTO `activos` (`idactivo`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`)
-                                          VALUES (NULL, '$imagen', '$codigo', '$nombreProducto', '$cantidad', '$fechaRegistro')");
-
-        return $query;
-    }
-
-    public function deleteActivo($idproducto)
-    {
-        $query = $this->con->query("Delete from activos where idactivo=$idproducto");
-
-        return $query;
-    }
-
-    public function updateActivo($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $idproducto)
-    {
-
-        $query = $this->con->query("UPDATE `activos` SET `imagen` = '$imagen',
-                                                     `codigo` = '$codigo',
-                                                     `nombreProducto` = '$nombreProducto',
-                                                     `cantidad` = '$cantidad',
-                                                     `fechaRegistro` = '$fechaRegistro'
-                                                      WHERE `activos`.`idactivo` = $idproducto");
-
-        return $query;
-    }
+    
 //*************************************metodo para obtener todos los tipos de monedas**************************************
     public function getTipoMoneda()
     {
@@ -582,38 +550,7 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $query;
     }
 
-    public function getAllGastos()
-    {
-
-        $query = $this->con->query("SELECT * FROM `gastos` order by idgastos desc");
-        return $query;
-    }
-
-    public function registerNewAccount($tipo, $descripcion, $entrada, $fechaRegistro, $usuario, $salida)
-    {
-
-        $query = $this->con->query("INSERT INTO `gastos` (`idgastos`, `descripcion`, `entrada`, `usuario`, `salida`, `tipo`,`fechaRegistro`)
-                                            VALUES (NULL, '$descripcion', '$entrada', '$usuario', '$salida', '$tipo','$fechaRegistro')");
-        return $query;
-    }
-
-     public function deleteAccount($idCuenta)
-    {
-        $query = $this->con->query("DELETE FROM `gastos` WHERE `idgastos` = $idCuenta");
-        return $query;
-    }
-
-    public function updateAccount($tipo, $descripcion, $entrada, $fechaRegistro, $usuario, $salida, $idCuenta)
-    {
-
-        $query = $this->con->query("UPDATE `gastos` SET `descripcion` = '$descripcion',
-                                                                `entrada` = '$entrada',
-                                                                `fechaRegistro` = '$fechaRegistro',
-                                                                 `usuario` = '$usuario',
-                                                                 `salida` = '$salida',
-                                                                 `tipo` = '$tipo' WHERE `idgastos` = $idCuenta");
-        return $query;
-    }
+  
 
 
 /*******En esta parte se borro todas las consultas sql que eran referentes a el 
@@ -700,43 +637,6 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
         return $query;
     }
 
-    public function getGatosDeLaEmpresa($fechaVentasI, $fechaVentasF)
-    {
-        $query = $this->con->query("SELECT  *
-                                           FROM `gastos`
-                                           WHERE fechaRegistro
-                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
-        return $query;
-    }
-
-    public function getEntradasDeLaEmpresa($fechaVentasI, $fechaVentasF)
-    {
-        $query = $this->con->query("SELECT  SUM(entrada) as totalEntrada
-                                           FROM `gastos`
-                                           WHERE fechaRegistro
-                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
-        return $query;
-    }
-
-
-    public function getTotalGatosDeLaEmpresa($fechaVentasI, $fechaVentasF)
-    {
-        $query = $this->con->query("SELECT  SUM(salida) as totalSalida
-                                           FROM `gastos`
-                                           WHERE fechaRegistro
-                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
-        return $query;
-    }
-
-
-    public function getUtilidadDeLaEmpresa($fechaVentasI, $fechaVentasF)
-    {
-        $query = $this->con->query("SELECT  (SUM(entrada) - SUM(salida)) as utilidad
-                                           FROM `gastos`
-                                           WHERE fechaRegistro
-                                           BETWEEN '" . $fechaVentasI . "'  AND '" . $fechaVentasF . "' ");
-        return $query;
-    }
 
     public function getTotalVentasByYear($anio)
     {
