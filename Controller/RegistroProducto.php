@@ -12,6 +12,21 @@ $passwordLogin = $_POST['passwordLogin'];
 
 $con = new conexion();
 
+// devuelve el motivo por el que los datos no son validos, o vacio si estan bien
+function validarDatosProducto($cantidad, $precioVenta, $precioCompra)
+{
+    if (!is_numeric($precioVenta) || $precioVenta <= 0) {
+        return "el precio de venta debe ser un numero mayor a 0.";
+    }
+    if (!is_numeric($precioCompra) || $precioCompra < 0) {
+        return "el precio de compra debe ser un numero.";
+    }
+    if (!is_numeric($cantidad) || $cantidad < 0) {
+        return "la cantidad debe ser un numero igual o mayor a 0.";
+    }
+    return "";
+}
+
 if (isset($_POST['nuevo_Producto'])) {
     $tipoproducto = $_POST['tipoproducto'];
     $codigo= $_POST['codigo'];
@@ -22,18 +37,23 @@ if (isset($_POST['nuevo_Producto'])) {
     $fechaRegistro = $_POST['fechaRegistro'];
     $proveedor =null;
 
+    $errorDatos = validarDatosProducto($cantidad, $precioVenta, $precioCompra);
 
-    $destino = subirFoto('userfile', "img/user.png", $errorFoto);
+    if ($errorDatos != "") {
+        $updateMensaje = $con->updateMensajeAlert("No se registro el producto: " . $errorDatos, "alert alert-danger");
+    } else {
+        $destino = subirFoto('userfile', "img/user.png", $errorFoto);
 
-    $mensaje = "Se registro un nuevo producto  correctamente !!!";
-    $alerta = "alert alert-success";
-    if ($errorFoto != "") {
-        $mensaje = "Se registro el producto, pero la foto no se guardo: " . $errorFoto;
-        $alerta = "alert alert-warning";
+        $mensaje = "Se registro un nuevo producto  correctamente !!!";
+        $alerta = "alert alert-success";
+        if ($errorFoto != "") {
+            $mensaje = "Se registro el producto, pero la foto no se guardo: " . $errorFoto;
+            $alerta = "alert alert-warning";
+        }
+
+        $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+        $registerNewProducto = $con->registerNewProducto($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra);
     }
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-    $registerNewProducto = $con->registerNewProducto($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra);
 }
 
 
@@ -64,20 +84,25 @@ if (isset($_POST['update_producto'])) {
     $fechaRegistro = date("Y-m-d");
     $proveedor =null;
 
+    $errorDatos = validarDatosProducto($cantidad, $precioVenta, $precioCompra);
 
-    $destino = subirFoto('userfileEdit', $imagen, $errorFoto);
+    if ($errorDatos != "") {
+        $updateMensaje = $con->updateMensajeAlert("No se actualizo el producto: " . $errorDatos, "alert alert-danger");
+    } else {
+        $destino = subirFoto('userfileEdit', $imagen, $errorFoto);
 
 
-    $mensaje = "Se Actualizo  los datos del Producto correctamente !!!";
-    $alerta = "alert alert-info";
-    if ($errorFoto != "") {
-        $mensaje = "Se actualizo el producto, pero la foto no se guardo: " . $errorFoto;
-        $alerta = "alert alert-warning";
+        $mensaje = "Se Actualizo  los datos del Producto correctamente !!!";
+        $alerta = "alert alert-info";
+        if ($errorFoto != "") {
+            $mensaje = "Se actualizo el producto, pero la foto no se guardo: " . $errorFoto;
+            $alerta = "alert alert-warning";
+        }
+
+        $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+
+        $updateProductoData = $con->updateProduct($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra,$idproducto);
     }
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-
-    $updateProductoData = $con->updateProduct($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra,$idproducto);
 
 }
 

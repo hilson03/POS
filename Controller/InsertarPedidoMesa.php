@@ -36,7 +36,9 @@ $tipoPedido = 'Mesa';
 $urlViews = URL_VIEWS;
 $cantidadEnPedido = $con->getCantidadEnPreventa($idProducto);
 
-if ($cantidadEnPedido < (int) $cantidad) {
+if (!is_numeric($precioVenta) || $precioVenta <= 0) {
+    $mensajeStock = "El producto $nombreProducto no tiene precio de venta. Asignale un precio en el modulo Productos.";
+} elseif ($cantidadEnPedido < (int) $cantidad) {
     $regiterPreventa = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
 } else {
     $mensajeStock = "Sin stock: no quedan unidades disponibles de $nombreProducto (stock: " . (int) $cantidad . ").";

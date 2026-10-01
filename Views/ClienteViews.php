@@ -42,7 +42,7 @@ include('Head.php');
 
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a
-                                href="principal.php?usuario=<?php echo $usuario; ?> &password=<?php echo $password; ?>">Inicio</a>
+                                href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
                     </li>
                 </ol>
             </div>

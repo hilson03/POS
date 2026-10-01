@@ -42,7 +42,7 @@ include('Head.php');
 
                 <ol class="breadcrumb">
                     <li>
-                        <i class="fa fa-home"></i><a href="principal.php?usuario=<?php echo $usuario; ?>&password=<?php echo $password; ?>">Inicio</a>
+                        <i class="fa fa-home"></i><a href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
                     </li>
                     <li>
                         <i class="fa fa-inbox"></i><a href="Producto.php?usuario=<?php echo $usuario; ?>&password=<?php echo $password; ?>">Producto</a>
@@ -126,14 +126,14 @@ include('Head.php');
                                                     <div class="col-lg-4">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="cantidad" name="cantidad"
-                                                               placeholder="0.00" type="text" required/>
+                                                               placeholder="0" type="number" step="1" min="0" required/>
                                                     </div>
                                                     <label for="pVenta" class="control-label col-lg-2">Precio
                                                         de Venta:</label>
                                                     <div class="col-lg-4">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="pventa" name="pventa"
-                                                               placeholder="0.00" type="text" required/>
+                                                               placeholder="0.00" type="number" step="0.01" min="0.01" required/>
                                                     </div>
 
                                                 </div>
@@ -142,7 +142,7 @@ include('Head.php');
                                                         Compra:</label>
                                                     <div class="col-lg-4">
                                                         <input class="form-control input-lg m-bot15" id="pcompra"
-                                                               name="pcompra" placeholder="0.00" type="text"
+                                                               name="pcompra" placeholder="0.00" type="number" step="0.01" min="0"
                                                                required/>
                                                     </div>
                                                     <label for="fechaRegistr"
@@ -281,16 +281,16 @@ include('Head.php');
                                                             <div class="col-lg-4">
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="cantidad" name="cantidad"
-                                                                       placeholder="0.00" type="text"
+                                                                       placeholder="0" type="number" step="1" min="0" required
                                                                        value="<?php echo $product['cantidad']; ?>"/>
                                                             </div>
                                                             <label for="pprofesional"
                                                                    class="control-label col-lg-2">Precio de
-                                                                Venta:</label>
+                                                                Compra:</label>
                                                             <div class="col-lg-4">
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="pcompra" name="pcompra"
-                                                                       placeholder="0.00" type="text"
+                                                                       placeholder="0.00" type="number" step="0.01" min="0" required
                                                                        value="<?php echo $product['precioCompra']; ?>"/>
                                                             </div>
 
@@ -300,12 +300,12 @@ include('Head.php');
                                                         <div class="form-group">
                                                             <label for="ppublico" class="control-label col-lg-2">Precio
                                                                 de
-                                                                compra:</label>
+                                                                Venta:</label>
                                                             <div class="col-lg-4">
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="pventa"
                                                                        name="pventa" placeholder="0.00"
-                                                                       type="text"
+                                                                       type="number" step="0.01" min="0.01" required
                                                                        value="<?php echo $product['precioVenta']; ?>"/>
                                                             </div>
                                                             <label for="pventa"

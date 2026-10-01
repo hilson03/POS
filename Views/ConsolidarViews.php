@@ -42,7 +42,7 @@ include('Head.php');
                 </div>
 
                 <ol class="breadcrumb">
-                    <li><i class="fa fa-home"></i><a href="principal.php">Inicio</a></li>
+                    <li><i class="fa fa-home"></i><a href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a></li>
                     <li><i class="fa fa-truck"></i>Consolidar Ventas</li>
 
                 </ol>

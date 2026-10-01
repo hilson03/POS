@@ -39,7 +39,7 @@ include('LiteralMoney.php');
                 <h3 class="page-header"><i class="fa fa-print"></i> PRINCIPAL</h3>
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a
-                            href="principal.php?usuario=<?php echo $usuario; ?> &password=<?php echo $password; ?>">Inicio</a>
+                            href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
                     </li>
                     <li>
                         <i class="fa fa-print"></i><a

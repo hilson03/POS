@@ -126,17 +126,9 @@ include('Head.php');
 
 <!--                                                id="dataTables-example"-->
 
-                                                <table class="table table-striped table-bordered table-hover">
-                                                    <thead>
-                                                    <tr>
-                                                     <?PHP
-                                                       include (__DIR__ . "/Producto.php");
-                                                     ?>
-
-                                                    </tr>
-                                                    </thead>
-
-                                                </table>
+                                                <?PHP
+                                                  include (__DIR__ . "/Producto.php");
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
