@@ -127,8 +127,11 @@ if (isset($_GET['RegistarVenta'])) {
         $cantidad = $detallePedido['cantidad'];
         $total = $detallePedido['precio'] * $detallePedido['cantidad'];
         $tipo = $detallePedido['tipo'];
+        $idProductoVendido = $detallePedido['idproducto'];
 
         $registrarPreventaTotalFinal = $con->registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado);
+
+        $descontarStock = $con->descontarStockProducto($idProductoVendido, $cantidad);
     }
 
     $registrarDatosVentaTotal = $con->registrarDatosVentaTotal($nombreClienteDato, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado,$comentario);

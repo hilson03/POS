@@ -30,6 +30,19 @@ $nombreProducto = $_GET['producto'];
 $cantidadUpdated = $_GET['cantidadUpdated'];
 $nuevoPrecio = $_GET['nuevoPrecio'];
 
+$parametroStock = '';
+$productElegido = $con->getProductoElegido($idProducto);
+foreach ($productElegido as $product) {
+    $stockProducto = (int) $product['cantidad'];
+}
+// unidades disponibles para este tipo de pedido = stock - lo que ya esta pedido en el otro tipo
+$cantidadDisponible = $stockProducto - $con->getCantidadEnPreventa($idProducto, $tipoPedido);
+
+if ((int) $cantidadUpdated > $cantidadDisponible) {
+    $cantidadUpdated = $cantidadDisponible;
+    $parametroStock = "&sinStock=" . urlencode($nombreProducto) . "&stock=" . $stockProducto;
+}
+
 $getCantidadActual = $con->getCantidadProductoChoose($idProducto, $tipoPedido);
 
 foreach ($getCantidadActual as $cantidadPedidoActual) {
@@ -60,6 +73,6 @@ if ($cantidadUpdated == 1) {
     }
 }
 
-header("Location: Ventas.php?usuario=$usuario&password=$password");
+header("Location: Ventas.php?usuario=$usuario&password=$password$parametroStock");
 
 ?>

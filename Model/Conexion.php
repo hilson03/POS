@@ -421,6 +421,15 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 
     }
 
+    /******************Funcion SQL para saber cuantas unidades de un producto ya estan en el pedido*****************************/
+    public function getCantidadEnPreventa($idProducto, $tipoExcluido = '')
+    {
+        $idProducto = (int) $idProducto;
+        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa` where idproducto=$idProducto and tipo<>'$tipoExcluido'");
+        $fila = $query->fetch_assoc();
+        return (int) $fila['cantidadTotal'];
+    }
+
      public function getContact($nitClient)
     {
         $query = $this->con->query("SELECT * FROM `cliente`  where  ci='$nitClient'");
@@ -498,6 +507,27 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     {
         $query = $this->con->query("INSERT INTO `datosventa` (`idDatosVentas`, `cantidad`, `descripcion`, `precio`, `total`, `tipo`, `fechaVenta`, `codigoControl`, `idVentas`, `estado`)
                                       VALUES (NULL, '$cantidad', '$descripcion', '$precio', '$total', '$tipo', '$fechaVenta', '$codigoControl', '$idVentas', '$estado')");
+        return $query;
+    }
+
+    /******************Funcion SQL para traer lo vendido en un dia, agrupado por producto*****************************/
+    public function getVentasDelDia($fecha)
+    {
+        $query = $this->con->query("SELECT descripcion, precio, SUM(cantidad) as cantidad, SUM(total) as totalVendido, MAX(DATE(fechaVenta)) as fecha
+                                          FROM `datosventa`
+                                          WHERE fechaVenta >= '$fecha 00:00:00' and fechaVenta <= '$fecha 23:59:59'
+                                          GROUP BY descripcion, precio
+                                          ORDER BY totalVendido DESC");
+        return $query;
+    }
+
+    /******************Funcion SQL para descontar del stock la cantidad vendida de un producto*****************************/
+    public function descontarStockProducto($idProducto, $cantidadVendida)
+    {
+        $idProducto = (int) $idProducto;
+        $cantidadVendida = (int) $cantidadVendida;
+        $query = $this->con->query("UPDATE `producto` SET `cantidad` = CAST(`cantidad` AS SIGNED) - $cantidadVendida
+                                          WHERE `idproducto` = $idProducto");
         return $query;
     }
 

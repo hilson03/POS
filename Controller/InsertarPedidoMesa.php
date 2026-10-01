@@ -34,7 +34,13 @@ foreach ($productElegido as $product) {
 }
 $tipoPedido = 'Mesa';
 $urlViews = URL_VIEWS;
-$regiterPreventa = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
+$cantidadEnPedido = $con->getCantidadEnPreventa($idProducto);
+
+if ($cantidadEnPedido < (int) $cantidad) {
+    $regiterPreventa = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
+} else {
+    $mensajeStock = "Sin stock: no quedan unidades disponibles de $nombreProducto (stock: " . (int) $cantidad . ").";
+}
 
 require('../Views/RefreshPedido.php');
 ?>

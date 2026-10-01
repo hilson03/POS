@@ -7,6 +7,12 @@
                     </strong>
             </header>
 
+            <?PHP if (!empty($mensajeStock)) { ?>
+                <div class="alert alert-danger" align="center">
+                    <strong><?PHP echo htmlspecialchars($mensajeStock); ?></strong>
+                </div>
+            <?PHP } ?>
+
             <div id="formularioEdit" style="display: none;"></div>
 
             <table class="table table-striped">

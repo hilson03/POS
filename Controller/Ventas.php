@@ -59,6 +59,10 @@ foreach ($tipoDeMoneda as $moneda){
     $tipoMonedaElegida =$moneda['tipoMoneda'];
 }
 
+if (isset($_GET['sinStock'])) {
+    $mensajeStock = "Sin stock suficiente de " . $_GET['sinStock'] . " (stock: " . (int) $_GET['stock'] . "). Se ajusto la cantidad al maximo disponible.";
+}
+
 $allProducto =$con->getAllProducto();
 $menuMain = $con->getMenuMain();
 require("../Views/VentasViews.php");
