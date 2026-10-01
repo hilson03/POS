@@ -16,7 +16,6 @@ $onlyUserSession = $con->getOnlyUserData($idUsuario);
 
 foreach ($onlyUserSession as $user) {
     $usuario = $user['login'];
-    $password = $user['password'];
     $tipoUsuserio = $user['tipo'];
 }
 $urlViews = URL_VIEWS;

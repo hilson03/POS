@@ -2,67 +2,94 @@
 class conexion{
 
     public $con;
-    
+
     public function __construct(){
         $user = 'root';
         $password = '';
         $server = 'localhost';
         $database = 'icontpos';
-        $this-> con = new mysqli($server, $user, $password, $database); 
-        $this->con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"); 
+        $this-> con = new mysqli($server, $user, $password, $database);
+        $this->con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }
 
-    public function getUser($usuario, $password){
-    $query = $this->con->query("SELECT * FROM usuarios WHERE login='" . $usuario . "' AND password = '" . $password . "'");
+    /*
+     * Ejecuta una consulta preparada: los datos van aparte del SQL (marcados con ?), asi lo que escribe
+     * el usuario nunca se interpreta como parte de la consulta (protege contra inyeccion SQL).
+     * Devuelve un mysqli_result en los SELECT y true/false en INSERT, UPDATE y DELETE.
+     */
+    private function ejecutar($sql, $parametros = array())
+    {
+        $stmt = $this->con->prepare($sql);
 
-        $retorno = array();
-        $i = 0;
-        while($fila=$query->fetch_assoc()){
-
-            $retorno[$i] =$fila;
-            $i++;
+        if (!empty($parametros)) {
+            $valores = array();
+            foreach ($parametros as $parametro) {
+                $valores[] = $parametro === null ? null : (string) $parametro;
+            }
+            $stmt->bind_param(str_repeat('s', count($valores)), ...$valores);
         }
 
-    return $retorno;
+        $stmt->execute();
+        $resultado = $stmt->get_result();
 
+        return $resultado === false ? true : $resultado;
+    }
+
+    // convierte un resultado en un arreglo de filas (lo que devolvian las funciones que hacian el while a mano)
+    private function filas($resultado)
+    {
+        $retorno = array();
+        while ($fila = $resultado->fetch_assoc()) {
+            $retorno[] = $fila;
+        }
+        return $retorno;
+    }
+
+    /*
+     * Busca al usuario por login y valida la contrasena.
+     * Las contrasenas se guardan cifradas con password_hash; si una todavia esta en texto plano
+     * (usuarios creados antes de este cambio) se valida igual y se cifra en ese momento.
+     */
+    public function getUser($usuario, $password){
+        $usuarios = $this->filas($this->ejecutar("SELECT * FROM usuarios WHERE login = ?", array($usuario)));
+
+        foreach ($usuarios as $fila) {
+            $guardada = $fila['password'];
+            $esHash = !empty(password_get_info($guardada)['algo']);
+
+            if ($esHash && password_verify($password, $guardada)) {
+                return array($fila);
+            }
+
+            if (!$esHash && $guardada !== '' && hash_equals($guardada, (string) $password)) {
+                $this->ejecutar("UPDATE usuarios SET password = ? WHERE id_usu = ?",
+                    array(password_hash($password, PASSWORD_DEFAULT), $fila['id_usu']));
+                return array($fila);
+            }
+        }
+
+        return array();
     }
 
    public function getMenuMain(){
 
-        $query = $this->con->query("SELECT * FROM `menu`");
-
-        $retorno=[];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()){
-
-            $retorno[$i] = $fila;
-            $i++;
-
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("SELECT * FROM `menu`"));
 
     }
 
 //***************************esta funcion atraves de una consulta trae toda la informacion de los usuarios.******************************
     public function getAllUserData(){
-        
-        $query = $this->con->query("SELECT * FROM `usuarios`");
 
-       
-         return $query;
+        return $this->ejecutar("SELECT * FROM `usuarios`");
 
     }
 
 
 //***********************esta funcion sirve para registrar nuevos usuarios con imagen******************
-//recordar ver como resolver lo de la imagen de perfil de usuario
     public function getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario){
 
-    $query = $this->con->query("INSERT INTO `usuarios`(`id_usu`,`login`,`tipo`,`nombre`,`password`,`foto`)
-                            VALUES(NULL, '$usuario', '$tipo','$nombre','$password','$imagenUsuario')");
-
-    return $query;
+        return $this->ejecutar("INSERT INTO `usuarios`(`id_usu`,`login`,`tipo`,`nombre`,`password`,`foto`) VALUES(NULL, ?, ?, ?, ?, ?)",
+            array($usuario, $tipo, $nombre, password_hash($password, PASSWORD_DEFAULT), $imagenUsuario));
 
     }
 
@@ -70,69 +97,47 @@ class conexion{
     public function deleteUsuario($idUsuario)
     {
 
-        $query = $this->con->query("DELETE FROM usuarios Where id_usu=$idUsuario ");
-
-        return $query;
+        return $this->ejecutar("DELETE FROM usuarios Where id_usu = ?", array((int) $idUsuario));
     }
 
     //*********************esta consulta permite actualizar la informacion del usuario********************************
+    // si $password viene vacio se conserva la contrasena actual
     public function updateUsuario($login, $tipo, $nombre, $password, $foto, $idUsuario)
     {
+        if ($password === null || $password === '') {
+            return $this->ejecutar("UPDATE `usuarios` SET `login` = ?, `tipo` = ?, `nombre` = ?, `foto` = ? WHERE `id_usu` = ?",
+                array($login, $tipo, $nombre, $foto, (int) $idUsuario));
+        }
 
-        $query = $this->con->query("UPDATE `usuarios`
-        SET `login` = '$login',
-             `tipo` = '$tipo',
-              `nombre` = '$nombre',
-               `password` = '$password',
-               `foto` = '$foto' WHERE `usuarios`.`id_usu` = $idUsuario");
-
-        return $query;
+        return $this->ejecutar("UPDATE `usuarios` SET `login` = ?, `tipo` = ?, `nombre` = ?, `password` = ?, `foto` = ? WHERE `id_usu` = ?",
+            array($login, $tipo, $nombre, password_hash($password, PASSWORD_DEFAULT), $foto, (int) $idUsuario));
     }
 
 
     public function getMensajeAlerta()
     {
 
-        $query = $this->con->query("SELECT * FROM `alerta`");
-
-        $retorno = [];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("SELECT * FROM `alerta`"));
 
     }
 //*************esta funcion sirve para ver un mensaje de alerta ya se por que se creo, actualizo o elimino un usuario.**********
     public function updateMensajeAlert($mensaje, $alerta)
     {
-        $query = $this->con->query("UPDATE `alerta` SET `tipoAlerta` = '$alerta',
-                                                `mensaje` = '$mensaje'  WHERE `alerta`.`alertaId` = 1");
-        return $query;
+        return $this->ejecutar("UPDATE `alerta` SET `tipoAlerta` = ?, `mensaje` = ? WHERE `alerta`.`alertaId` = 1", array($alerta, $mensaje));
     }
 
 //******************esta funciones sirven para obtener datos de facturas y actualizarlos al mismo tiempo*******************
     public function getDataFactura(){
 
-        $query = $this->con->query("SELECT * FROM `datos`");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `datos`");
 
     }
 
 
     public function updateDataFactura($iddatos,$propietario, $razon, $direccion, $nro, $telefono){
 
-        $query = $this->con->query("UPDATE `datos` SET `propietario` = '$propietario',
-        `razon` = '$razon',
-        `direccion` = '$direccion',
-         `nro` = '$nro',
-         `telefono` = '$telefono'
-          WHERE `datos`.`iddatos` = $iddatos");
-
-            return $query;
-
+        return $this->ejecutar("UPDATE `datos` SET `propietario` = ?, `razon` = ?, `direccion` = ?, `nro` = ?, `telefono` = ? WHERE `datos`.`iddatos` = ?",
+            array($propietario, $razon, $direccion, $nro, $telefono, (int) $iddatos));
 
     }
 
@@ -141,43 +146,31 @@ class conexion{
 
     public function getMoneda()
         {
-            $query = $this->con->query("SELECT * FROM `moneda`");
-            return $query;
+            return $this->ejecutar("SELECT * FROM `moneda`");
         }
 
     public function updateDataMoneda($idMoneda, $pais, $tipoMoneda, $contexto){
 
-        $query = $this->con->query("UPDATE `moneda` SET
-        `pais` = '$pais',
-        `tipoMoneda` = '$tipoMoneda',
-        `contexto` = '$contexto' WHERE `moneda`.`idMoneda` = $idMoneda ");
-        
-        return $query;
+        return $this->ejecutar("UPDATE `moneda` SET `pais` = ?, `tipoMoneda` = ?, `contexto` = ? WHERE `moneda`.`idMoneda` = ?",
+            array($pais, $tipoMoneda, $contexto, (int) $idMoneda));
 
     }
 
 //*************************************Metodos para cambiar idiomas*********************************************
     public function getIdioma()
     {
-        $query = $this->con->query("SELECT * FROM `idioma`");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `idioma`");
     }
 
     public function updateDataIdioma($idioma, $idIdioma)
     {
 
-        $query = $this->con->query("UPDATE `idioma`
-                                          SET `idioma` = '$idioma'
-                                          WHERE `idioma`.`idIdioma` = $idIdioma");
-        return $query;
+        return $this->ejecutar("UPDATE `idioma` SET `idioma` = ? WHERE `idioma`.`idIdioma` = ?", array($idioma, (int) $idIdioma));
     }
 
     public function updateIdiomaSistem($opcionMenu, $idIdioma)
     {
-        $query = $this->con->query("UPDATE `menu`
-                                          SET `opcion` = '$opcionMenu'
-                                          WHERE `menu`.`idmenu` = $idIdioma ");
-        return $query;
+        return $this->ejecutar("UPDATE `menu` SET `opcion` = ? WHERE `menu`.`idmenu` = ?", array($opcionMenu, (int) $idIdioma));
     }
 /**Funciones de proveedores que nos permiten obtener, crear, actualizar y borrar proveedores de la base de datos
 fueron borradas ya que el cliente no necesitaba ese modulo en esta version del POS************************/
@@ -186,244 +179,153 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     public function getAllCliente()
     {
 
-        $query = $this->con->query("SELECT * FROM cliente ");
-
-        return $query;
+        return $this->ejecutar("SELECT * FROM cliente ");
     }
 
 
     public function registerNewCliente($imagen, $nombre, $apellido, $direccion, $telefonoFijo, $telefonoCelular, $email, $fechaRegistro, $ci)
     {
 
-        $query = $this->con->query("INSERT INTO `cliente` (`idcliente`, `foto`, `nombre`, `apellido`, `direccion`, `telefonoFijo`, `telefonoCelular`, `email`, `contactoReferencia`, `telefonoReferencia`, `observaciones`, `fechaRegistro`, `ci`)
-                                     VALUES (NULL, '$imagen', '$nombre', '$apellido', '$direccion', '$telefonoFijo', '$telefonoCelular', '$email', '', '', '', '$fechaRegistro', '$ci')");
-
-        return $query;
+        return $this->ejecutar("INSERT INTO `cliente` (`idcliente`, `foto`, `nombre`, `apellido`, `direccion`, `telefonoFijo`, `telefonoCelular`, `email`, `contactoReferencia`, `telefonoReferencia`, `observaciones`, `fechaRegistro`, `ci`)
+                                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, '', '', '', ?, ?)",
+            array($imagen, $nombre, $apellido, $direccion, $telefonoFijo, $telefonoCelular, $email, $fechaRegistro, $ci));
     }
 
     public function updateClient($idcliente, $imagen, $nombre, $apellido, $direccion, $telefonoFijo, $telefonoCelular, $email, $fechaRegistro, $ci)
     {
 
-        $query = $this->con->query("UPDATE `cliente` SET
-                                                `foto` = '$imagen',
-                                                `nombre` = '$nombre',
-                                                `apellido` = '$apellido',
-                                                `direccion` = '$direccion',
-                                                `telefonoFijo` = '$telefonoFijo',
-                                                `telefonoCelular` = '$telefonoCelular',
-                                                `email` = '$email',
-                                                `fechaRegistro` = '$fechaRegistro',
-                                                `ci` = '$ci' WHERE `cliente`.`idcliente` = $idcliente");
-
-        return $query;
+        return $this->ejecutar("UPDATE `cliente` SET `foto` = ?, `nombre` = ?, `apellido` = ?, `direccion` = ?, `telefonoFijo` = ?,
+                                                `telefonoCelular` = ?, `email` = ?, `fechaRegistro` = ?, `ci` = ? WHERE `cliente`.`idcliente` = ?",
+            array($imagen, $nombre, $apellido, $direccion, $telefonoFijo, $telefonoCelular, $email, $fechaRegistro, $ci, (int) $idcliente));
     }
 
 
      public function deleteClient($idClient)
     {
-        $query = $this->con->query("Delete from cliente where idcliente=$idClient ");
-
-        return $query;
+        return $this->ejecutar("Delete from cliente where idcliente = ?", array((int) $idClient));
     }
 
 //******************************funcion SQL permite traer todos los productos*******************************************
     public function getAllProducto()
     {
 
-        $query = $this->con->query("SELECT * FROM producto");
-
-        return $query;
+        return $this->ejecutar("SELECT * FROM producto");
     }
 
 
     public function getAllTipoProducto()
     {
-        $query = $this->con->query("SELECT * FROM tipoproducto");
-
-        return $query;
+        return $this->ejecutar("SELECT * FROM tipoproducto");
     }
 
 
     public function registerNewProducto($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra)
     {
 
-        $query = $this->con->query("INSERT INTO `producto` (`idproducto`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`, `precioVenta`, `tipo`, `proveedor`, `precioCompra`)
-                                          VALUES (NULL, '$imagen', '$codigo', '$nombreProducto', '$cantidad', '$fechaRegistro', '$precioVenta', '$tipo', '$proveedor', '$precioCompra')");
-
-        return $query;
+        return $this->ejecutar("INSERT INTO `producto` (`idproducto`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`, `precioVenta`, `tipo`, `proveedor`, `precioCompra`)
+                                          VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, (string) $proveedor, $precioCompra));
     }
 
     public function deleteProduct($idproducto)
     {
-        $query = $this->con->query("Delete from producto where idproducto=$idproducto");
-
-        return $query;
+        return $this->ejecutar("Delete from producto where idproducto = ?", array((int) $idproducto));
     }
 
      public function updateProduct($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra, $idproducto)
     {
 
-        $query = $this->con->query("UPDATE `producto` SET `imagen` = '$imagen',
-                                                     `codigo` = '$codigo',
-                                                     `nombreProducto` = '$nombreProducto',
-                                                     `cantidad` = '$cantidad',
-                                                     `fechaRegistro` = '$fechaRegistro',
-                                                     `precioVenta` = '$precioVenta',
-                                                     `tipo` = '$tipo',
-                                                      `proveedor` = '$proveedor',
-                                                      `precioCompra` = '$precioCompra' WHERE `producto`.`idproducto` = $idproducto");
-
-        return $query;
+        return $this->ejecutar("UPDATE `producto` SET `imagen` = ?, `codigo` = ?, `nombreProducto` = ?, `cantidad` = ?, `fechaRegistro` = ?,
+                                                     `precioVenta` = ?, `tipo` = ?, `proveedor` = ?, `precioCompra` = ? WHERE `producto`.`idproducto` = ?",
+            array($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, (string) $proveedor, $precioCompra, (int) $idproducto));
     }
 
 //*****************************************Funcion SQL para registrar nuevos tipos de producto******************************************
     public function registerNewTipoProduct($tipoProducto)
     {
-        $query = $this->con->query("INSERT INTO `tipoproducto` (`idtipoproducto`, `tipoproducto`)
-                                          VALUES (NULL, '$tipoProducto')");
-
-        return $query;
+        return $this->ejecutar("INSERT INTO `tipoproducto` (`idtipoproducto`, `tipoproducto`) VALUES (NULL, ?)", array($tipoProducto));
 
     }
 
     public function deleteTipoProduct($tipoProductoId)
     {
-        $query = $this->con->query("Delete from tipoproducto where idtipoproducto=$tipoProductoId");
-
-        return $query;
+        return $this->ejecutar("Delete from tipoproducto where idtipoproducto = ?", array((int) $tipoProductoId));
     }
 
 
     public function updateTipoProducto($tipoProductoId, $tipoproducto)
     {
-        $query = $this->con->query("UPDATE `tipoproducto` SET `tipoproducto` = '$tipoproducto'
-                                          WHERE `tipoproducto`.`idtipoproducto` = $tipoProductoId");
-
-        return $query;
+        return $this->ejecutar("UPDATE `tipoproducto` SET `tipoproducto` = ? WHERE `tipoproducto`.`idtipoproducto` = ?",
+            array($tipoproducto, (int) $tipoProductoId));
     }
 
-    //************************funcion SQL para traer los inventarios, crearlos, Modificarlos y borrarlos*******************************
-    
-
-    
 //*************************************metodo para obtener todos los tipos de monedas**************************************
     public function getTipoMoneda()
     {
 
-        $query = $this->con->query("SELECT * FROM `moneda`");
-
-        $retorno = [];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("SELECT * FROM `moneda`"));
 
     }
 //consulta para hacer una preVenta
 
     public function getPreventa($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("SELECT MIN(idPreventa) as idPreventa,imagen,producto,COUNT(producto) as cantidad, SUM(precio) as totalPrecio,idProducto,pventa,idUser,precio,tipo
+        return $this->ejecutar("SELECT MIN(idPreventa) as idPreventa,imagen,producto,COUNT(producto) as cantidad, SUM(precio) as totalPrecio,idProducto,pventa,idUser,precio,tipo
                                             FROM `preventa`
-                                            WHERE idUser = $idUser
+                                            WHERE idUser = ?
                                             GROUP BY producto,idProducto,tipo
-                                            ORDER BY idPreventa ASC");
-        return $query;
+                                            ORDER BY idPreventa ASC", array((int) $idUser));
     }
 
      public function getTotalPreventa($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("SELECT Sum(precio) as total , idUser FROM `preventa` WHERE idUser = $idUser HAVING COUNT(*) > 0");
-        return $query;
+        return $this->ejecutar("SELECT Sum(precio) as total , idUser FROM `preventa` WHERE idUser = ? HAVING COUNT(*) > 0", array((int) $idUser));
     }
 
-    /******************Funcion SQL para traer datos de usuario relacionados con el pedido modificar o eliminar*****************************/ 
+    /******************Funcion SQL para traer datos de usuario relacionados con el pedido modificar o eliminar*****************************/
 
     public function getOnlyUserData($idUser)
-    { $query = $this->con->query("SELECT * FROM usuarios where id_usu=$idUser");
-        $retorno = [];
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+    {
+        return $this->filas($this->ejecutar("SELECT * FROM usuarios where id_usu = ?", array((int) $idUser)));
     }
 
 
     public function getProductoElegido($idproducto)
     {
 
-        $query = $this->con->query("SELECT * FROM `producto` where idproducto='$idproducto'");
-
-        $retorno = [];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("SELECT * FROM `producto` where idproducto = ?", array($idproducto)));
 
     }
 
     public function insertarPreventaProducto($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo)
     {
-        $query = $this->con->query("INSERT INTO `preventa` (`idPreventa`, `imagen`, `producto`, `precio`, `idProducto`, `pventa`, `idUser`, `tipo`)
-                                          VALUES (NULL, '$imagen', '$producto', '$precio', '$idProducto', '$pventa', '$idUser', '$tipo')");
-
-        return $query;
+        return $this->ejecutar("INSERT INTO `preventa` (`idPreventa`, `imagen`, `producto`, `precio`, `idProducto`, `pventa`, `idUser`, `tipo`)
+                                          VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)",
+            array($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo));
     }
 
     public function deleteOnlyPreventa($idProducto, $tipo, $idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("Delete from preventa where idproducto='$idProducto'  and  tipo='$tipo' and idUser = $idUser");
-        return $query;
+        return $this->ejecutar("Delete from preventa where idproducto = ? and tipo = ? and idUser = ?", array($idProducto, $tipo, (int) $idUser));
     }
 
     public function deleteAllPreventa($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("DELETE FROM `preventa` WHERE idUser = $idUser");
-        return $query;
+        return $this->ejecutar("DELETE FROM `preventa` WHERE idUser = ?", array((int) $idUser));
     }
 
 
     public function getDataProductoChoose($idProducto, $tipo, $idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("SELECT * FROM `preventa` where idproducto='$idProducto' and tipo='$tipo' and idUser = $idUser");
-
-        $retorno = [];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("SELECT * FROM `preventa` where idproducto = ? and tipo = ? and idUser = ?",
+            array($idProducto, $tipo, (int) $idUser)));
 
     }
 
     public function getCantidadProductoChoose($idProducto, $tipo, $idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa` where idproducto='$idProducto' and tipo='$tipo' and idUser = $idUser");
-
-        $retorno = [];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("SELECT count(idproducto) as cantidadTotal FROM `preventa` where idproducto = ? and tipo = ? and idUser = ?",
+            array($idProducto, $tipo, (int) $idUser)));
 
     }
 
@@ -432,73 +334,55 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     // con $idUserExcluido y $tipoExcluido se descuentan las lineas que el usuario esta editando
     public function getCantidadEnPreventa($idProducto, $idUserExcluido = 0, $tipoExcluido = '')
     {
-        $idProducto = (int) $idProducto;
-        $idUserExcluido = (int) $idUserExcluido;
-        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa`
-                                          where idproducto=$idProducto and NOT (idUser = $idUserExcluido and tipo = '$tipoExcluido')");
-        $fila = $query->fetch_assoc();
+        $fila = $this->ejecutar("SELECT count(idproducto) as cantidadTotal FROM `preventa`
+                                          where idproducto = ? and NOT (idUser = ? and tipo = ?)",
+            array((int) $idProducto, (int) $idUserExcluido, $tipoExcluido))->fetch_assoc();
         return (int) $fila['cantidadTotal'];
     }
 
      public function getContact($nitClient)
     {
-        $query = $this->con->query("SELECT * FROM `cliente`  where  ci='$nitClient'");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `cliente`  where  ci = ?", array($nitClient));
     }
 
     public function getClienteDatos($nitClient)
     {
-        $query = $this->con->query("select * from cliente where ci = $nitClient ");
-        $retorno = [];
-
-        $i = 0;
-        while ($fila = $query->fetch_assoc()) {
-            $retorno[$i] = $fila;
-            $i++;
-        }
-        return $retorno;
+        return $this->filas($this->ejecutar("select * from cliente where ci = ?", array($nitClient)));
     }
 
       public function getDatosFactura()
     {
-        $query = $this->con->query("SELECT * FROM `datos`");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `datos`");
     }
 
     public function getDatosDosificacion()
     {
-        $query = $this->con->query("SELECT * FROM `dosificacion`");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `dosificacion`");
     }
 
      public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente, $idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`)
-                                            VALUES (NULL , '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idcliente', 'Local', $idUser);");
-        return $query;
+        return $this->ejecutar("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`)
+                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?)",
+            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idcliente, $idUser));
     }
 
 
     public function getDataCliente($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("SELECT * FROM `clientedato` WHERE idUser = $idUser order by idcliente DESC  limit 1");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `clientedato` WHERE idUser = ? order by idcliente DESC  limit 1", array((int) $idUser));
     }
 
     public function getPedidoTotalForFactura($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("SELECT MIN(idpreventa) as idpreventa,imagen,producto,precio, count( idproducto ) AS cantidad, precio*count( idproducto ) as totalPrecio, idproducto, pventa ,tipo
-                                          FROM `preventa` WHERE idUser = $idUser GROUP BY idproducto");
-        return $query;
+        return $this->ejecutar("SELECT MIN(idpreventa) as idpreventa,imagen,producto,precio, count( idproducto ) AS cantidad, precio*count( idproducto ) as totalPrecio, idproducto, pventa ,tipo
+                                          FROM `preventa` WHERE idUser = ? GROUP BY idproducto", array((int) $idUser));
     }
 
     public function getNumFicha($dateInicial, $dateFinal)
     {
-        $query = $this->con->query("SELECT (COUNT(*) +1 ) as numficha FROM `ventatotal` WHERE fecha >= '$dateInicial 00:00:00' and fecha <= '$dateFinal 23:59:00'");
-        return $query;
+        return $this->ejecutar("SELECT (COUNT(*) +1 ) as numficha FROM `ventatotal` WHERE fecha >= ? and fecha <= ?",
+            array($dateInicial . ' 00:00:00', $dateFinal . ' 23:59:00'));
     }
 
 /***************************************************Funciones SQL para registrar una venta ************************************************/
@@ -506,214 +390,203 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     // devuelve el id de la venta recien creada (0 si fallo)
     public function registrarVenta($nombre, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $idUsuario)
     {
-        $idUsuario = (int) $idUsuario;
-        $query = $this->con->query("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`, `idUsuario`)
-                                            VALUES (NULL, '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idClientei', '$codigoControl', $idUsuario)");
+        $query = $this->ejecutar("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`, `idUsuario`)
+                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $idUsuario));
         return $query ? $this->con->insert_id : 0;
     }
 
     public function getDatosVenta($idVentas)
     {
-        $idVentas = (int) $idVentas;
-        $query = $this->con->query("SELECT * FROM `ventatotal` WHERE idVentas = $idVentas");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `ventatotal` WHERE idVentas = ?", array((int) $idVentas));
     }
 
 
      public function registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado)
     {
-        $query = $this->con->query("INSERT INTO `datosventa` (`idDatosVentas`, `cantidad`, `descripcion`, `precio`, `total`, `tipo`, `fechaVenta`, `codigoControl`, `idVentas`, `estado`)
-                                      VALUES (NULL, '$cantidad', '$descripcion', '$precio', '$total', '$tipo', '$fechaVenta', '$codigoControl', '$idVentas', '$estado')");
-        return $query;
+        return $this->ejecutar("INSERT INTO `datosventa` (`idDatosVentas`, `cantidad`, `descripcion`, `precio`, `total`, `tipo`, `fechaVenta`, `codigoControl`, `idVentas`, `estado`)
+                                      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado));
     }
 
     /******************Funcion SQL para traer lo vendido en un dia, agrupado por producto*****************************/
     public function getVentasDelDia($fecha)
     {
-        $query = $this->con->query("SELECT descripcion, precio, SUM(cantidad) as cantidad, SUM(total) as totalVendido, MAX(DATE(fechaVenta)) as fecha
+        return $this->ejecutar("SELECT descripcion, precio, SUM(cantidad) as cantidad, SUM(total) as totalVendido, MAX(DATE(fechaVenta)) as fecha
                                           FROM `datosventa`
-                                          WHERE fechaVenta >= '$fecha 00:00:00' and fechaVenta <= '$fecha 23:59:59'
+                                          WHERE fechaVenta >= ? and fechaVenta <= ?
                                           GROUP BY descripcion, precio
-                                          ORDER BY totalVendido DESC");
-        return $query;
+                                          ORDER BY totalVendido DESC", array($fecha . ' 00:00:00', $fecha . ' 23:59:59'));
     }
 
     /******************Funcion SQL para descontar del stock la cantidad vendida de un producto*****************************/
     public function descontarStockProducto($idProducto, $cantidadVendida)
     {
-        $idProducto = (int) $idProducto;
-        $cantidadVendida = (int) $cantidadVendida;
-        $query = $this->con->query("UPDATE `producto` SET `cantidad` = CAST(`cantidad` AS SIGNED) - $cantidadVendida
-                                          WHERE `idproducto` = $idProducto");
-        return $query;
+        return $this->ejecutar("UPDATE `producto` SET `cantidad` = CAST(`cantidad` AS SIGNED) - ? WHERE `idproducto` = ?",
+            array((int) $cantidadVendida, (int) $idProducto));
     }
 
-    public function registrarDatosVentaTotal($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado,$comentario)
+    // una fila por venta para Consolidar y los reportes: $total es el total de la venta y $cantidad las unidades vendidas
+    public function registrarDatosVentaTotal($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado, $comentario, $idVentaTotal, $idUsuario)
     {
-        $query = $this->con->query("INSERT INTO `datosventatotal` (`idVentas`, `cliente`, `cantidad`, `precio`, `total`, `codigoControl`, `fechaVenta`, `estado`, `comentario`)
-                                       VALUES (NULL, '$cliente', '$cantidad', '$precio', '$total', '$codigoControl', '$fechaVenta', '$estado','$comentario')");
-        return $query;
+        return $this->ejecutar("INSERT INTO `datosventatotal` (`idVentas`, `cliente`, `cantidad`, `precio`, `total`, `codigoControl`, `fechaVenta`, `estado`, `comentario`, `idVentaTotal`, `idUsuario`)
+                                       VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado, $comentario, (int) $idVentaTotal, (int) $idUsuario));
     }
 
      public function registrarDatosClienteVenta($fechaVenta, $nitci, $cliente, $codigoControl, $idVentas, $estado)
     {
-        $query = $this->con->query("INSERT INTO `datosclienteventa` (`idClienteVenta`, `fechaVenta`, `nitCliente`, `cliente`, `codigoControl`, `idVentas`, `estado`)
-                                             VALUES (NULL, '$fechaVenta', '$nitci', '$cliente', '$codigoControl', '$idVentas', '$estado')");
-        return $query;
+        return $this->ejecutar("INSERT INTO `datosclienteventa` (`idClienteVenta`, `fechaVenta`, `nitCliente`, `cliente`, `codigoControl`, `idVentas`, `estado`)
+                                             VALUES (NULL, ?, ?, ?, ?, ?, ?)",
+            array($fechaVenta, $nitci, $cliente, $codigoControl, $idVentas, $estado));
     }
 
     public function registrarDatosFacturaVenta($nit, $factura, $numeroAutorizacion, $codigoControl, $idVentas, $estado)
     {
-        $query = $this->con->query("INSERT INTO `datosfacturaventa` (`idDatosFactura`, `nit`, `factura`, `numeroAutorizacion`, `codigoControl`, `idVentas`, `estado`)
-                                              VALUES (NULL, '$nit', '$factura', '$numeroAutorizacion', '$codigoControl', '$idVentas', '$estado')");
-        return $query;
+        return $this->ejecutar("INSERT INTO `datosfacturaventa` (`idDatosFactura`, `nit`, `factura`, `numeroAutorizacion`, `codigoControl`, `idVentas`, `estado`)
+                                              VALUES (NULL, ?, ?, ?, ?, ?, ?)",
+            array($nit, $factura, $numeroAutorizacion, $codigoControl, $idVentas, $estado));
     }
 
     public function cleanClientData($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("DELETE FROM `clientedato` WHERE idUser = $idUser");
-        return $query;
+        return $this->ejecutar("DELETE FROM `clientedato` WHERE idUser = ?", array((int) $idUser));
     }
 
      public function cleanRegistroPreventa($idUser)
     {
-        $idUser = (int) $idUser;
-        $query = $this->con->query("DELETE FROM `preventa` WHERE idUser = $idUser");
-        return $query;
+        return $this->ejecutar("DELETE FROM `preventa` WHERE idUser = ?", array((int) $idUser));
     }
 
 
     public function updateOpcionElegida($colorElegido,$idMenu)
     {
 
-        $query = $this->con->query("UPDATE `menu` SET `color` = '$colorElegido' WHERE `idmenu` = $idMenu ");
-
-        return $query;
+        return $this->ejecutar("UPDATE `menu` SET `color` = ? WHERE `idmenu` = ?", array($colorElegido, $idMenu));
     }
 
     public function updateOpcionDefecto($colorDefecto,$idMenu)
     {
-        $query = $this->con->query("UPDATE `menu` SET `color` = '$colorDefecto' WHERE `idmenu` != $idMenu ");
-
-        return $query;
+        return $this->ejecutar("UPDATE `menu` SET `color` = ? WHERE `idmenu` != ?", array($colorDefecto, $idMenu));
     }
 
-  
-
-
-/*******En esta parte se borro todas las consultas sql que eran referentes a el 
+/*******En esta parte se borro todas las consultas sql que eran referentes a el
 modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria*********/
-    
-    
 
 
-    public function getAllVentas()
+    // ventas pendientes de consolidar; con $idUsuario solo las de ese vendedor (0 = todas, para el administrador)
+    public function getAllVentas($idUsuario = 0)
     {
-        $query = $this->con->query('SELECT * FROM datosventatotal where estado=\'NoConsolidado\' order by idVentas ASC ');
-        return $query;
+        if ((int) $idUsuario > 0) {
+            return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' and idUsuario = ? order by idVentas ASC", array((int) $idUsuario));
+        }
+        return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' order by idVentas ASC");
     }
 
-    public function updateDatosclienteventa($codigoControl)
+    // fila de la lista de Consolidar (datosventatotal.idVentas)
+    public function getVentaConsolidar($idFila)
     {
-        $query = $this->con->query("UPDATE `datosclienteventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
-        return $query;
+        $filas = $this->filas($this->ejecutar("SELECT * FROM datosventatotal WHERE idVentas = ?", array((int) $idFila)));
+        return empty($filas) ? null : $filas[0];
     }
 
-
-    public function updateDatosfacturaventa($codigoControl)
+    /*
+     * Consolida UNA venta. Antes se consolidaba por codigo de control, pero ese codigo se repite entre ventas
+     * y se consolidaban ventas ajenas. Ahora se usa el numero de venta; las ventas antiguas que no quedaron
+     * vinculadas usan su fecha exacta + codigo de control (todas las tablas de una venta comparten la misma fecha).
+     */
+    public function consolidarVenta($idFila)
     {
-        $query = $this->con->query("UPDATE `datosfacturaventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
-        return $query;
+        $venta = $this->getVentaConsolidar($idFila);
+        if ($venta === null) {
+            return false;
+        }
+
+        if ((int) $venta['idVentaTotal'] > 0) {
+            $idVenta = (int) $venta['idVentaTotal'];
+            $this->ejecutar("UPDATE `datosventa` SET `estado` = 'Consolidado' WHERE `idVentas` = ?", array($idVenta));
+            $this->ejecutar("UPDATE `datosclienteventa` SET `estado` = 'Consolidado' WHERE `idVentas` = ?", array($idVenta));
+            $this->ejecutar("UPDATE `datosfacturaventa` SET `estado` = 'Consolidado' WHERE `idVentas` = ?", array($idVenta));
+        } else {
+            $datos = array($venta['codigoControl'], $venta['fechaVenta']);
+            $this->ejecutar("UPDATE `datosventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = ? AND `fechaVenta` = ?", $datos);
+            $this->ejecutar("UPDATE `datosclienteventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = ? AND `fechaVenta` = ?", $datos);
+        }
+
+        return $this->ejecutar("UPDATE `datosventatotal` SET `estado` = 'Consolidado' WHERE `idVentas` = ?", array((int) $idFila));
     }
 
-    public function updateDatosventa($codigoControl)
+    public function insertarComentarioFicha($idFila, $comentario)
     {
-        $query = $this->con->query("UPDATE `datosventa` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
-        return $query;
-    }
-
-    public function updateDatosventatotal($codigoControl)
-    {
-        $query = $this->con->query("UPDATE `datosventatotal` SET `estado` = 'Consolidado' WHERE `codigoControl` = '$codigoControl'");
-        return $query;
+        return $this->ejecutar("UPDATE `datosventatotal` SET `comentario` = ? WHERE `idVentas` = ?", array($comentario, (int) $idFila));
     }
 
     /************************Funciones SQL para sacar los reportes de ventas por dia, semana, mes y anio*******************************/
 
     public function getVentasDia($fechaInicial,$fechaFinal)
     {
-        $query = $this->con->query("SELECT * FROM `datosventatotal` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `datosventatotal` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
+            array($fechaInicial, $fechaFinal));
     }
 
 
     public function getVentasTotalesDia($fechaInicial,$fechaFinal)
     {
-        $query = $this->con->query("SELECT SUM(total) as totalVentas FROM `datosventatotal` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM `datosventatotal` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
+            array($fechaInicial, $fechaFinal));
     }
 
     public function getVentasProductoByDia($fechaInicial,$fechaFinal)
     {
-        $query = $this->con->query("SELECT * FROM `datosventa` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
-        return $query;
+        return $this->ejecutar("SELECT * FROM `datosventa` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
+            array($fechaInicial, $fechaFinal));
     }
 
     public function getVentasProductoTotalesDia($fechaInicial,$fechaFinal)
     {
-        $query = $this->con->query("SELECT SUM(total) as totalVentas FROM `datosventa` WHERE fechaVenta >= '$fechaInicial' and fechaVenta < '$fechaFinal' and estado='Consolidado'");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM `datosventa` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
+            array($fechaInicial, $fechaFinal));
     }
 
     public function getVentasMensuales()
     {
 
-        $query = $this->con->query("SELECT MonthName(fechaVenta) as mes FROM datosventatotal GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
-        return $query;
+        return $this->ejecutar("SELECT MonthName(fechaVenta) as mes FROM datosventatotal GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
     }
 
     public function getSumaTotalVentasByMes($mes, $anio)
     {
-        $query = $this->con->query("SELECT SUM(cantidad * precio) as totalVentas FROM datosventatotal WHERE MONTH(fechaVenta) = '$mes' AND YEAR(fechaVenta) = '$anio'");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM datosventatotal WHERE MONTH(fechaVenta) = ? AND YEAR(fechaVenta) = ?",
+            array($mes, $anio));
     }
 
 
     public function getTotalVentasByMes($mes, $anio)
     {
-        $query = $this->con->query("SELECT SUM(cantidad * precio) as total, DAY(fechaVenta) as dia FROM datosventatotal WHERE MONTH(fechaVenta) = '$mes' AND YEAR(fechaVenta) = '$anio' GROUP BY DAY(fechaVenta) ORDER BY DAY(fechaVenta) ASC");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as total, DAY(fechaVenta) as dia FROM datosventatotal WHERE MONTH(fechaVenta) = ? AND YEAR(fechaVenta) = ?
+                                          GROUP BY DAY(fechaVenta) ORDER BY DAY(fechaVenta) ASC", array($mes, $anio));
     }
 
 
     public function getTotalVentasByYear($anio)
     {
-        $query = $this->con->query("SELECT SUM(cantidad * precio) as totalVentas FROM datosventatotal WHERE  YEAR(fechaVenta) = '$anio'");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM datosventatotal WHERE  YEAR(fechaVenta) = ?", array($anio));
     }
 
     public function getTotalVentasByAnio($anio)
     {
-        $query = $this->con->query("SELECT SUM(cantidad * precio) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE  YEAR(fechaVenta) = '$anio'   GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE  YEAR(fechaVenta) = ?
+                                          GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC", array($anio));
     }
 
     public function getTotalVentas6Meses()
     {
-       $query = $this->con->query("SELECT SUM(cantidad * precio) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW() GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
-        return $query;
+       return $this->ejecutar("SELECT SUM(total) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW() GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
     }
 
     public function getGrandTotalVentas6Meses()
     {
-        $query = $this->con->query("SELECT SUM(cantidad * precio) as totalVentas FROM datosventatotal WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW()");
-        return $query;
+        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM datosventatotal WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW()");
     }
 
-
-
-
 }
-
-

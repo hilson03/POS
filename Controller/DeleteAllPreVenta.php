@@ -14,7 +14,6 @@ $onlyUserSession = $con->getOnlyUserData($idUsuario);
 
 foreach ($onlyUserSession as $user) {
     $usuario = $user['login'];
-    $password = $user['password'];
 }
 
 $deleteAllPreventa = $con->deleteAllPreventa($idUsuario);

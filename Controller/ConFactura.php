@@ -37,7 +37,6 @@ foreach ($searchUser as $user) {
     $tipo = $user['tipo'];
     $id_usuario = $user['id_usu'];
     $nombres = $user['nombre'];
-    $password = $user['password'];
     $foto = $user['foto'];
 }
 $urlViews = URL_VIEWS;

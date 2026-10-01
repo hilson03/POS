@@ -85,7 +85,7 @@ include('Head.php');
                             <td>
                                 <a href="#a<?php echo $ventas[0]; ?>" role="button" class="btn btn-warning"
                                    data-toggle="modal"><i class="icon_pencil-edit_alt"></i></a>
-                                <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>&codigoControl=<?php echo $ventas[5]; ?>"
+                                <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>"
                                    class="btn btn-success"><i class="icon_box-checked"></i></a>
                             </td>
                         </tr>

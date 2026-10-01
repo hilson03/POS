@@ -15,7 +15,6 @@ $onlyUserSession = $con->getOnlyUserData($idUsuario);
 
 foreach ($onlyUserSession as $user) {
     $usuario = $user['login'];
-    $password = $user['password'];
 }
 
 $productElegido = $con->getProductoElegido($idProducto);

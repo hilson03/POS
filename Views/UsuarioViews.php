@@ -131,7 +131,7 @@ include('Head.php');
                                                     </label>
                                                     <div class="col-lg-10">
                                                         <input class="form-control input-lg m-bot15" id="password"
-                                                               name="password" minlength="5" type="text" required>
+                                                               name="password" minlength="5" type="password" autocomplete="new-password" required>
                                                     </div>
                                                     <br><br>
 
@@ -170,7 +170,6 @@ include('Head.php');
                                         <th><i class="icon_contacts"></i> NOMBRE</th>
                                         <th><i class="icon_folder"></i> TIPO</th>
                                         <th><i class="icon_contacts_alt"></i> LOGIN</th>
-                                        <th><i class="icon_key"></i> PASSWORD</th>
                                         <th><i class="icon_cog"></i> ACCIONES</th>
                                     </tr>
                                     </thead>
@@ -187,7 +186,6 @@ include('Head.php');
                                         <td> <?PHP echo $datosUsuarios['nombre']; ?></td>
                                                 <td> <?PHP echo $datosUsuarios['tipo']; ?></td>
                                                 <td> <?PHP echo $datosUsuarios['login']; ?></td>
-                                                <td> <?PHP echo $datosUsuarios['password']; ?></td>
                                                 <td>
                                                 <a href="#a<?php echo $datosUsuarios[0]; ?>" role="button" class="btn btn-success" data-toggle="modal">
                                                     <i class="icon_check_alt2"></i> </a>
@@ -273,8 +271,11 @@ include('Head.php');
                                                                        class="control-label col-lg-2">Password:</label>
                                                                 <div class="col-lg-10">
                                                                     <input class="form-control input-lg m-bot15"
-                                                                           type="text" name="password"
-                                                                           value="<?php echo $datosUsuarios['password']; ?>">
+                                                                           type="password" name="password" minlength="5"
+                                                                           autocomplete="new-password"
+                                                                           placeholder="Déjalo vacío para no cambiarla">
+                                                                    <!-- la contrasena se guarda cifrada y ya no se puede mostrar -->
+                                                                    <small class="help-block">Escribe una contraseña nueva solo si quieres cambiarla.</small>
                                                                 </div>
                                                         </div>
 

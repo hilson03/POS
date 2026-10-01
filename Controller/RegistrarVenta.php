@@ -34,7 +34,6 @@ if (isset($_GET['RegistarVenta'])) {
         $tipo = $user['tipo'];
         $id_usuario = $user['id_usu'];
         $nombres = $user['nombre'];
-        $password = $user['password'];
         $login =$user['login'];
     }
     $urlViews = URL_VIEWS;
@@ -121,6 +120,8 @@ if (isset($_GET['RegistarVenta'])) {
     $pedidoTotalPreventa = $con->getPedidoTotalForFactura($id_usuario);
     $pedido = mysqli_num_rows($pedidoTotalPreventa);
 
+    $unidadesVenta = 0;
+    $totalVenta = 0;
     for ($i = 0; $i < $pedido; $i++) {
         $detallePedido = mysqli_fetch_array($pedidoTotalPreventa);
 
@@ -134,9 +135,14 @@ if (isset($_GET['RegistarVenta'])) {
         $registrarPreventaTotalFinal = $con->registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado);
 
         $descontarStock = $con->descontarStockProducto($idProductoVendido, $cantidad);
+
+        $unidadesVenta += $cantidad;
+        $totalVenta += $total;
     }
 
-    $registrarDatosVentaTotal = $con->registrarDatosVentaTotal($nombreClienteDato, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado,$comentario);
+    // antes se guardaban la cantidad, el precio y el total del ultimo producto del bucle, no los de la venta completa
+    $precioPromedio = $unidadesVenta > 0 ? round($totalVenta / $unidadesVenta, 2) : 0;
+    $registrarDatosVentaTotal = $con->registrarDatosVentaTotal($nombreClienteDato, $unidadesVenta, $precioPromedio, $totalVenta, $codigoControl, $fechaVenta, $estado, $comentario, $idVentas, $id_usuario);
 
     $registrarClienteDatosFinal = $con->registrarDatosClienteVenta($fechaVenta, $ci, $nombreClienteDato, $codigoControl, $idVentas, $estado);
 

@@ -25,7 +25,6 @@ foreach ($searchUser as $user) {
     $tipo = $user['tipo'];
     $id_usuario = $user['id_usu'];
     $nombres = $user['nombre'];
-    $password = $user['password'];
     $foto = $user['foto'];
 }
 $colorElegido="#4e4e4e";

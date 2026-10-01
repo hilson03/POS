@@ -4,26 +4,29 @@ require('Constans.php');
 require_once('Sesion.php');
 
 iniciarSesionSegura();
-$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuarioSesion = requerirSesion();
 $usuario = $usuarioSesion['login'];
 
 $con = new conexion();
+
+// el administrador puede trabajar con cualquier venta; un vendedor solo con las suyas
+function puedeModificarVenta($venta, $usuarioSesion)
+{
+    return $venta !== null
+        && ($usuarioSesion['tipo'] == 'ADMINISTRADOR' || (int) $venta['idUsuario'] === (int) $usuarioSesion['id_usu']);
+}
 
 
 if (isset($_GET['idConsolidar'])) {
 
     $idVenta = $_GET['idConsolidar'];
-    $codigoControl = $_GET['codigoControl'];
 
-    $updateDatosclienteventa = $con->updateDatosclienteventa($codigoControl);
-    $updateDatosfacturaventa = $con->updateDatosfacturaventa($codigoControl);
-    $updateDatosventa = $con->updateDatosventa($codigoControl);
-    $updateDatosventatotal = $con->updateDatosventatotal($codigoControl);
-
-
-    $mensaje = "Se Consolido la venta  correctamente !!!";
-    $alerta = "alert alert-success";
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+    if (puedeModificarVenta($con->getVentaConsolidar($idVenta), $usuarioSesion)) {
+        $con->consolidarVenta($idVenta);
+        $updateMensaje = $con->updateMensajeAlert("Se Consolido la venta  correctamente !!!", "alert alert-success");
+    } else {
+        $updateMensaje = $con->updateMensajeAlert("No puedes consolidar esa venta: no existe o la hizo otro vendedor.", "alert alert-danger");
+    }
 
 }
 
@@ -32,13 +35,12 @@ if (isset($_POST['insertarComentario'])) {
     $idVentas = $_POST['idVentas'];
     $comentario = $_POST['comentario'];
 
-
-   $updateComentario = $con ->insertarComentarioFicha($idVentas, $comentario);
-
-    $mensaje = "Se Inserto un comentario correctamente !!!";
-    $alerta = "alert alert-info";
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+    if (puedeModificarVenta($con->getVentaConsolidar($idVentas), $usuarioSesion)) {
+        $updateComentario = $con->insertarComentarioFicha($idVentas, $comentario);
+        $updateMensaje = $con->updateMensajeAlert("Se Inserto un comentario correctamente !!!", "alert alert-info");
+    } else {
+        $updateMensaje = $con->updateMensajeAlert("No puedes comentar esa venta: no existe o la hizo otro vendedor.", "alert alert-danger");
+    }
 
 }
 
@@ -49,7 +51,6 @@ foreach ($searchUser as $user) {
     $tipo = $user['tipo'];
     $id_usuario = $user['id_usu'];
     $nombres = $user['nombre'];
-    $password = $user['password'];
     $foto = $user['foto'];
 }
 

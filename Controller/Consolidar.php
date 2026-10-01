@@ -5,7 +5,7 @@ require_once('Sesion.php');
 
 iniciarSesionSegura();
 
-$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuarioSesion = requerirSesion();
 
 $usuario = $usuarioSesion['login'];
 $password = '';
@@ -20,7 +20,6 @@ foreach ($searchUser as $user) {
     $tipo = $user['tipo'];
     $id_usuario = $user['id_usu'];
     $nombres = $user['nombre'];
-    $password = $user['password'];
     $foto = $user['foto'];
 }
 
@@ -49,7 +48,8 @@ $urlViews = URL_VIEWS;
 $userLogueado = $nombres;
 $imageUser = $foto;
 
-$allVentas =$con->getAllVentas();
+// el administrador ve todas las ventas pendientes; cada vendedor solo las suyas
+$allVentas = $con->getAllVentas($usuarioSesion['tipo'] == 'ADMINISTRADOR' ? 0 : $usuarioSesion['id_usu']);
 
 $menuMain = $con->getMenuMain();
 
