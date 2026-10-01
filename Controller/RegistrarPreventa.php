@@ -24,7 +24,7 @@ if(empty($searchClient)){
 
     $nombreNewCliente = $_POST['nombreNewCliente'];
 
-    $registrarNewProveedor = $con->registerNewCliente("fotoUsuario/user.png","",$nombreNewCliente,"","","","",$fechaVenta,$ci);
+    $registrarNewProveedor = $con->registerNewCliente("img/user.png","",$nombreNewCliente,"","","","",$fechaVenta,$ci);
     $searchClient = $con->getClienteDatos($ci);
     foreach ($searchClient as $cliente) {
         $nombreClienteDato = $cliente['apellido'];

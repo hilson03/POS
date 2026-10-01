@@ -1,6 +1,7 @@
 <?php
 require("../Model/Conexion.php");
 require("Constans.php");
+require_once("SubirFoto.php");
 
 if (!isset($_SESSION)){
     session_start();
@@ -22,38 +23,16 @@ if(isset($_POST['nuevo_usuario'])){
     $nombre = $_POST['nombre'];
     $password = $_POST['password'];
     
+    $imagenUsuario = subirFoto('userfile', "img/user.png", $errorFoto);
+
     $mensaje = "Se Añadio un nuevo Usuario";
     $alerta = "alert alert-success";
+    if ($errorFoto != "") {
+        $mensaje = "Se añadio el usuario, pero la foto no se guardo: " . $errorFoto;
+        $alerta = "alert alert-warning";
+    }
 
     $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-
-    if($_FILES['userfile']['name'] != ""){
-       $ruta = "fotoproducto/";
-       opendir($ruta);
-
-       $imagenUsuario = $ruta . $_FILES['userfile']['name'];
-
-       $nombre_archivo = ADDRESS . $_FILES['userfile']['name'];
-       $tipo_archivo = $_FILES['userfile']['type'];
-       $tamano_archivo = $_FILES['userfile']['size'];
-
-       $nuevo_archivo = "fotoproducto/" . substr($tipo_archivo, 6, 4);
-
-
-       if (!((strpos($tipo_archivo, "gif") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "png")) && ($tamano_archivo < 5000000))) {
-            cuadro_error("La extensión o el tamaño de los archivos no es correcta, Se permiten archivos .gif o .jpg de 5 Mb máximo");
-
-        } else {
-            if (move_uploaded_file($_FILES['userfile']['tmp_name'], $nombre_archivo)) {
-                rename($nombre_archivo, $nuevo_archivo);
-                // se subio correctamente
-            } else {
-                cuadro_error("Ocurrió algún error al subir el archivo. No pudo guardarse");
-            }
-        }
-    } else {
-        $imagenUsuario = "fotoUsuario/user.png";
-    }
 
 
 
@@ -95,39 +74,16 @@ if (isset($_POST['update_usuario'])) {
         $usuarioLogin = $_POST['usuarioLogin'];
         $passwordLogin = $_POST['passwordLogin'];
 
+        $imagenUsuario = subirFoto('userfileEdit', $imagen, $errorFoto);
+
         $mensaje = "Se Edito los datos de  un usuario";
         $alerta = "alert alert-info";
+        if ($errorFoto != "") {
+            $mensaje = "Se editaron los datos del usuario, pero la foto no se guardo: " . $errorFoto;
+            $alerta = "alert alert-warning";
+        }
 
         $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-
-
-        if ($_FILES['userfileEdit']['name'] != "") {
-
-            $ruta = "fotoproducto/";
-            opendir($ruta);
-
-            $imagenUsuario = $ruta . $_FILES['userfileEdit']['name'];
-
-            $nombre_archivo = ADDRESS . $_FILES['userfileEdit']['name'];
-            $tipo_archivo = $_FILES['userfileEdit']['type'];
-            $tamano_archivo = $_FILES['userfileEdit']['size'];
-
-            $nuevo_archivo = "fotoproducto/" . substr($tipo_archivo, 6, 4);
-
-            if (!((strpos($tipo_archivo, "gif") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "png")) && ($tamano_archivo < 5000000))) {
-                cuadro_error("La extensión o el tamaño de los archivos no es correcta, Se permiten archivos .gif o .jpg de 5 Mb máximo");
-    
-            }else {
-                if (move_uploaded_file($_FILES['userfileEdit']['tmp_name'], $nombre_archivo)) {
-                    rename($nombre_archivo, $nuevo_archivo);
-                } else {
-                    cuadro_error("Ocurrió algún error al subir el archivo. No pudo guardarse");
-                }
-            }
-
-        }else {
-            $imagenUsuario = $imagen;
-        }
 
         $updateUser = $con->updateUsuario($login, $tipo, $nombre, $password, $imagenUsuario, $idUsuarioData);
 

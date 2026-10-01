@@ -1,6 +1,7 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('SubirFoto.php');
 
 if (!isset($_SESSION)) {
     session_start();
@@ -22,40 +23,14 @@ if (isset($_POST['nuevo_Producto'])) {
     $proveedor =null;
 
 
-    if($_FILES['userfile']['name']!=""){
-
-        $ruta = "fotoproducto/";
-        opendir($ruta);
-        $destino = $ruta.$_FILES['userfile']['name'];
-
-
-        $nombre_archivo = ADDRESS . $_FILES['userfile']['name'];
-        $tipo_archivo = $_FILES['userfile']['type'];
-        $tamano_archivo = $_FILES['userfile']['size'];
-
-
-        $nuevo_archivo= "fotoproducto/" . substr($tipo_archivo,6,4);
-
-
-        if (!((strpos($tipo_archivo, "gif") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "png")) && ($tamano_archivo < 5000000))) {
-            cuadro_error("La extensión o el tamaño de los archivos no es correcta, Se permiten archivos .gif o .jpg de 5 Mb máximo");
-
-        }else{
-            if (move_uploaded_file($_FILES['userfile']['tmp_name'], $nombre_archivo)){
-                rename($nombre_archivo,$nuevo_archivo);
-                //  cuadro_mensaje("El archivo ha sido cargado correctamente");
-            }else{
-                cuadro_error("Ocurrió algún error al subir el archivo. No pudo guardarse");
-            }
-        }
-    }
-
-    else{
-        $destino = "fotoUsuario/user.png";
-    }
+    $destino = subirFoto('userfile', "img/user.png", $errorFoto);
 
     $mensaje = "Se registro un nuevo producto  correctamente !!!";
     $alerta = "alert alert-success";
+    if ($errorFoto != "") {
+        $mensaje = "Se registro el producto, pero la foto no se guardo: " . $errorFoto;
+        $alerta = "alert alert-warning";
+    }
 
     $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
     $registerNewProducto = $con->registerNewProducto($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra);
@@ -90,40 +65,15 @@ if (isset($_POST['update_producto'])) {
     $proveedor =null;
 
 
-    if($_FILES['userfileEdit']['name']!=""){
-
-        $ruta = "fotoproducto/";
-        opendir($ruta);
-        $destino = $ruta.$_FILES['userfileEdit']['name'];
-
-
-        $nombre_archivo = ADDRESS . $_FILES['userfileEdit']['name'];
-        $tipo_archivo = $_FILES['userfileEdit']['type'];
-        $tamano_archivo = $_FILES['userfileEdit']['size'];
-
-
-        $nuevo_archivo= "fotoproducto/" . substr($tipo_archivo,6,4);
-
-
-        if (!((strpos($tipo_archivo, "gif") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "png")) && ($tamano_archivo < 5000000))) {
-            cuadro_error("La extensión o el tamaño de los archivos no es correcta, Se permiten archivos .gif o .jpg de 5 Mb máximo");
-
-        }else{
-            if (move_uploaded_file($_FILES['userfileEdit']['tmp_name'], $nombre_archivo)){
-                rename($nombre_archivo,$nuevo_archivo);
-            }else{
-                cuadro_error("Ocurrió algún error al subir el archivo. No pudo guardarse");
-            }
-        }
-    }
-
-    else{
-        $destino = $imagen;
-    }
+    $destino = subirFoto('userfileEdit', $imagen, $errorFoto);
 
 
     $mensaje = "Se Actualizo  los datos del Producto correctamente !!!";
     $alerta = "alert alert-info";
+    if ($errorFoto != "") {
+        $mensaje = "Se actualizo el producto, pero la foto no se guardo: " . $errorFoto;
+        $alerta = "alert alert-warning";
+    }
 
     $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 
