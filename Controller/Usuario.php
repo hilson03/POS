@@ -16,6 +16,7 @@ $con = new conexion();
 
 
 $allUsuarios = $con->getAllUserData();
+$sucursales = $con->getSucursales(true);
 
 $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
 

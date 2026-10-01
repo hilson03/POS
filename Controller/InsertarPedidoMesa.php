@@ -17,7 +17,7 @@ foreach ($onlyUserSession as $user) {
     $usuario = $user['login'];
 }
 
-$productElegido = $con->getProductoElegido($idProducto);
+$productElegido = $con->getProductoElegido($idProducto, $usuarioSesion['idSucursalActiva']);
 
 foreach ($productElegido as $product) {
 
@@ -33,12 +33,12 @@ foreach ($productElegido as $product) {
 }
 $tipoPedido = 'Mesa';
 $urlViews = URL_VIEWS;
-$cantidadEnPedido = $con->getCantidadEnPreventa($idProducto);
+$cantidadEnPedido = $con->getCantidadEnPreventa($idProducto, $usuarioSesion['idSucursalActiva']);
 
 if (!is_numeric($precioVenta) || $precioVenta <= 0) {
     $mensajeStock = "El producto $nombreProducto no tiene precio de venta. Asignale un precio en el modulo Productos.";
 } elseif ($cantidadEnPedido < (int) $cantidad) {
-    $regiterPreventa = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
+    $regiterPreventa = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido, $usuarioSesion['idSucursalActiva']);
 } else {
     $mensajeStock = "Sin stock: no quedan unidades disponibles de $nombreProducto (stock: " . (int) $cantidad . ").";
 }

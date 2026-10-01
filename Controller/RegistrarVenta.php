@@ -101,7 +101,7 @@ if (isset($_GET['RegistarVenta'])) {
 
 
     // se usa el id de la venta recien creada (antes se tomaba la ultima de la tabla y podia ser la de otro vendedor)
-    $idVentaNueva = $con->registrarVenta($nombreClienteDato, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $id_usuario);
+    $idVentaNueva = $con->registrarVenta($nombreClienteDato, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $id_usuario, $usuarioSesion['idSucursalActiva']);
 
     $getDataClienteVenta = $con->getDatosVenta($idVentaNueva);
 
@@ -132,9 +132,9 @@ if (isset($_GET['RegistarVenta'])) {
         $tipo = $detallePedido['tipo'];
         $idProductoVendido = $detallePedido['idproducto'];
 
-        $registrarPreventaTotalFinal = $con->registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado);
+        $registrarPreventaTotalFinal = $con->registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado, $usuarioSesion['idSucursalActiva']);
 
-        $descontarStock = $con->descontarStockProducto($idProductoVendido, $cantidad);
+        $descontarStock = $con->descontarStockProducto($idProductoVendido, $cantidad, $usuarioSesion['idSucursalActiva']);
 
         $unidadesVenta += $cantidad;
         $totalVenta += $total;
@@ -142,7 +142,7 @@ if (isset($_GET['RegistarVenta'])) {
 
     // antes se guardaban la cantidad, el precio y el total del ultimo producto del bucle, no los de la venta completa
     $precioPromedio = $unidadesVenta > 0 ? round($totalVenta / $unidadesVenta, 2) : 0;
-    $registrarDatosVentaTotal = $con->registrarDatosVentaTotal($nombreClienteDato, $unidadesVenta, $precioPromedio, $totalVenta, $codigoControl, $fechaVenta, $estado, $comentario, $idVentas, $id_usuario);
+    $registrarDatosVentaTotal = $con->registrarDatosVentaTotal($nombreClienteDato, $unidadesVenta, $precioPromedio, $totalVenta, $codigoControl, $fechaVenta, $estado, $comentario, $idVentas, $id_usuario, $usuarioSesion['idSucursalActiva']);
 
     $registrarClienteDatosFinal = $con->registrarDatosClienteVenta($fechaVenta, $ci, $nombreClienteDato, $codigoControl, $idVentas, $estado);
 

@@ -101,7 +101,7 @@
                 <div class="panel panel-default">
 
                     <div class="panel-heading">
-                        <h2><i class="fa fa-flag-o red"></i><strong>Venta Total del  Dia</strong></h2>
+                        <h2><i class="fa fa-flag-o red"></i><strong>Venta Total del Día - <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?></strong></h2>
 
                     </div>
                     <div class="panel-body">

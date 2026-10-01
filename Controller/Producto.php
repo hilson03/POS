@@ -52,7 +52,7 @@ $urlViews = URL_VIEWS;
 $userLogueado = $nombres;
 $imageUser = $foto;
 
-$allProducto =$con->getAllProducto();
+$allProducto =$con->getAllProducto($usuarioSesion['idSucursalActiva']);
 $tipoProductos = $con->getAllTipoProducto();
 
 $menuMain = $con->getMenuMain();

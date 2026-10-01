@@ -25,12 +25,20 @@ function iniciarSesionSegura()
     session_start();
 }
 
-// guarda al usuario en la sesion despues de validar su contrasena
-function guardarSesion($idUsuario)
+// guarda al usuario en la sesion despues de validar su contrasena; empieza trabajando en su propia sucursal
+function guardarSesion($idUsuario, $idSucursal)
 {
     iniciarSesionSegura();
     session_regenerate_id(true); // evita que alguien reutilice un identificador de sesion anterior
     $_SESSION['id_usu'] = (int) $idUsuario;
+    $_SESSION['idSucursal'] = (int) $idSucursal;
+}
+
+// solo los administradores pueden trabajar en otra sucursal distinta a la suya
+function cambiarSucursalActiva($idSucursal)
+{
+    iniciarSesionSegura();
+    $_SESSION['idSucursal'] = (int) $idSucursal;
 }
 
 function cerrarSesion()
@@ -69,6 +77,23 @@ function requerirSesion($tipoRequerido = '', $esAjax = false)
         }
         exit;
     }
+
+    /*
+     * Sucursal en la que se esta trabajando: un vendedor siempre en la suya; un administrador en la que eligio
+     * (si la elegida ya no existe o esta inactiva, vuelve a la suya).
+     */
+    $idSucursalActiva = (int) $usuarioSesion['idSucursal'];
+    if ($usuarioSesion['tipo'] == 'ADMINISTRADOR' && !empty($_SESSION['idSucursal'])) {
+        $idSucursalActiva = (int) $_SESSION['idSucursal'];
+    }
+    $sucursal = $con->getSucursal($idSucursalActiva);
+    if ($sucursal === null || $sucursal['estado'] != 'Activo') {
+        $idSucursalActiva = (int) $usuarioSesion['idSucursal'];
+        $sucursal = $con->getSucursal($idSucursalActiva);
+    }
+    $_SESSION['idSucursal'] = $idSucursalActiva;
+    $usuarioSesion['idSucursalActiva'] = $idSucursalActiva;
+    $usuarioSesion['nombreSucursal'] = $sucursal === null ? '(sin sucursal)' : $sucursal['nombre'];
 
     if ($tipoRequerido != '' && $usuarioSesion['tipo'] != $tipoRequerido) {
         http_response_code(403);

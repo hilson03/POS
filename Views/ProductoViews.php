@@ -119,8 +119,7 @@ include('Head.php');
 
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="cantidad" class="control-label col-lg-2">Cantidad
-                                                        :</label>
+                                                    <label for="cantidad" class="control-label col-lg-2">Stock en <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?> :</label>
                                                     <div class="col-lg-4">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="cantidad" name="cantidad"
@@ -179,7 +178,7 @@ include('Head.php');
                         <th> CODIGO</th>
                         <th> PRODUCTO</th>
                         <th> DESCRIPCION</th>
-                        <th>STOCK</th>
+                        <th>STOCK (<?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?>)</th>
                         <th> PRECIO COMPRA</th>
                         <th> PRECIO VENTA</th>
                         <th> TIPO</th>
@@ -279,7 +278,7 @@ include('Head.php');
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="pdistribuidor"
-                                                                   class="control-label col-lg-2">Cantidad :</label>
+                                                                   class="control-label col-lg-2">Stock en <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?> :</label>
                                                             <div class="col-lg-4">
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="cantidad" name="cantidad"

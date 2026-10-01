@@ -80,16 +80,16 @@ class conexion{
 //***************************esta funcion atraves de una consulta trae toda la informacion de los usuarios.******************************
     public function getAllUserData(){
 
-        return $this->ejecutar("SELECT * FROM `usuarios`");
+        return $this->ejecutar("SELECT u.*, COALESCE(s.nombre, '(sin sucursal)') AS nombreSucursal FROM `usuarios` u LEFT JOIN sucursal s ON s.idSucursal = u.idSucursal");
 
     }
 
 
 //***********************esta funcion sirve para registrar nuevos usuarios con imagen******************
-    public function getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario){
+    public function getRegisterNewUser($nombre, $tipo, $usuario, $password, $imagenUsuario, $idSucursal){
 
-        return $this->ejecutar("INSERT INTO `usuarios`(`id_usu`,`login`,`tipo`,`nombre`,`password`,`foto`) VALUES(NULL, ?, ?, ?, ?, ?)",
-            array($usuario, $tipo, $nombre, password_hash($password, PASSWORD_DEFAULT), $imagenUsuario));
+        return $this->ejecutar("INSERT INTO `usuarios`(`id_usu`,`login`,`tipo`,`nombre`,`password`,`foto`,`idSucursal`) VALUES(NULL, ?, ?, ?, ?, ?, ?)",
+            array($usuario, $tipo, $nombre, password_hash($password, PASSWORD_DEFAULT), $imagenUsuario, (int) $idSucursal));
 
     }
 
@@ -102,15 +102,15 @@ class conexion{
 
     //*********************esta consulta permite actualizar la informacion del usuario********************************
     // si $password viene vacio se conserva la contrasena actual
-    public function updateUsuario($login, $tipo, $nombre, $password, $foto, $idUsuario)
+    public function updateUsuario($login, $tipo, $nombre, $password, $foto, $idUsuario, $idSucursal)
     {
         if ($password === null || $password === '') {
-            return $this->ejecutar("UPDATE `usuarios` SET `login` = ?, `tipo` = ?, `nombre` = ?, `foto` = ? WHERE `id_usu` = ?",
-                array($login, $tipo, $nombre, $foto, (int) $idUsuario));
+            return $this->ejecutar("UPDATE `usuarios` SET `login` = ?, `tipo` = ?, `nombre` = ?, `foto` = ?, `idSucursal` = ? WHERE `id_usu` = ?",
+                array($login, $tipo, $nombre, $foto, (int) $idSucursal, (int) $idUsuario));
         }
 
-        return $this->ejecutar("UPDATE `usuarios` SET `login` = ?, `tipo` = ?, `nombre` = ?, `password` = ?, `foto` = ? WHERE `id_usu` = ?",
-            array($login, $tipo, $nombre, password_hash($password, PASSWORD_DEFAULT), $foto, (int) $idUsuario));
+        return $this->ejecutar("UPDATE `usuarios` SET `login` = ?, `tipo` = ?, `nombre` = ?, `password` = ?, `foto` = ?, `idSucursal` = ? WHERE `id_usu` = ?",
+            array($login, $tipo, $nombre, password_hash($password, PASSWORD_DEFAULT), $foto, (int) $idSucursal, (int) $idUsuario));
     }
 
 
@@ -205,11 +205,74 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $this->ejecutar("Delete from cliente where idcliente = ?", array((int) $idClient));
     }
 
+//******************************Sucursales*******************************************
+    public function getSucursales($soloActivas = false)
+    {
+        if ($soloActivas) {
+            return $this->filas($this->ejecutar("SELECT * FROM sucursal WHERE estado = 'Activo' ORDER BY nombre"));
+        }
+        return $this->filas($this->ejecutar("SELECT * FROM sucursal ORDER BY nombre"));
+    }
+
+    public function getSucursal($idSucursal)
+    {
+        $filas = $this->filas($this->ejecutar("SELECT * FROM sucursal WHERE idSucursal = ?", array((int) $idSucursal)));
+        return empty($filas) ? null : $filas[0];
+    }
+
+    public function registrarSucursal($nombre, $direccion, $telefono)
+    {
+        return $this->ejecutar("INSERT INTO sucursal (nombre, direccion, telefono, estado) VALUES (?, ?, ?, 'Activo')",
+            array($nombre, $direccion, $telefono));
+    }
+
+    public function updateSucursal($idSucursal, $nombre, $direccion, $telefono, $estado)
+    {
+        return $this->ejecutar("UPDATE sucursal SET nombre = ?, direccion = ?, telefono = ?, estado = ? WHERE idSucursal = ?",
+            array($nombre, $direccion, $telefono, $estado, (int) $idSucursal));
+    }
+
+    // cuantos usuarios tienen asignada la sucursal (no se puede desactivar si todavia tiene usuarios)
+    public function contarUsuariosSucursal($idSucursal)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM usuarios WHERE idSucursal = ?", array((int) $idSucursal))->fetch_assoc()['c'];
+    }
+
+//******************************Stock por sucursal*******************************************
+    // fija el stock de un producto en una sucursal (lo crea si no existia)
+    public function setStockSucursal($idProducto, $idSucursal, $cantidad)
+    {
+        return $this->ejecutar("INSERT INTO stock_sucursal (idProducto, idSucursal, cantidad) VALUES (?, ?, ?)
+                                       ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad)",
+            array((int) $idProducto, (int) $idSucursal, (int) $cantidad));
+    }
+
+    // stock de un producto en cada sucursal activa (para ver donde hay unidades disponibles)
+    public function getStockPorSucursal($idProducto)
+    {
+        return $this->filas($this->ejecutar("SELECT s.idSucursal, s.nombre, COALESCE(st.cantidad, 0) AS cantidad
+                                                    FROM sucursal s
+                                                    LEFT JOIN stock_sucursal st ON st.idSucursal = s.idSucursal AND st.idProducto = ?
+                                                    WHERE s.estado = 'Activo' ORDER BY s.nombre", array((int) $idProducto)));
+    }
+
 //******************************funcion SQL permite traer todos los productos*******************************************
-    public function getAllProducto()
+    /*
+     * Productos con el stock de la sucursal indicada en la columna `cantidad` (misma posicion y nombre que en la
+     * tabla producto, asi las pantallas que ya leian $product['cantidad'] muestran el stock de la sucursal).
+     */
+    private function sqlProductoConStock()
+    {
+        return "SELECT p.idproducto, p.imagen, p.codigo, p.nombreProducto, COALESCE(st.cantidad, 0) AS cantidad, p.fechaRegistro,
+                       p.precioVenta, p.tipo, p.proveedor, p.precioCompra
+                FROM producto p
+                LEFT JOIN stock_sucursal st ON st.idProducto = p.idproducto AND st.idSucursal = ?";
+    }
+
+    public function getAllProducto($idSucursal)
     {
 
-        return $this->ejecutar("SELECT * FROM producto");
+        return $this->ejecutar($this->sqlProductoConStock() . " ORDER BY p.idproducto", array((int) $idSucursal));
     }
 
 
@@ -219,25 +282,34 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 
-    public function registerNewProducto($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra)
+    // el producto es del catalogo compartido; $cantidad es el stock inicial de la sucursal donde se registra
+    // (producto.cantidad ya no se usa: el stock vive en stock_sucursal)
+    public function registerNewProducto($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra, $idSucursal)
     {
 
-        return $this->ejecutar("INSERT INTO `producto` (`idproducto`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`, `precioVenta`, `tipo`, `proveedor`, `precioCompra`)
-                                          VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            array($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, (string) $proveedor, $precioCompra));
+        $this->ejecutar("INSERT INTO `producto` (`idproducto`, `imagen`, `codigo`, `nombreProducto`, `cantidad`, `fechaRegistro`, `precioVenta`, `tipo`, `proveedor`, `precioCompra`)
+                                          VALUES (NULL, ?, ?, ?, '0', ?, ?, ?, ?, ?)",
+            array($imagen, $codigo, $nombreProducto, $fechaRegistro, $precioVenta, $tipo, (string) $proveedor, $precioCompra));
+        $idProducto = $this->con->insert_id;
+
+        return $this->setStockSucursal($idProducto, $idSucursal, $cantidad);
     }
 
     public function deleteProduct($idproducto)
     {
+        $this->ejecutar("DELETE FROM stock_sucursal WHERE idProducto = ?", array((int) $idproducto));
         return $this->ejecutar("Delete from producto where idproducto = ?", array((int) $idproducto));
     }
 
-     public function updateProduct($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra, $idproducto)
+    // actualiza los datos del catalogo y el stock del producto en la sucursal indicada
+     public function updateProduct($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, $proveedor, $precioCompra, $idproducto, $idSucursal)
     {
 
-        return $this->ejecutar("UPDATE `producto` SET `imagen` = ?, `codigo` = ?, `nombreProducto` = ?, `cantidad` = ?, `fechaRegistro` = ?,
+        $this->ejecutar("UPDATE `producto` SET `imagen` = ?, `codigo` = ?, `nombreProducto` = ?, `fechaRegistro` = ?,
                                                      `precioVenta` = ?, `tipo` = ?, `proveedor` = ?, `precioCompra` = ? WHERE `producto`.`idproducto` = ?",
-            array($imagen, $codigo, $nombreProducto, $cantidad, $fechaRegistro, $precioVenta, $tipo, (string) $proveedor, $precioCompra, (int) $idproducto));
+            array($imagen, $codigo, $nombreProducto, $fechaRegistro, $precioVenta, $tipo, (string) $proveedor, $precioCompra, (int) $idproducto));
+
+        return $this->setStockSucursal($idproducto, $idSucursal, $cantidad);
     }
 
 //*****************************************Funcion SQL para registrar nuevos tipos de producto******************************************
@@ -290,18 +362,23 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 
-    public function getProductoElegido($idproducto)
+    public function getProductoElegido($idproducto, $idSucursal)
     {
 
-        return $this->filas($this->ejecutar("SELECT * FROM `producto` where idproducto = ?", array($idproducto)));
+        return $this->filas($this->ejecutar($this->sqlProductoConStock() . " WHERE p.idproducto = ?", array((int) $idSucursal, (int) $idproducto)));
 
     }
 
-    public function insertarPreventaProducto($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo)
+    public function insertarPreventaProducto($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo, $idSucursal)
     {
-        return $this->ejecutar("INSERT INTO `preventa` (`idPreventa`, `imagen`, `producto`, `precio`, `idProducto`, `pventa`, `idUser`, `tipo`)
-                                          VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)",
-            array($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo));
+        return $this->ejecutar("INSERT INTO `preventa` (`idPreventa`, `imagen`, `producto`, `precio`, `idProducto`, `pventa`, `idUser`, `tipo`, `idSucursal`)
+                                          VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($imagen, $producto, $precio, $idProducto, $pventa, $idUser, $tipo, (int) $idSucursal));
+    }
+
+    public function contarPreventaUsuario($idUser)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM preventa WHERE idUser = ?", array((int) $idUser))->fetch_assoc()['c'];
     }
 
     public function deleteOnlyPreventa($idProducto, $tipo, $idUser)
@@ -330,13 +407,13 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
     /******************Funcion SQL para saber cuantas unidades de un producto estan apartadas en los pedidos*****************************/
-    // cuenta los pedidos de TODOS los usuarios, asi dos vendedores no pueden vender la misma unidad a la vez;
+    // cuenta los pedidos de TODOS los usuarios de la sucursal, asi dos vendedores no pueden vender la misma unidad a la vez;
     // con $idUserExcluido y $tipoExcluido se descuentan las lineas que el usuario esta editando
-    public function getCantidadEnPreventa($idProducto, $idUserExcluido = 0, $tipoExcluido = '')
+    public function getCantidadEnPreventa($idProducto, $idSucursal, $idUserExcluido = 0, $tipoExcluido = '')
     {
         $fila = $this->ejecutar("SELECT count(idproducto) as cantidadTotal FROM `preventa`
-                                          where idproducto = ? and NOT (idUser = ? and tipo = ?)",
-            array((int) $idProducto, (int) $idUserExcluido, $tipoExcluido))->fetch_assoc();
+                                          where idproducto = ? and idSucursal = ? and NOT (idUser = ? and tipo = ?)",
+            array((int) $idProducto, (int) $idSucursal, (int) $idUserExcluido, $tipoExcluido))->fetch_assoc();
         return (int) $fila['cantidadTotal'];
     }
 
@@ -388,11 +465,11 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 /***************************************************Funciones SQL para registrar una venta ************************************************/
 
     // devuelve el id de la venta recien creada (0 si fallo)
-    public function registrarVenta($nombre, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $idUsuario)
+    public function registrarVenta($nombre, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $idUsuario, $idSucursal)
     {
-        $query = $this->ejecutar("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`, `idUsuario`)
-                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $idUsuario));
+        $query = $this->ejecutar("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`, `idUsuario`, `idSucursal`)
+                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $idUsuario, (int) $idSucursal));
         return $query ? $this->con->insert_id : 0;
     }
 
@@ -402,36 +479,37 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 
-     public function registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado)
+     public function registrarDatosVenta($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado, $idSucursal)
     {
-        return $this->ejecutar("INSERT INTO `datosventa` (`idDatosVentas`, `cantidad`, `descripcion`, `precio`, `total`, `tipo`, `fechaVenta`, `codigoControl`, `idVentas`, `estado`)
-                                      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            array($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado));
+        return $this->ejecutar("INSERT INTO `datosventa` (`idDatosVentas`, `cantidad`, `descripcion`, `precio`, `total`, `tipo`, `fechaVenta`, `codigoControl`, `idVentas`, `estado`, `idSucursal`)
+                                      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($cantidad, $descripcion, $precio, $total, $tipo, $fechaVenta, $codigoControl, $idVentas, $estado, (int) $idSucursal));
     }
 
     /******************Funcion SQL para traer lo vendido en un dia, agrupado por producto*****************************/
-    public function getVentasDelDia($fecha)
+    public function getVentasDelDia($fecha, $idSucursal)
     {
         return $this->ejecutar("SELECT descripcion, precio, SUM(cantidad) as cantidad, SUM(total) as totalVendido, MAX(DATE(fechaVenta)) as fecha
                                           FROM `datosventa`
-                                          WHERE fechaVenta >= ? and fechaVenta <= ?
+                                          WHERE fechaVenta >= ? and fechaVenta <= ? and idSucursal = ?
                                           GROUP BY descripcion, precio
-                                          ORDER BY totalVendido DESC", array($fecha . ' 00:00:00', $fecha . ' 23:59:59'));
+                                          ORDER BY totalVendido DESC", array($fecha . ' 00:00:00', $fecha . ' 23:59:59', (int) $idSucursal));
     }
 
-    /******************Funcion SQL para descontar del stock la cantidad vendida de un producto*****************************/
-    public function descontarStockProducto($idProducto, $cantidadVendida)
+    /******************Funcion SQL para descontar del stock de la sucursal la cantidad vendida de un producto*****************************/
+    public function descontarStockProducto($idProducto, $cantidadVendida, $idSucursal)
     {
-        return $this->ejecutar("UPDATE `producto` SET `cantidad` = CAST(`cantidad` AS SIGNED) - ? WHERE `idproducto` = ?",
-            array((int) $cantidadVendida, (int) $idProducto));
+        return $this->ejecutar("INSERT INTO stock_sucursal (idProducto, idSucursal, cantidad) VALUES (?, ?, ?)
+                                       ON DUPLICATE KEY UPDATE cantidad = cantidad - ?",
+            array((int) $idProducto, (int) $idSucursal, -(int) $cantidadVendida, (int) $cantidadVendida));
     }
 
     // una fila por venta para Consolidar y los reportes: $total es el total de la venta y $cantidad las unidades vendidas
-    public function registrarDatosVentaTotal($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado, $comentario, $idVentaTotal, $idUsuario)
+    public function registrarDatosVentaTotal($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado, $comentario, $idVentaTotal, $idUsuario, $idSucursal)
     {
-        return $this->ejecutar("INSERT INTO `datosventatotal` (`idVentas`, `cliente`, `cantidad`, `precio`, `total`, `codigoControl`, `fechaVenta`, `estado`, `comentario`, `idVentaTotal`, `idUsuario`)
-                                       VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            array($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado, $comentario, (int) $idVentaTotal, (int) $idUsuario));
+        return $this->ejecutar("INSERT INTO `datosventatotal` (`idVentas`, `cliente`, `cantidad`, `precio`, `total`, `codigoControl`, `fechaVenta`, `estado`, `comentario`, `idVentaTotal`, `idUsuario`, `idSucursal`)
+                                       VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array($cliente, $cantidad, $precio, $total, $codigoControl, $fechaVenta, $estado, $comentario, (int) $idVentaTotal, (int) $idUsuario, (int) $idSucursal));
     }
 
      public function registrarDatosClienteVenta($fechaVenta, $nitci, $cliente, $codigoControl, $idVentas, $estado)
@@ -474,13 +552,14 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria*********/
 
 
-    // ventas pendientes de consolidar; con $idUsuario solo las de ese vendedor (0 = todas, para el administrador)
-    public function getAllVentas($idUsuario = 0)
+    // ventas pendientes de consolidar de una sucursal; con $idUsuario solo las de ese vendedor (0 = todas, para el administrador)
+    public function getAllVentas($idSucursal, $idUsuario = 0)
     {
         if ((int) $idUsuario > 0) {
-            return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' and idUsuario = ? order by idVentas ASC", array((int) $idUsuario));
+            return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' and idSucursal = ? and idUsuario = ? order by idVentas ASC",
+                array((int) $idSucursal, (int) $idUsuario));
         }
-        return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' order by idVentas ASC");
+        return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' and idSucursal = ? order by idVentas ASC", array((int) $idSucursal));
     }
 
     // fila de la lista de Consolidar (datosventatotal.idVentas)

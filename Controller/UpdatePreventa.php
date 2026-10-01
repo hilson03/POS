@@ -30,12 +30,12 @@ $cantidadUpdated = $_GET['cantidadUpdated'];
 $nuevoPrecio = $_GET['nuevoPrecio'];
 
 $parametroStock = '';
-$productElegido = $con->getProductoElegido($idProducto);
+$productElegido = $con->getProductoElegido($idProducto, $usuarioSesion['idSucursalActiva']);
 foreach ($productElegido as $product) {
     $stockProducto = (int) $product['cantidad'];
 }
 // unidades disponibles = stock - lo apartado en los pedidos de otros usuarios y en el otro tipo (Mesa/Llevar) de este usuario
-$cantidadDisponible = $stockProducto - $con->getCantidadEnPreventa($idProducto, $idUsuario, $tipoPedido);
+$cantidadDisponible = $stockProducto - $con->getCantidadEnPreventa($idProducto, $usuarioSesion['idSucursalActiva'], $idUsuario, $tipoPedido);
 
 if ((int) $cantidadUpdated > $cantidadDisponible) {
     $cantidadUpdated = $cantidadDisponible;
@@ -51,7 +51,7 @@ foreach ($getCantidadActual as $cantidadPedidoActual) {
 if ($cantidadUpdated > $cantidadActual) {
     $cantidadNuevaActualizada = $cantidadUpdated - $cantidadActual;
     for ($i=0; $i <$cantidadNuevaActualizada; $i++ ){
-        $isertarCantidadActualizada = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
+        $isertarCantidadActualizada = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido, $usuarioSesion['idSucursalActiva']);
     }
 }
 
@@ -60,7 +60,7 @@ if (($cantidadUpdated < $cantidadActual) and ($cantidadUpdated != 1)) {
     $cantidadNuevaActualizada = $cantidadActual - ($cantidadActual - $cantidadUpdated);
     $deleteCantidadActual = $con->deleteOnlyPreventa($idProducto, $tipoPedido, $idUsuario);
     for ($i=0; $i <$cantidadNuevaActualizada; $i++ ){
-        $isertarCantidadActualizada = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
+        $isertarCantidadActualizada = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido, $usuarioSesion['idSucursalActiva']);
     }
 }
 
@@ -68,7 +68,7 @@ if (($cantidadUpdated < $cantidadActual) and ($cantidadUpdated != 1)) {
 if ($cantidadUpdated == 1) {
     $deleteCantidadActual = $con->deleteOnlyPreventa($idProducto, $tipoPedido, $idUsuario);
     for ($i=0; $i <$cantidadUpdated; $i++ ){
-        $isertarCantidadActualizada = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido);
+        $isertarCantidadActualizada = $con->insertarPreventaProducto($imagen, $nombreProducto, $precioVenta, $idProducto, $precioVenta, $idUsuario, $tipoPedido, $usuarioSesion['idSucursalActiva']);
     }
 }
 

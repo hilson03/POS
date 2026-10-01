@@ -115,6 +115,19 @@ include('Head.php');
                                                     </div>
                                                     <br><br>
 
+                                                    <label class="control-label col-lg-2">
+                                                        Sucursal :
+                                                    </label>
+                                                    <div class="col-lg-10">
+                                                        <select class="form-control input-lg m-bot15" name="idSucursal" required>
+                                                            <option value="" selected disabled>— Elige una sucursal —</option>
+                                                            <?php foreach ($sucursales as $sucursal) { ?>
+                                                                <option value="<?php echo $sucursal['idSucursal']; ?>"><?php echo htmlspecialchars($sucursal['nombre']); ?></option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                    <br><br>
+
 
                                                     <label for="login" class="control-label col-lg-2">
                                                         Login :
@@ -170,6 +183,7 @@ include('Head.php');
                                         <th><i class="icon_contacts"></i> NOMBRE</th>
                                         <th><i class="icon_folder"></i> TIPO</th>
                                         <th><i class="icon_contacts_alt"></i> LOGIN</th>
+                                        <th><i class="icon_building"></i> SUCURSAL</th>
                                         <th><i class="icon_cog"></i> ACCIONES</th>
                                     </tr>
                                     </thead>
@@ -186,6 +200,7 @@ include('Head.php');
                                         <td> <?PHP echo $datosUsuarios['nombre']; ?></td>
                                                 <td> <?PHP echo $datosUsuarios['tipo']; ?></td>
                                                 <td> <?PHP echo $datosUsuarios['login']; ?></td>
+                                                <td> <?PHP echo htmlspecialchars($datosUsuarios['nombreSucursal']); ?></td>
                                                 <td>
                                                 <a href="#a<?php echo $datosUsuarios[0]; ?>" role="button" class="btn btn-success" data-toggle="modal">
                                                     <i class="icon_check_alt2"></i> </a>
@@ -255,7 +270,18 @@ include('Head.php');
                                                                     </select>
                                                                 </div>
                                                         </div>
-                                                    
+
+                                                    <div class="form-group ">
+                                                                <label class="control-label col-lg-2">Sucursal:</label>
+                                                                <div class="col-lg-10">
+                                                                    <select class="form-control input-lg m-bot15" name="idSucursal" required>
+                                                                        <?php foreach ($sucursales as $sucursal) { ?>
+                                                                            <option value="<?php echo $sucursal['idSucursal']; ?>"<?php echo $sucursal['idSucursal'] == $datosUsuarios['idSucursal'] ? ' selected' : ''; ?>><?php echo htmlspecialchars($sucursal['nombre']); ?></option>
+                                                                        <?php } ?>
+                                                                    </select>
+                                                                </div>
+                                                        </div>
+
                                                     <div class="form-group ">
                                                                 <label for="direccion"
                                                                        class="control-label col-lg-2">Login:</label>

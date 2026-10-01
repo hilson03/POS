@@ -6,7 +6,7 @@ $usuarioSesion = requerirSesion();
 $con = new Conexion();
 
 if(isset($_GET['productos'])){
-    $allProducto =$con->getAllProducto();
+    $allProducto =$con->getAllProducto($usuarioSesion['idSucursalActiva']);
     require('../Views/ReporteProductosPdf.php');
 }
 

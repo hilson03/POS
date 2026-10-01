@@ -50,7 +50,7 @@ if (isset($_POST['nuevo_Producto'])) {
         }
 
         $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-        $registerNewProducto = $con->registerNewProducto($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra);
+        $registerNewProducto = $con->registerNewProducto($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra,$usuarioSesion['idSucursalActiva']);
     }
 }
 
@@ -97,7 +97,7 @@ if (isset($_POST['update_producto'])) {
 
         $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 
-        $updateProductoData = $con->updateProduct($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra,$idproducto);
+        $updateProductoData = $con->updateProduct($destino,$codigo,$nombreProducto,$cantidad,$fechaRegistro,$precioVenta,$tipoproducto,$proveedor,$precioCompra,$idproducto,$usuarioSesion['idSucursalActiva']);
     }
 
 }

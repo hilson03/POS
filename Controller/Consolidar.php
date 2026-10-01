@@ -49,7 +49,7 @@ $userLogueado = $nombres;
 $imageUser = $foto;
 
 // el administrador ve todas las ventas pendientes; cada vendedor solo las suyas
-$allVentas = $con->getAllVentas($usuarioSesion['tipo'] == 'ADMINISTRADOR' ? 0 : $usuarioSesion['id_usu']);
+$allVentas = $con->getAllVentas($usuarioSesion['idSucursalActiva'], $usuarioSesion['tipo'] == 'ADMINISTRADOR' ? 0 : $usuarioSesion['id_usu']);
 
 $menuMain = $con->getMenuMain();
 

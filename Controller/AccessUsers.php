@@ -14,7 +14,7 @@ if (isset($_POST['usuario'], $_POST['password'])) {
         exit;
     }
 
-    guardarSesion($searchUser[0]['id_usu']);
+    guardarSesion($searchUser[0]['id_usu'], $searchUser[0]['idSucursal']);
     header("Location: AccessUsers.php");
     exit;
 }
@@ -48,6 +48,6 @@ foreach ($tipoDeMoneda as $moneda){
 }
 
 // misma zona horaria con la que RegistrarVenta guarda la fecha de la venta
-$ventasDelDia = $con->getVentasDelDia(date('Y-m-d'));
+$ventasDelDia = $con->getVentasDelDia(date('Y-m-d'), $usuarioSesion['idSucursalActiva']);
 
 require('../Views/Wellcome.php');
