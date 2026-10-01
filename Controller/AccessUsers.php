@@ -44,6 +44,14 @@ else if($tipo =='ADMINISTRADOR'){
 
     
     $menuMain = $con->getMenuMain();
-    
+
+    $tipoDeMoneda = $con->getTipoMoneda();
+    foreach ($tipoDeMoneda as $moneda){
+        $tipoMonedaElegida = $moneda['tipoMoneda'];
+    }
+
+    // misma zona horaria con la que RegistrarVenta guarda la fecha de la venta
+    $ventasDelDia = $con->getVentasDelDia(date('Y-m-d'));
+
     require('../Views/Wellcome.php');
 }

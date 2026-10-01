@@ -117,6 +117,27 @@
                                     <th>FECHA</th>
                             </tr>
                             </thead>
+                            <tbody>
+                            <?PHP
+                            $totalDelDia = 0;
+                            while ($venta = mysqli_fetch_array($ventasDelDia)) {
+                                $totalDelDia += $venta['totalVendido'];
+                                ?>
+                                <tr>
+                                    <td><?PHP echo htmlspecialchars($venta['descripcion']); ?></td>
+                                    <td><?PHP echo $venta['cantidad']; ?></td>
+                                    <td><?PHP echo $venta['precio'] . ' ' . $tipoMonedaElegida; ?></td>
+                                    <td><?PHP echo $venta['totalVendido'] . ' ' . $tipoMonedaElegida; ?></td>
+                                    <td><?PHP echo date('d/m/Y', strtotime($venta['fecha'])); ?></td>
+                                </tr>
+                            <?PHP } ?>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="3" style="text-align: right;">TOTAL DEL DIA :</th>
+                                <th colspan="2"><?PHP echo $totalDelDia . ' ' . $tipoMonedaElegida; ?></th>
+                            </tr>
+                            </tfoot>
 
 
                             </table>
