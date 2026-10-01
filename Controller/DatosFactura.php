@@ -1,24 +1,23 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
 
 
-if(!isset($_SESSION)){
-    
-    session_start();
+iniciarSesionSegura();
 
-}
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
 
-$usuario = $_GET['usuario'];
-$password = $_GET['password'];
+$usuario = $usuarioSesion['login'];
+$password = '';
 
 $con = new conexion();
 
 
 $allUsuarios = $con->getAllUserData();
 
-$searchUser = $con->getUser($usuario, $password);
+$searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
 
 $tipo = '';
 $id_usuario = '';

@@ -1,12 +1,12 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+iniciarSesionSegura();
 
-$idUsuario = $_GET['userId'];
+$usuarioSesion = requerirSesion();
+$idUsuario = $usuarioSesion['id_usu'];
 
 $con = new conexion();
 
@@ -73,6 +73,6 @@ if ($cantidadUpdated == 1) {
     }
 }
 
-header("Location: Ventas.php?usuario=$usuario&password=$password$parametroStock");
+header("Location: Ventas.php?" . ltrim($parametroStock, '&'));
 
 ?>

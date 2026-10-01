@@ -1,14 +1,12 @@
 1<?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuario = $usuarioSesion['login'];
 
 
 $con = new conexion();
@@ -19,9 +17,6 @@ $menuMain = $con->getMenuMain();
 if (isset($_POST['update_data_factura'])) {
 
     $iddatos = $_POST['iddatos'];
-
-    $usuarioLogin = $_POST['usuarioLogin'];
-    $passwordLogin = $_POST['passwordLogin'];
     $iddatos = $_POST['iddatos'];
     $propietario = $_POST['propietario'];
     $razon = $_POST['razon'];
@@ -41,7 +36,7 @@ if (isset($_POST['update_data_factura'])) {
 }
 
 
-    header("Location: DatosFactura.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+    header("Location: DatosFactura.php?estado='Activo'");
 
 
 

@@ -1,11 +1,11 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 $con = new conexion();
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion('', true);
 $nitCliente = $_POST['nitClient'];
 $showContact = $con->getContact($nitCliente);
 

@@ -1,13 +1,11 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
@@ -15,9 +13,6 @@ $allUsuarios = $con->getAllUserData();
 $menuMain = $con->getMenuMain();
 
 if (isset($_POST['update_data_idioma'])) {
-
-    $usuarioLogin = $_POST['usuarioLogin'];
-    $passwordLogin = $_POST['passwordLogin'];
     $idIdiomaSytem = $_POST['idIdioma'];
     $idioma = $_POST['idioma'];
 
@@ -92,4 +87,4 @@ if (isset($_POST['update_data_idioma'])) {
 
 }
 
-header("Location: Languaje.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+header("Location: Languaje.php?estado='Activo'");

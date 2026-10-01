@@ -1,13 +1,11 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
@@ -16,9 +14,6 @@ $menuMain = $con->getMenuMain();
 
 
 if (isset($_POST['update_data_moneda'])) {
-
-    $usuarioLogin = $_POST['usuarioLogin'];
-    $passwordLogin = $_POST['passwordLogin'];
     $idMoneda = $_POST['idMoneda'];
     $moneda = $_POST['moneda'];
 
@@ -101,7 +96,7 @@ if (isset($_POST['update_data_moneda'])) {
     $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
     $updateDatosMoneda = $con->updateDataMoneda($idMoneda, $pais, $tipoMoneda, $contexto);
 
-    header("Location: Moneda.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+    header("Location: Moneda.php?estado='Activo'");
 
 
 

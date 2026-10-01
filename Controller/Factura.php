@@ -1,18 +1,19 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+iniciarSesionSegura();
 
-$usuario = $_GET['usuario'];
-$password = $_GET['password'];
+$usuarioSesion = requerirSesion();
+
+$usuario = $usuarioSesion['login'];
+$password = '';
 
 
 $con = new conexion();
 
-$onlyUserSession = $con->getUser($usuario,$password);
+$onlyUserSession = $con->getOnlyUserData($usuarioSesion['id_usu']);
 
 foreach ($onlyUserSession as $user) {
     $usuario = $user['login'];
@@ -22,6 +23,7 @@ foreach ($onlyUserSession as $user) {
 }
 $urlViews = URL_VIEWS;
 
+$preventa = 0;
 $getTotalPreventa = $con->getTotalPreventa($id_usuario);
 
 foreach ($getTotalPreventa as $preVentaTotal){

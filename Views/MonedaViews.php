@@ -88,10 +88,6 @@ include('Head.php');
                                              aria-hidden="true">
                                             <form class="form-validate form-horizontal" name="form2"
                                                   action="RegistrosDataMoneda.php" method="post">
-                                                <input name="usuarioLogin" value="<?php echo $usuario; ?>"
-                                                       type="hidden">
-                                                <input name="passwordLogin" value="<?php echo $password; ?>"
-                                                       type="hidden">
                                                 <input type="hidden" name="idMoneda"
                                                        value="<?php echo $datosUsuarioMoneda['idMoneda']; ?>">
                                                 <div class="modal-dialog">

@@ -42,7 +42,7 @@ include('Head.php');
                 </div>
 
                 <ol class="breadcrumb">
-                    <li><i class="fa fa-home"></i><a href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a></li>
+                    <li><i class="fa fa-home"></i><a href="AccessUsers.php">Inicio</a></li>
                     <li><i class="fa fa-truck"></i>Consolidar Ventas</li>
 
                 </ol>
@@ -85,7 +85,7 @@ include('Head.php');
                             <td>
                                 <a href="#a<?php echo $ventas[0]; ?>" role="button" class="btn btn-warning"
                                    data-toggle="modal"><i class="icon_pencil-edit_alt"></i></a>
-                                <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>&codigoControl=<?php echo $ventas[5]; ?>&usuarioLogin=<?php echo $usuario; ?>&passwordLogin=<?php echo $password; ?>"
+                                <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>&codigoControl=<?php echo $ventas[5]; ?>"
                                    class="btn btn-success"><i class="icon_box-checked"></i></a>
                             </td>
                         </tr>
@@ -94,8 +94,6 @@ include('Head.php');
                              aria-labelledby="myModalLabel" aria-hidden="true">
                             <form class="form-validate form-horizontal" name="form2" action="ConsolidarVenta.php"
                                   method="post">
-                                <input name="usuarioLogin" value="<?php echo $usuario;?>" type="hidden" >
-                                <input name="passwordLogin" value="<?php echo $password;?>" type="hidden" >
                                 <input type="hidden" name="idVentas"
                                        value="<?php echo $ventas['idVentas']; ?>">
                                 <div class="modal-dialog">

@@ -39,7 +39,7 @@ include('LiteralMoney.php');
                 <h3 class="page-header"><i class="fa fa-print"></i> PRINCIPAL</h3>
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a
-                            href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
+                            href="AccessUsers.php">Inicio</a>
                     </li>
                     <li>
                         <i class="fa fa-print"></i><a
@@ -47,7 +47,7 @@ include('LiteralMoney.php');
                     </li>
                     <li>
                         <i class="fa fa-save"></i><a
-                                href='RegistrarVenta.php?RegistarVenta="RegistarVenta"&usuario=<?PHP echo $usuario; ?>&password=<?PHP echo $password; ?>&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
+                                href='RegistrarVenta.php?RegistarVenta="RegistarVenta"&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
                              Nuevo Pedido </a></a>
                     </li>
                 </ol>
@@ -58,17 +58,17 @@ include('LiteralMoney.php');
             <tr>
                 <td width="150" align="center">
                     <a class="btnPrint"
-                       href='ConFactura.php?usuario=<?PHP echo $usuario; ?>&password=<?PHP echo $password; ?>&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
+                       href='ConFactura.php?ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
                         <img src="<?php echo $urlViews; ?>/ticket/images/impresora.png" alt="FACTURA"/><br>FACTURA </a>
                 </td>
 
                 <td width="150" align="center">
                     <a class="btnPrint"
-                       href='SinFactura.php?usuario=<?PHP echo $usuario; ?>&password=<?PHP echo $password; ?>&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
+                       href='SinFactura.php?ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
                         <img src="<?php echo $urlViews; ?>/ticket/images/impresora.png" alt="FACTURA"/><br>SIN FACTURA
                     </a></td>
                 <td width="150" align="center"><a
-                        href='RegistrarVenta.php?RegistarVenta="RegistarVenta"&usuario=<?PHP echo $usuario; ?>&password=<?PHP echo $password; ?>&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
+                        href='RegistrarVenta.php?RegistarVenta="RegistarVenta"&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
                         <img src="<?php echo $urlViews; ?>/ticket/images/factura.png" alt="FACTURA"/><br> NUEVO
                         PEDIDO </a></td>
             </tr>

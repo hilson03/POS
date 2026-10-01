@@ -33,16 +33,29 @@
 
 <div class="container">
 
-    <form class="login-form" action="/Controller/AccessUsers.php">
+    <form class="login-form" action="Controller/AccessUsers.php" method="post">
         <div class="login-wrap">
             <p class="login-img"><i class="icon_lock_alt"></i></p>
+            <?php if (isset($_GET['error'])) { ?>
+                <div class="alert alert-danger" style="text-align: center;">
+                    <?php
+                    if ($_GET['error'] == 'login') {
+                        echo 'Usuario o contraseña incorrectos, intenta de nuevo.';
+                    } else {
+                        echo 'Tu sesión terminó, vuelve a iniciar sesión.';
+                    }
+                    ?>
+                </div>
+            <?php } elseif (isset($_GET['salir'])) { ?>
+                <div class="alert alert-info" style="text-align: center;">Cerraste sesión correctamente.</div>
+            <?php } ?>
             <div class="input-group">
                 <span class="input-group-addon"><i class="icon_profile"></i></span>
-                <input type="text" name="usuario"   class="form-control" placeholder="Nombre de Usuario" autofocus>
+                <input type="text" name="usuario"   class="form-control" placeholder="Nombre de Usuario" autofocus required>
             </div>
             <div class="input-group">
                 <span class="input-group-addon"><i class="icon_key_alt"></i></span>
-                <input type="password"  name="password" class="form-control" placeholder="Password">
+                <input type="password"  name="password" class="form-control" placeholder="Password" required>
             </div>
             <label class="checkbox">
                 <input type="checkbox" value="remember-me"> Remember me

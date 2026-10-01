@@ -1,14 +1,12 @@
 <?php
 require("../Model/Conexion.php");
 require("Constans.php");
+require_once('Sesion.php');
 require_once("SubirFoto.php");
 
-if (!isset($_SESSION)){
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
@@ -46,8 +44,6 @@ if(isset($_POST['nuevo_usuario'])){
 if (isset($_GET['idborrar'])) {
 
         $idUsuario = $_GET['idborrar'];
-        $usuarioLogin = $_GET['usuarioLogin'];
-        $passwordLogin = $_GET['passwordLogin'];
 
         $mensaje = "Se Elimino un usuario";
         $alerta = "alert alert-danger";
@@ -71,9 +67,6 @@ if (isset($_POST['update_usuario'])) {
         $password = $_POST['password'];
         $imagen = $_POST['imagen'];
 
-        $usuarioLogin = $_POST['usuarioLogin'];
-        $passwordLogin = $_POST['passwordLogin'];
-
         $imagenUsuario = subirFoto('userfileEdit', $imagen, $errorFoto);
 
         $mensaje = "Se Edito los datos de  un usuario";
@@ -93,5 +86,5 @@ if (isset($_POST['update_usuario'])) {
     }
 
 
-header("Location: Usuario.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+header("Location: Usuario.php?estado='Activo'");
 

@@ -1,13 +1,11 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuario = $_GET['usuarioLogin'];
-$password = $_GET['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion();
+$usuario = $usuarioSesion['login'];
 $con = new Conexion();
 
 

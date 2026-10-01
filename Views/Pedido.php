@@ -91,7 +91,7 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                 if (isset($userId)) {
 
                     echo " <a  data-toggle='modal'  class='btn btn-primary enabled'
-                              href='Factura.php?usuario=$usuario&password=$password'
+                              href='Factura.php'
                               data-target='#myModal'>
                     <i class='icon_check'></i><strong> ACEPTAR</strong> </a>
                     <div class='modal fade' id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>      

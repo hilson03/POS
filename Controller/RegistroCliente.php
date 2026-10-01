@@ -1,14 +1,12 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 require_once('SubirFoto.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion();
+$usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
@@ -43,8 +41,6 @@ if (isset($_POST['nuevo_cliente'])) {
 }
 
 if (isset($_GET['idborrar'])) {
-    $usuarioLogin = $_GET['usuarioLogin'];
-    $passwordLogin = $_GET['passwordLogin'];
     $idborrar = $_GET['idborrar'];
 
     $mensaje = "Se elimino  los datos del cliente correctamente !!!";
@@ -61,8 +57,6 @@ if (isset($_POST['update_cliente'])) {
 
         $idcliente = $_POST['idcliente'];
         $imagen = $_POST['imagen'];
-        $usuarioLogin = $_POST['usuarioLogin'];
-        $passwordLogin = $_POST['passwordLogin'];
     
         $nombre = $_POST['nombre'];
         $apellido = $_POST['apellido'];
@@ -91,6 +85,6 @@ if (isset($_POST['update_cliente'])) {
 
     $menuMain = $con->getMenuMain();
 
-header("Location: Cliente.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+header("Location: Cliente.php?estado='Activo'");
 
 ?>

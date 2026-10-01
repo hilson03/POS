@@ -42,13 +42,13 @@ include('Head.php');
 
                 <ol class="breadcrumb">
                     <li>
-                        <i class="fa fa-home"></i><a href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
+                        <i class="fa fa-home"></i><a href="AccessUsers.php">Inicio</a>
                     </li>
                     <li>
-                        <i class="fa fa-inbox"></i><a href="Producto.php?usuario=<?php echo $usuario; ?>&password=<?php echo $password; ?>">Producto</a>
+                        <i class="fa fa-inbox"></i><a href="Producto.php">Producto</a>
                     </li>
                     <li>
-                        <i class="fa fa-plus"></i><a href="TipoProducto.php?usuario=<?php echo $usuario; ?>&password=<?php echo $password; ?>">Registrar Tipo Producto</a>
+                        <i class="fa fa-plus"></i><a href="TipoProducto.php">Registrar Tipo Producto</a>
                     </li>
                 </ol>
             </div>
@@ -71,8 +71,6 @@ include('Head.php');
                 <div id="add" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                      aria-hidden="true">
                     <form action="RegistroProducto.php" method="post" enctype="multipart/form-data">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog" id="mdialTamanio">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -208,7 +206,7 @@ include('Head.php');
                                 <a href="#a<?php echo $product[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
                                     <i class="icon_check_alt2"></i> </a>
-                                <a href="RegistroProducto.php?idborrar=<?PHP echo $product[0]; ?>&usuarioLogin=<?PHP echo $usuario; ?>&passwordLogin=<?PHP echo $password; ?>"
+                                <a href="RegistroProducto.php?idborrar=<?PHP echo $product[0]; ?>"
                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                 </a>
                             </td>
@@ -222,8 +220,6 @@ include('Head.php');
                                 <input type="hidden" id="idproducto" name="idproducto"
                                        value="<?php echo $product['idproducto']; ?>">
                                 <input type="hidden" name="imagen" value="<?php echo $product['imagen']; ?>">
-                                <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                                <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
 
                                 <div class="modal-dialog" id="mdialTamanio">
                                     <div class="modal-content">
@@ -253,8 +249,14 @@ include('Head.php');
                                                             <div class="col-sm-4">
                                                                 <select class="form-control input-lg m-bot15"
                                                                         name="tipoproducto">
-                                                                    <option><?php echo $product['tipo']; ?></option>
-                                                                    <?php include("MenuTipoProducto.php"); ?>
+                                                                    <?php
+                                                                    // MenuTipoProducto.php nunca existio; se usa la misma lista de tipos del formulario de registro
+                                                                    mysqli_data_seek($tipoProductos, 0);
+                                                                    while ($tipoProducto = mysqli_fetch_array($tipoProductos)) {
+                                                                        $seleccionado = $tipoProducto['tipoproducto'] == $product['tipo'] ? ' selected' : '';
+                                                                        echo '<option value="' . $tipoProducto['tipoproducto'] . '"' . $seleccionado . '>' . $tipoProducto['tipoproducto'] . '</option>';
+                                                                    }
+                                                                    ?>
                                                                 </select>
                                                             </div>
                                                             <label class="col-sm-2 control-label">Codigo:</label>

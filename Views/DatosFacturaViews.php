@@ -98,10 +98,6 @@ include('Head.php');
                                              aria-hidden="true">
                                             <form class="form-validate form-horizontal" name="form2"
                                                   action="RegistrosDataFactura.php" method="post">
-                                                <input name="usuarioLogin" value="<?php echo $usuario; ?>"
-                                                       type="hidden">
-                                                <input name="passwordLogin" value="<?php echo $password; ?>"
-                                                       type="hidden">
                                                 <input type="hidden" name="iddatos"
                                                        value="<?php echo $datosUsuarioFactura['iddatos']; ?>">
                                                 <div class="modal-dialog">

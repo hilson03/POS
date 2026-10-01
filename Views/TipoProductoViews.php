@@ -43,15 +43,15 @@ include('Head.php');
                 <ol class="breadcrumb">
                     <li>
                         <i class="fa fa-home"></i><a
-                                href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
+                                href="AccessUsers.php">Inicio</a>
                     </li>
                     <li>
                         <i class="fa fa-inbox"></i><a
-                                href="Producto.php?usuario=<?php echo $usuario; ?>&password=<?php echo $password; ?>">Producto</a>
+                                href="Producto.php">Producto</a>
                     </li>
                     <li>
                         <i class="fa fa-plus"></i><a
-                                href="TipoProducto.php?usuario=<?php echo $usuario; ?>&password=<?php echo $password; ?>">Registrar
+                                href="TipoProducto.php">Registrar
                             Tipo Producto</a>
                     </li>
                 </ol>
@@ -71,8 +71,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal" name="form2" action="RegistroTipoProducto.php"
                           method="post">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -122,7 +120,7 @@ include('Head.php');
                             <td>
                                 <a href="#a<?php echo $tipoProducto[0]; ?>" role="button" class="btn btn-success"
                                    data-toggle="modal"><i class="icon_check_alt2"></i></a>
-                                <a href="RegistroTipoProducto.php?idborrar=<?php echo $tipoProducto[0]; ?>&usuarioLogin=<?php echo $usuario; ?>&passwordLogin=<?php echo $password; ?>"
+                                <a href="RegistroTipoProducto.php?idborrar=<?php echo $tipoProducto[0]; ?>"
                                    class="btn btn-danger"><i class="icon_close_alt2"></i></a>
                             </td>
                         </tr>
@@ -131,8 +129,6 @@ include('Head.php');
                              aria-labelledby="myModalLabel" aria-hidden="true">
                             <form class="form-validate form-horizontal" name="form2" action="RegistroTipoProducto.php"
                                   method="post">
-                                <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                                <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                                 <input type="hidden" name="idtipoproducto"
                                        value="<?php echo $tipoProducto['idtipoproducto']; ?>">
                                 <div class="modal-dialog">

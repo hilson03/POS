@@ -84,10 +84,6 @@ include('Head.php');
                                              aria-hidden="true">
                                             <form class="form-validate form-horizontal" name="form2"
                                                   action="RegistrosDataIdioma.php" method="post">
-                                                <input name="usuarioLogin" value="<?php echo $usuario; ?>"
-                                                       type="hidden">
-                                                <input name="passwordLogin" value="<?php echo $password; ?>"
-                                                       type="hidden">
                                                 <input type="hidden" name="idIdioma"
                                                        value="<?php echo $datosUsuarioLanguaje['idIdioma']; ?>">
                                                 <div class="modal-dialog">

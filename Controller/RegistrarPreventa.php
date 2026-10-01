@@ -1,15 +1,16 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 require_once('Codigo_control.class.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+iniciarSesionSegura();
 $con = new conexion();
 
-$usuario= $_POST['usuario'];
-$password = $_POST['password'];
+$usuarioSesion = requerirSesion();
+
+$usuario = $usuarioSesion['login'];
+$password = '';
 
 $ci =$_POST['ci'];
 
@@ -43,13 +44,13 @@ if(!empty($searchClient)){
 
 
 // usuario que esta cobrando: sus datos de cobro se guardan aparte de los de otros vendedores
-$usuarioVenta = $con->getUser($usuario, $password);
+$usuarioVenta = $con->getOnlyUserData($usuarioSesion['id_usu']);
 $idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
 
 $registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta);
 
 
-$searchUser = $con->getUser($usuario,$password);
+$searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
 
 foreach ($searchUser as $user) {
     $tipo = $user['tipo'];

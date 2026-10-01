@@ -41,7 +41,7 @@ include('Head.php');
                 </div>
 
                 <ol class="breadcrumb">
-                    <li><i class="fa fa-home"></i><a href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a></li>
+                    <li><i class="fa fa-home"></i><a href="AccessUsers.php">Inicio</a></li>
                     <li><i class="fa fa-truck"></i>Reporte de Ventas</li>
 
                 </ol>
@@ -101,8 +101,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal" target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -141,8 +139,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal" target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -187,8 +183,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal" target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
 
 
@@ -235,8 +229,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal" target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -304,8 +296,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal"  target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
 
 
@@ -347,8 +337,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal"  target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
 
 
@@ -391,8 +379,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal" target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -442,8 +428,6 @@ include('Head.php');
                      aria-hidden="true">
                     <form class="form-validate form-horizontal"  target="_blank" name="form2" action="Reportes.php"
                           method="GET">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">

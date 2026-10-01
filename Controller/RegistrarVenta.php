@@ -1,16 +1,17 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 require_once('Codigo_control.class.php');
-if (!isset($_SESSION)) {
-    session_start();
-}
+iniciarSesionSegura();
 
 if (isset($_GET['RegistarVenta'])) {
     $con = new conexion();
 
-    $usuario = $_GET['usuario'];
-    $password = $_GET['password'];
+    $usuarioSesion = requerirSesion();
+
+    $usuario = $usuarioSesion['login'];
+    $password = '';
     $ci = $_GET['ci'];
     $totalAPagar = $_GET['ingreso1'];
     $efectivo = $_GET['ingreso2'];
@@ -27,7 +28,7 @@ if (isset($_GET['RegistarVenta'])) {
         $idClientei = $cliente['idcliente'];
     }
 
-    $searchUser = $con->getUser($usuario, $password);
+    $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
 
     foreach ($searchUser as $user) {
         $tipo = $user['tipo'];
@@ -146,7 +147,7 @@ if (isset($_GET['RegistarVenta'])) {
     $cleanDataCliente = $con->cleanClientData($id_usuario);
     $cleanDataPreventa = $con->cleanRegistroPreventa($id_usuario);
 
- header("Location: Ventas.php?usuario=$login&password=$password");
+ header("Location: Ventas.php");
 
 }
 

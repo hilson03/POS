@@ -14,6 +14,6 @@
     </li>
 
     <li>
-        <a href="Logout.php?usuario="><i class="icon_key_alt"></i> Salir</a>
+        <a href="Logout.php"><i class="icon_key_alt"></i> Salir</a>
     </li>
 </ul>

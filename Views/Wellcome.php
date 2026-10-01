@@ -40,7 +40,7 @@
             <div class="col-lg-12">
                 <h3 class="page-header"><i class="fa fa-laptop"></i> PRINCIPAL</h3>
                 <ol class="breadcrumb">
-                    <li><i class="fa fa-home"></i><a href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a></li>
+                    <li><i class="fa fa-home"></i><a href="AccessUsers.php">Inicio</a></li>
                     <li><i class="fa fa-laptop"></i> Principal</li>
                 </ol>
             </div>

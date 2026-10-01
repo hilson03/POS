@@ -1,14 +1,14 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+iniciarSesionSegura();
 
 $idProducto = $_POST['idProducto'];
 $tipo = $_POST['tipo'];
-$idUsuario = $_POST['idUser'];
+$usuarioSesion = requerirSesion('', true);
+$idUsuario = $usuarioSesion['id_usu'];
 
 $con = new conexion();
 

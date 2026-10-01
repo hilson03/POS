@@ -1,14 +1,12 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 require_once('SubirFoto.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion();
+$usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
@@ -58,8 +56,6 @@ if (isset($_POST['nuevo_Producto'])) {
 
 
 if (isset($_GET['idborrar'])) {
-    $usuarioLogin = $_GET['usuarioLogin'];
-    $passwordLogin = $_GET['passwordLogin'];
     $idborrar = $_GET['idborrar'];
 
     $mensaje = "Se elimino  los datos del producto correctamente !!!";
@@ -106,7 +102,7 @@ if (isset($_POST['update_producto'])) {
 
 }
 
-$searchUser = $con->getUser($usuarioLogin, $passwordLogin);
+$searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
 $allUsuarios = $con->getAllUserData();
 
 foreach ($searchUser as $user) {
@@ -119,7 +115,7 @@ foreach ($searchUser as $user) {
 
 
 $menuMain = $con->getMenuMain();
-header("Location: producto.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+header("Location: Producto.php?estado='Activo'");
 
 
 ?>

@@ -3,8 +3,6 @@
         <div class="modal-header">
             <form class="form-validate form-horizontal" name="calculadora" action="RegistrarPreventa.php" method="post">
                 <table id="dataTables-example">
-                    <input type="hidden" id="usuario" name="usuario" value="<?php echo $usuario; ?>">
-                    <input type="hidden" id="password" name="password" value="<?php echo $password; ?>">
 
                     <tr>
                         <th colspan="5" align="Center"> REGISTRAR</th>

@@ -1,13 +1,11 @@
 <?php
 require_once('../Model/Conexion.php');
 require('Constans.php');
+require_once('Sesion.php');
 
-if (!isset($_SESSION)) {
-    session_start();
-}
-
-$usuarioLogin = $_POST['usuarioLogin'];
-$passwordLogin = $_POST['passwordLogin'];
+iniciarSesionSegura();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
+$usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
@@ -16,8 +14,6 @@ if (isset($_GET['idConsolidar'])) {
 
     $idVenta = $_GET['idConsolidar'];
     $codigoControl = $_GET['codigoControl'];
-    $usuarioLogin = $_GET['usuarioLogin'];
-    $passwordLogin = $_GET['passwordLogin'];
 
     $updateDatosclienteventa = $con->updateDatosclienteventa($codigoControl);
     $updateDatosfacturaventa = $con->updateDatosfacturaventa($codigoControl);
@@ -46,7 +42,7 @@ if (isset($_POST['insertarComentario'])) {
 
 }
 
-$searchUser = $con->getUser($usuarioLogin, $passwordLogin);
+$searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
 $allUsuarios = $con->getAllUserData();
 
 foreach ($searchUser as $user) {
@@ -60,7 +56,7 @@ foreach ($searchUser as $user) {
 
 $menuMain = $con->getMenuMain();
 
-header("Location: Consolidar.php?usuario=$usuarioLogin&password=$passwordLogin&estado='Activo'");
+header("Location: Consolidar.php?estado='Activo'");
 
 
 ?>

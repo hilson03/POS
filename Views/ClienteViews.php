@@ -42,7 +42,7 @@ include('Head.php');
 
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a
-                                href="AccessUsers.php?usuario=<?php echo urlencode($usuario); ?>&password=<?php echo urlencode($password); ?>">Inicio</a>
+                                href="AccessUsers.php">Inicio</a>
                     </li>
                 </ol>
             </div>
@@ -75,8 +75,6 @@ include('Head.php');
                           action="RegistroCliente.php"
                           method="post"
                           enctype="multipart/form-data">
-                        <input name="usuarioLogin" value="<?php echo $usuario; ?>" type="hidden">
-                        <input name="passwordLogin" value="<?php echo $password; ?>" type="hidden">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -221,7 +219,7 @@ include('Head.php');
                                 <a href="#a<?php echo $client[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
                                     <i class="icon_check_alt2"></i> </a>
-                                <a href="RegistroCliente.php?idborrar=<?PHP echo $client[0]; ?>&usuarioLogin=<?PHP echo $usuario; ?>&passwordLogin=<?PHP echo $password; ?>"
+                                <a href="RegistroCliente.php?idborrar=<?PHP echo $client[0]; ?>"
                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                 </a>
                             </td>
@@ -234,10 +232,6 @@ include('Head.php');
                                   method="post" enctype="multipart/form-data">
                                 <input type="hidden" name="idcliente"
                                        value="<?php echo $client['idcliente']; ?>">
-                                <input name="usuarioLogin" value="<?php echo $usuario; ?>"
-                                       type="hidden">
-                                <input name="passwordLogin" value="<?php echo $password; ?>"
-                                       type="hidden">
                                 <input type="hidden" name="imagen"
                                        value="<?php echo $client['foto']; ?>">
                                 <div class="modal-dialog">

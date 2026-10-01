@@ -68,8 +68,6 @@ include('Head.php');
 
                                      <form class="form-validate form-horizontal" name="form2" action="Registros.php"
                                           method="POST" enctype="multipart/form-data">
-                                        <input name="usuarioLogin" value="<?PHP echo $usuario; ?>" type="hidden">
-                                        <input name="passwordLogin" value="<?PHP echo $password; ?>" type="hidden">
 
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -193,7 +191,7 @@ include('Head.php');
                                                 <td>
                                                 <a href="#a<?php echo $datosUsuarios[0]; ?>" role="button" class="btn btn-success" data-toggle="modal">
                                                     <i class="icon_check_alt2"></i> </a>
-                                                <a href="Registros.php?idborrar=<?PHP echo $datosUsuarios[0]; ?>&usuarioLogin=<?PHP echo $usuario; ?>&passwordLogin=<?PHP echo $password; ?>"
+                                                <a href="Registros.php?idborrar=<?PHP echo $datosUsuarios[0]; ?>"
                                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                                 </a>
                                             </td>
@@ -206,10 +204,6 @@ include('Head.php');
                                         <form class="form-validate form-horizontal" name="form2"
                                         action="Registros.php" method="post" enctype="multipart/form-data">
 
-                                            <input name="usuarioLogin" value="<?php echo $usuario; ?>"
-                                                       type="hidden">
-                                            <input name="passwordLogin" value="<?php echo $password; ?>"
-                                                       type="hidden">
                                             <input type="hidden" name="idUsuario"
                                                        value="<?php echo $datosUsuarios['id_usu']; ?>">
                                             <input type="hidden" name="imagen"
