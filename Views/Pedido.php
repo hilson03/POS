@@ -1,3 +1,7 @@
+<?PHP
+// Ventas.php define $id_usuario; los controladores que refrescan el pedido por ajax definen $idUsuario
+$idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
+?>
 <section class="panel">
 
 
@@ -29,7 +33,7 @@
                 </tr>
 
                 <?PHP
-        $showPreventa = $con->getPreventa();
+        $showPreventa = $con->getPreventa($idUsuarioPedido);
         while ($preventa = mysqli_fetch_array($showPreventa)) {
             ?>
 
@@ -69,7 +73,7 @@
                 <h2>
                     <strong>
                         <?PHP
-                        $totalPreventaConsulta = $con->getTotalPreventa();
+                        $totalPreventaConsulta = $con->getTotalPreventa($idUsuarioPedido);
                         while ($totalVenta = mysqli_fetch_array($totalPreventaConsulta)) {
                             $userId = $totalVenta['idUser'];
                             echo $totalVenta['total'];

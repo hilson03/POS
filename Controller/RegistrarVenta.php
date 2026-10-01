@@ -78,7 +78,7 @@ if (isset($_GET['RegistarVenta'])) {
     }
 
 
-    $obtenerDatosCliente = $con->getDataCliente();
+    $obtenerDatosCliente = $con->getDataCliente($id_usuario);
     foreach ($obtenerDatosCliente as $datosCliente) {
         $nombreCliente = $datosCliente['nombre'];
         $ci = $datosCliente['ci'];
@@ -100,9 +100,10 @@ if (isset($_GET['RegistarVenta'])) {
     $codigoControl = $getCodigoControl->generar();
 
 
-    $registrarVentaTotal = $con->registrarVenta($nombreClienteDato, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta);
+    // se usa el id de la venta recien creada (antes se tomaba la ultima de la tabla y podia ser la de otro vendedor)
+    $idVentaNueva = $con->registrarVenta($nombreClienteDato, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $id_usuario);
 
-    $getDataClienteVenta = $con->getDatosVenta();
+    $getDataClienteVenta = $con->getDatosVenta($idVentaNueva);
 
     foreach ($getDataClienteVenta as $dataVenta) {
         $idVentas = $dataVenta['idVentas'];
@@ -116,7 +117,7 @@ if (isset($_GET['RegistarVenta'])) {
     }
 
 
-    $pedidoTotalPreventa = $con->getPedidoTotalForFactura();
+    $pedidoTotalPreventa = $con->getPedidoTotalForFactura($id_usuario);
     $pedido = mysqli_num_rows($pedidoTotalPreventa);
 
     for ($i = 0; $i < $pedido; $i++) {
@@ -142,8 +143,8 @@ if (isset($_GET['RegistarVenta'])) {
 
     /// Clean for new client
 
-    $cleanDataCliente = $con->cleanClientData();
-    $cleanDataPreventa = $con->cleanRegistroPreventa();
+    $cleanDataCliente = $con->cleanClientData($id_usuario);
+    $cleanDataPreventa = $con->cleanRegistroPreventa($id_usuario);
 
  header("Location: Ventas.php?usuario=$login&password=$password");
 

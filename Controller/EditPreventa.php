@@ -21,7 +21,7 @@ foreach ($onlyUserSession as $user) {
 }
 $urlViews = URL_VIEWS;
 
-$editPreVentaData = $con->getDataProductoChoose($idProducto, $tipo);
+$editPreVentaData = $con->getDataProductoChoose($idProducto, $tipo, $idUsuario);
 
 foreach ($editPreVentaData as $preVenta) {
     $idPreventa = $preVenta['idPreventa'];
@@ -34,7 +34,7 @@ foreach ($editPreVentaData as $preVenta) {
     $tipoPedido = $preVenta['tipo'];
 }
 
-$getCantidad = $con->getCantidadProductoChoose($idProducto, $tipo);
+$getCantidad = $con->getCantidadProductoChoose($idProducto, $tipo, $idUsuario);
 
 foreach ($getCantidad as $getCantidadTotal) {
     $cantidadActual = $getCantidadTotal['cantidadTotal'];

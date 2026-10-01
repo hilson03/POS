@@ -17,7 +17,7 @@ foreach ($onlyUserSession as $user) {
     $password = $user['password'];
 }
 
-$deleteAllPreventa = $con->deleteAllPreventa();
+$deleteAllPreventa = $con->deleteAllPreventa($idUsuario);
 
 $urlViews = URL_VIEWS;
 

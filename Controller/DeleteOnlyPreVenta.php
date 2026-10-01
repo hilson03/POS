@@ -19,7 +19,7 @@ foreach ($onlyUserSession as $user) {
     $password = $user['password'];
 }
 
-$deleteOnlyPreventaProducto = $con->deleteOnlyPreventa($idProducto,$tipo);
+$deleteOnlyPreventaProducto = $con->deleteOnlyPreventa($idProducto, $tipo, $idUsuario);
 
 $urlViews = URL_VIEWS;
 

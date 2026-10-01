@@ -324,18 +324,21 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 //consulta para hacer una preVenta
 
-    public function getPreventa()
+    public function getPreventa($idUser)
     {
-        $query = $this->con->query("SELECT idPreventa,imagen,producto,COUNT(producto) as cantidad, SUM(precio) as totalPrecio,idProducto,pventa,idUser,precio,tipo
+        $idUser = (int) $idUser;
+        $query = $this->con->query("SELECT MIN(idPreventa) as idPreventa,imagen,producto,COUNT(producto) as cantidad, SUM(precio) as totalPrecio,idProducto,pventa,idUser,precio,tipo
                                             FROM `preventa`
+                                            WHERE idUser = $idUser
                                             GROUP BY producto,idProducto,tipo
                                             ORDER BY idPreventa ASC");
         return $query;
     }
 
-     public function getTotalPreventa()
+     public function getTotalPreventa($idUser)
     {
-        $query = $this->con->query("SELECT Sum(precio) as total , idUser FROM `preventa`");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("SELECT Sum(precio) as total , idUser FROM `preventa` WHERE idUser = $idUser HAVING COUNT(*) > 0");
         return $query;
     }
 
@@ -377,23 +380,25 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $query;
     }
 
-    public function deleteOnlyPreventa($idProducto, $tipo)
+    public function deleteOnlyPreventa($idProducto, $tipo, $idUser)
     {
-        $query = $this->con->query("Delete from preventa where idproducto='$idProducto'  and  tipo='$tipo'");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("Delete from preventa where idproducto='$idProducto'  and  tipo='$tipo' and idUser = $idUser");
         return $query;
     }
 
-    public function deleteAllPreventa()
+    public function deleteAllPreventa($idUser)
     {
-        $query = $this->con->query("TRUNCATE `preventa`");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("DELETE FROM `preventa` WHERE idUser = $idUser");
         return $query;
     }
 
 
-    public function getDataProductoChoose($idProducto, $tipo)
+    public function getDataProductoChoose($idProducto, $tipo, $idUser)
     {
-
-        $query = $this->con->query("SELECT * FROM `preventa` where idproducto='$idProducto' and tipo='$tipo'");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("SELECT * FROM `preventa` where idproducto='$idProducto' and tipo='$tipo' and idUser = $idUser");
 
         $retorno = [];
 
@@ -406,9 +411,10 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 
     }
 
-    public function getCantidadProductoChoose($idProducto, $tipo)
+    public function getCantidadProductoChoose($idProducto, $tipo, $idUser)
     {
-        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa` where idproducto='$idProducto' and tipo='$tipo'");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa` where idproducto='$idProducto' and tipo='$tipo' and idUser = $idUser");
 
         $retorno = [];
 
@@ -421,11 +427,15 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 
     }
 
-    /******************Funcion SQL para saber cuantas unidades de un producto ya estan en el pedido*****************************/
-    public function getCantidadEnPreventa($idProducto, $tipoExcluido = '')
+    /******************Funcion SQL para saber cuantas unidades de un producto estan apartadas en los pedidos*****************************/
+    // cuenta los pedidos de TODOS los usuarios, asi dos vendedores no pueden vender la misma unidad a la vez;
+    // con $idUserExcluido y $tipoExcluido se descuentan las lineas que el usuario esta editando
+    public function getCantidadEnPreventa($idProducto, $idUserExcluido = 0, $tipoExcluido = '')
     {
         $idProducto = (int) $idProducto;
-        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa` where idproducto=$idProducto and tipo<>'$tipoExcluido'");
+        $idUserExcluido = (int) $idUserExcluido;
+        $query = $this->con->query("SELECT count(idproducto) as cantidadTotal FROM `preventa`
+                                          where idproducto=$idProducto and NOT (idUser = $idUserExcluido and tipo = '$tipoExcluido')");
         $fila = $query->fetch_assoc();
         return (int) $fila['cantidadTotal'];
     }
@@ -461,23 +471,27 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $query;
     }
 
-     public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente)
+     public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente, $idUser)
     {
-        $query = $this->con->query("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`)
-                                            VALUES (NULL , '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idcliente', 'Local');");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`)
+                                            VALUES (NULL , '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idcliente', 'Local', $idUser);");
         return $query;
     }
 
 
-    public function getDataCliente()
+    public function getDataCliente($idUser)
     {
-        $query = $this->con->query("SELECT * FROM `clientedato` order by idcliente DESC  limit 1");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("SELECT * FROM `clientedato` WHERE idUser = $idUser order by idcliente DESC  limit 1");
         return $query;
     }
 
-    public function getPedidoTotalForFactura()
+    public function getPedidoTotalForFactura($idUser)
     {
-        $query = $this->con->query("SELECT idpreventa,imagen,producto,precio, count( idproducto ) AS cantidad, precio*count( idproducto ) as totalPrecio, idproducto, pventa ,tipo FROM `preventa`  GROUP BY idproducto");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("SELECT MIN(idpreventa) as idpreventa,imagen,producto,precio, count( idproducto ) AS cantidad, precio*count( idproducto ) as totalPrecio, idproducto, pventa ,tipo
+                                          FROM `preventa` WHERE idUser = $idUser GROUP BY idproducto");
         return $query;
     }
 
@@ -489,16 +503,19 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 
 /***************************************************Funciones SQL para registrar una venta ************************************************/
 
-    public function registrarVenta($nombre, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta)
+    // devuelve el id de la venta recien creada (0 si fallo)
+    public function registrarVenta($nombre, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $idUsuario)
     {
-        $query = $this->con->query("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`)
-                                            VALUES (NULL, '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idClientei', '$codigoControl')");
-        return $query;
+        $idUsuario = (int) $idUsuario;
+        $query = $this->con->query("INSERT INTO `ventatotal` (`idVentas`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `codigoControl`, `idUsuario`)
+                                            VALUES (NULL, '$nombre', '$ci', '$fechaVenta', '$totalAPagar', '$efectivo', '$cambio', '$idClientei', '$codigoControl', $idUsuario)");
+        return $query ? $this->con->insert_id : 0;
     }
 
-    public function getDatosVenta()
+    public function getDatosVenta($idVentas)
     {
-        $query = $this->con->query("SELECT * FROM `ventatotal`");
+        $idVentas = (int) $idVentas;
+        $query = $this->con->query("SELECT * FROM `ventatotal` WHERE idVentas = $idVentas");
         return $query;
     }
 
@@ -552,15 +569,17 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $query;
     }
 
-    public function cleanClientData()
+    public function cleanClientData($idUser)
     {
-        $query = $this->con->query("truncate `clientedato`");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("DELETE FROM `clientedato` WHERE idUser = $idUser");
         return $query;
     }
 
-     public function cleanRegistroPreventa()
+     public function cleanRegistroPreventa($idUser)
     {
-        $query = $this->con->query("truncate `preventa`");
+        $idUser = (int) $idUser;
+        $query = $this->con->query("DELETE FROM `preventa` WHERE idUser = $idUser");
         return $query;
     }
 

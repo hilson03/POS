@@ -42,7 +42,11 @@ if(!empty($searchClient)){
 
 
 
-$registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1');
+// usuario que esta cobrando: sus datos de cobro se guardan aparte de los de otros vendedores
+$usuarioVenta = $con->getUser($usuario, $password);
+$idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
+
+$registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta);
 
 
 $searchUser = $con->getUser($usuario,$password);
@@ -76,7 +80,7 @@ $datosFactura = $con-> getDatosFactura();
    $fechaLimite=$dosificacion['fechaL'];
  }
 
- $obtenerDatosCliente =$con->getDataCliente();
+ $obtenerDatosCliente =$con->getDataCliente($idUsuarioVenta);
  foreach ( $obtenerDatosCliente as $datosCliente){
      $nombreCliente = $datosCliente['nombre'];
      $ci = $datosCliente['ci'];
@@ -86,7 +90,7 @@ $datosFactura = $con-> getDatosFactura();
      $cambio = $datosCliente['cambio'];
  }
 
- $pedidoTotalPreventa = $con->getPedidoTotalForFactura();
+ $pedidoTotalPreventa = $con->getPedidoTotalForFactura($idUsuarioVenta);
  $pedido = mysqli_num_rows($pedidoTotalPreventa);
 
 $dataMoneda = $con -> getMoneda();
