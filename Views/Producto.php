@@ -30,12 +30,26 @@
         padding: 10px 4px;
         text-align: center;
         border: 1px solid #a9d3a9;
-        background-size: cover;
+        background-size: 200px 200px;
+        background-repeat: repeat;
     }
 
     .tarjeta-producto .single-product {
         width: 112px;
         margin: 0 auto;
+    }
+
+    /* boton "Agregar" (antes eran dos botones cortos: Mesa y Llevar) */
+    .tarjeta-producto .product-hover a.add-to-cart-link {
+        font-size: 12px;
+        padding: 8px 4px;
+        left: 5%;
+        width: 90%;
+        letter-spacing: 0.5px;
+    }
+
+    .tarjeta-producto .single-product:hover .product-hover a.add-to-cart-link {
+        top: 30%;
     }
 
     .stock-otras {
@@ -67,16 +81,14 @@ while ($product = mysqli_fetch_array($allProducto)) {
     $tienePrecio = is_numeric($product['precioVenta']) && $product['precioVenta'] > 0;
     ?>
     <div class="tarjeta-producto" data-buscar="<?PHP echo htmlspecialchars($product['nombreProducto']); ?>"
-         style="background-image: url('<?PHP echo $urlViews; ?>img/menuPOS.jpg');">
+         style="background-image: url('<?PHP echo $urlViews; ?>img/fondoCelulares.svg');">
         <div class="single-product">
             <div class="product-f-image">
                 <img src="<?PHP echo $urlViews . $product['imagen']; ?>" width="90" height="90" class="imgRedonda">
                 <?PHP if ($stock > 0 && $tienePrecio) { ?>
                 <div class="product-hover">
-                    <a onclick="insertarPedidoMesa('<?PHP echo $product['idproducto'];?>','<?PHP echo $id_usuario;?>')" data-name="Mouse" style="text-decoration: none; cursor: pointer;"
-                       class="add-to-cart-link">Mesa</a>
-                    <a onclick="insertarPedidoLlevar('<?PHP echo $product['idproducto'];?>','<?PHP echo $id_usuario;?>')" data-name="Mouse" style="text-decoration: none; cursor: pointer;"
-                       class="view-details-link">Llevar</a>
+                    <a onclick="insertarPedido('<?PHP echo $product['idproducto'];?>')" style="text-decoration: none; cursor: pointer;"
+                       class="add-to-cart-link"><i class="icon_cart_alt"></i> Agregar</a>
                 </div>
                 <?PHP } ?>
 

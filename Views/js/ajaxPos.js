@@ -17,23 +17,11 @@ function objetoAjax() {
 }
 
 
-function insertarPedidoLlevar(idproducto, iduser){
+// agrega una unidad del producto al pedido (el usuario sale de la sesion en el servidor)
+function insertarPedido(idproducto){
     divResultado = document.getElementById('resultado');
     ajax=objetoAjax();
-    ajax.open("GET", "InsertarPedidoLlevar.php?idproducto=" + idproducto + "&iduser=" + iduser);
-    ajax.onreadystatechange=function() {
-        if (ajax.readyState==4) {
-            divResultado.innerHTML = ajax.responseText
-        }
-    }
-    ajax.send()
-}
-
-
-function insertarPedidoMesa(idproducto, iduser){
-    divResultado = document.getElementById('resultado');
-    ajax=objetoAjax();
-    ajax.open("GET", "InsertarPedidoMesa.php?idproducto=" + idproducto + "&iduser=" + iduser);
+    ajax.open("GET", "InsertarPedido.php?idproducto=" + idproducto);
     ajax.onreadystatechange=function() {
         if (ajax.readyState==4) {
             divResultado.innerHTML = ajax.responseText

@@ -50,4 +50,10 @@ foreach ($tipoDeMoneda as $moneda){
 // misma zona horaria con la que RegistrarVenta guarda la fecha de la venta
 $ventasDelDia = $con->getVentasDelDia(date('Y-m-d'), $usuarioSesion['idSucursalActiva']);
 
+// indicadores de la sucursal activa para los cuadros de arriba
+$indicadorVendidoHoy = $con->getTotalVendidoDia(date('Y-m-d'), $usuarioSesion['idSucursalActiva']);
+$indicadorPorConsolidar = mysqli_num_rows($con->getAllVentas($usuarioSesion['idSucursalActiva']));
+$indicadorSinStock = $con->contarProductosSinStock($usuarioSesion['idSucursalActiva']);
+$indicadorTraslados = $con->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], true);
+
 require('../Views/Wellcome.php');

@@ -28,7 +28,6 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                 <td><b>Cant.</b></td>
                 <td><b>Precio</b></td>
                 <td><b>Total</b></td>
-                <td><b>Tipo</b></td>
                 <td><b>Opcion</b></td>
                 </tr>
 
@@ -43,7 +42,6 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                 <td><?PHP echo $preventa['cantidad']; ?></td>
                 <td><?PHP echo $preventa['precio']; ?></td>
                 <td><?PHP echo $preventa['totalPrecio']; ?></td>
-                <td><?PHP echo $preventa['tipo']; ?></td>
                 <td>
 
 
@@ -86,7 +84,7 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
 
         <tr>
 
-        <td colspan="4" align="center">
+        <td colspan="3" align="center">
                 <?PHP
                 if (isset($userId)) {
 

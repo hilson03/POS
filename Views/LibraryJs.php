@@ -37,7 +37,7 @@
 <script src="<?php echo $urlViews; ?>js/jquery.slimscroll.min.js"></script>
 <script src="<?php echo $urlViews; ?>js/zabuto_calendar.js"></script>
 <script src="<?php echo $urlViews; ?>js/ajax.js"></script>
-<script language="JavaScript" type="text/javascript"src="<?php echo $urlViews; ?>js/ajaxPos.js" ></script>
+<script language="JavaScript" type="text/javascript"src="<?php echo $urlViews; ?>js/ajaxPos.js?v=<?php echo filemtime(__DIR__ . "/js/ajaxPos.js"); ?>" ></script>
 
 
 

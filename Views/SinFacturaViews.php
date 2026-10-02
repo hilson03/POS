@@ -59,7 +59,7 @@ include('LiteralMoney.php');
         echo '<td width="100"><span style="color: #2b2b2b;">' . $detallePedido['producto'] . '</span></td>';
         echo '<td width="70"><span style="color: #2b2b2b;">' . $detallePedido['precio'] . '</span></td>';
         echo '<td width="70"><span style="color: #2b2b2b;">' . $detallePedido['precio'] * $detallePedido['cantidad'] . '</span></td>';
-        echo '<td width="70"><span style="color: #2b2b2b;">' . $detallePedido['tipo'] . '</span></td>';
+        echo '<td width="70"><span style="color: #2b2b2b;"></span></td>';
         echo '</tr>';
     }
 

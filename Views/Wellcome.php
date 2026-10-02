@@ -48,48 +48,60 @@
 
         <div class="row">
 
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                    <div class="info-box blue-bg">
-                        <i class="fa fa-truck"></i>
-                        <div class="count"><?PHP
-                            // echo $t_pro;
+            <style>
+                /* cuadros de indicadores: toda la caja es un enlace al modulo correspondiente */
+                a.indicador,
+                a.indicador:hover,
+                a.indicador:focus {
+                    display: block;
+                    color: #fff;
+                    text-decoration: none;
+                }
 
-                            ?></div>
-                        <div class="title"> Proveedores</div>
+                a.indicador .info-box {
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+
+                a.indicador:hover .info-box {
+                    transform: translateY(-4px);
+                    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+                }
+
+                a.indicador .info-box .count {
+                    font-size: 30px;
+                    font-weight: bold;
+                }
+
+                a.indicador .info-box .detalle {
+                    font-size: 12px;
+                    opacity: 0.9;
+                    margin-top: 2px;
+                }
+            </style>
+            <?PHP
+            // indicadores de la sucursal activa: [enlace, color, icono, numero, titulo, detalle]
+            $indicadores = array(
+                array('ReportesVentas.php', 'blue-bg', 'fa fa-money', $tipoMonedaElegida . ' ' . number_format($indicadorVendidoHoy, 2),
+                    'Vendido hoy', 'Ver reportes de ventas'),
+                array('Consolidar.php', 'brown-bg', 'icon_documents_alt', $indicadorPorConsolidar,
+                    'Por consolidar', $indicadorPorConsolidar == 1 ? 'venta pendiente' : 'ventas pendientes'),
+                array('Producto.php', $indicadorSinStock > 0 ? 'dark-bg' : 'green-bg', 'fa fa-cubes', $indicadorSinStock,
+                    'Sin stock', $indicadorSinStock == 1 ? 'producto agotado aquí' : 'productos agotados aquí'),
+                array('Traslados.php', 'green-bg', 'arrow_left-right_alt', $indicadorTraslados,
+                    'Traslados', $indicadorTraslados == 1 ? 'solicitud por atender' : 'solicitudes por atender'),
+            );
+            foreach ($indicadores as $indicador) { ?>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <a href="<?PHP echo $indicador[0]; ?>" class="indicador">
+                    <div class="info-box <?PHP echo $indicador[1]; ?>">
+                        <i class="<?PHP echo $indicador[2]; ?>"></i>
+                        <div class="count"><?PHP echo $indicador[3]; ?></div>
+                        <div class="title"><?PHP echo $indicador[4]; ?></div>
+                        <div class="detalle"><?PHP echo $indicador[5]; ?></div>
                     </div><!--/.info-box-->
+                </a>
             </div><!--/.col-->
-
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                <div class="info-box brown-bg">
-                    <i class="icon_piechart"></i>
-                    <div class="count"><span style="font-size: xx-small; "><?PHP
-                            //echo $ventastotales;
-                            ?> </span>
-                    </div>
-                    <div class="title"> Reportes de Ventas </div>
-                </div><!--/.info-box-->
-            </div><!--/.col-->
-
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                <div class="info-box dark-bg">
-                    <i class="fa fa-money"></i>
-                    <div class="count"><?PHP
-                        //echo $gastototales;
-                        ?>$us.
-                    </div>
-                    <div class="title">Gastos y Entradas</div>
-                </div><!--/.info-box-->
-            </div><!--/.col-->
-
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                <div class="info-box green-bg">
-                    <i class="fa fa-cubes"></i>
-                    <div class="count"><?PHP
-                        //echo $totalProducto;
-                        ?></div>
-                    <div class="title">Stock de los productos</div>
-                </div><!--/.info-box-->
-            </div><!--/.col-->
+            <?PHP } ?>
 
 
         </div>

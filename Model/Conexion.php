@@ -663,6 +663,22 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
                                           ORDER BY totalVendido DESC", array($fecha . ' 00:00:00', $fecha . ' 23:59:59', (int) $idSucursal));
     }
 
+    // total vendido en un dia en una sucursal (misma fuente que la tabla "Venta Total del Dia")
+    public function getTotalVendidoDia($fecha, $idSucursal)
+    {
+        return (float) $this->ejecutar("SELECT COALESCE(SUM(total), 0) AS total FROM datosventa
+                                               WHERE fechaVenta >= ? AND fechaVenta <= ? AND idSucursal = ?",
+            array($fecha . ' 00:00:00', $fecha . ' 23:59:59', (int) $idSucursal))->fetch_assoc()['total'];
+    }
+
+    // productos del catalogo que no tienen unidades en la sucursal
+    public function contarProductosSinStock($idSucursal)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM producto p
+                                             LEFT JOIN stock_sucursal st ON st.idProducto = p.idproducto AND st.idSucursal = ?
+                                             WHERE COALESCE(st.cantidad, 0) <= 0", array((int) $idSucursal))->fetch_assoc()['c'];
+    }
+
     /******************Funcion SQL para descontar del stock de la sucursal la cantidad vendida de un producto*****************************/
     public function descontarStockProducto($idProducto, $cantidadVendida, $idSucursal)
     {

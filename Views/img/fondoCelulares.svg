@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 280 280">
+  <!-- Fondo de las tarjetas de productos en Ventas: dibujos tenues de celulares y accesorios (se repite como mosaico) -->
+  <rect width="280" height="280" fill="#45474d"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- celular -->
+    <g transform="translate(18 16) rotate(-12 22 40)">
+      <rect x="0" y="0" width="44" height="80" rx="8"/>
+      <rect x="5" y="9" width="34" height="58" rx="2"/>
+      <path d="M17 4h10"/>
+      <circle cx="22" cy="73" r="2.5"/>
+    </g>
+
+    <!-- audifonos de diadema -->
+    <g transform="translate(150 14)">
+      <path d="M8 46V34a32 32 0 0 1 64 0v12"/>
+      <rect x="0" y="44" width="16" height="26" rx="6"/>
+      <rect x="64" y="44" width="16" height="26" rx="6"/>
+    </g>
+
+    <!-- cargador con cable -->
+    <g transform="translate(96 108) rotate(10 20 30)">
+      <rect x="0" y="12" width="40" height="34" rx="6"/>
+      <path d="M12 12V0M28 12V0"/>
+      <path d="M20 46v14c0 12 14 12 14 24s-14 14-14 26"/>
+    </g>
+
+    <!-- reloj inteligente -->
+    <g transform="translate(206 112) rotate(-8 22 40)">
+      <path d="M10 0h24l3 18H7z"/>
+      <rect x="2" y="18" width="40" height="44" rx="10"/>
+      <path d="M7 62l3 18h24l3-18"/>
+      <path d="M22 32v10l7 5"/>
+    </g>
+
+    <!-- audifonos inalambricos con estuche -->
+    <g transform="translate(16 170)">
+      <rect x="0" y="22" width="64" height="44" rx="20"/>
+      <path d="M0 40h64"/>
+      <path d="M18 4c-8 0-10 12-2 14l2 14"/>
+      <path d="M46 4c8 0 10 12 2 14l-2 14"/>
+    </g>
+
+    <!-- tablet -->
+    <g transform="translate(118 196) rotate(6 40 34)">
+      <rect x="0" y="0" width="80" height="64" rx="7"/>
+      <rect x="7" y="7" width="66" height="50" rx="2"/>
+      <circle cx="76" cy="32" r="1.5"/>
+    </g>
+
+    <!-- parlante -->
+    <g transform="translate(222 206)">
+      <rect x="0" y="0" width="42" height="62" rx="8"/>
+      <circle cx="21" cy="38" r="12"/>
+      <circle cx="21" cy="38" r="4"/>
+      <circle cx="21" cy="13" r="4"/>
+    </g>
+
+    <!-- cable usb enrollado -->
+    <g transform="translate(78 30)">
+      <path d="M0 40c0-22 40-22 40 0s-30 20-30 0 20-14 20 0"/>
+      <rect x="36" y="38" width="10" height="16" rx="2"/>
+    </g>
+
+    <!-- funda / segundo celular -->
+    <g transform="translate(250 30) rotate(14 14 26)">
+      <rect x="0" y="0" width="28" height="52" rx="6"/>
+      <circle cx="8" cy="9" r="3"/>
+      <circle cx="8" cy="18" r="3"/>
+    </g>
+
+    <!-- bateria externa -->
+    <g transform="translate(36 118) rotate(-20 18 10)">
+      <rect x="0" y="0" width="46" height="22" rx="5"/>
+      <path d="M46 7v8"/>
+      <path d="M8 6h6M8 16h6M20 6h6M20 16h6"/>
+    </g>
+  </g>
+</svg>

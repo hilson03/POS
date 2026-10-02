@@ -29,7 +29,8 @@ foreach ($productElegido as $product) {
     $precioVenta = $product['precioVenta'];
     $tipo = $product['tipo'];
 }
-$tipoPedido = 'Llevar';
+// tienda de celulares: un solo tipo de venta (antes Mesa/Llevar del restaurante)
+$tipoPedido = 'Venta';
 $urlViews = URL_VIEWS;
 $cantidadEnPedido = $con->getCantidadEnPreventa($idProducto, $usuarioSesion['idSucursalActiva']);
 
