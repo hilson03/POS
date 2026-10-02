@@ -38,6 +38,13 @@
         margin: 0 auto;
     }
 
+    .stock-otras {
+        margin-top: 4px;
+        font-size: 11px;
+        line-height: 1.3;
+        color: #d9edf7;
+    }
+
     .sin-resultados {
         width: 100%;
         padding: 20px;
@@ -89,6 +96,18 @@ while ($product = mysqli_fetch_array($allProducto)) {
                     <span class="label label-success">Stock: <?PHP echo $stock; ?></span>
                 <?PHP } else { ?>
                     <span class="label label-danger">SIN STOCK</span>
+                <?PHP } ?>
+                <?PHP if (!empty($stockOtras[$product['idproducto']])) {
+                    $otrasTiendas = array();
+                    foreach ($stockOtras[$product['idproducto']] as $otra) {
+                        $otrasTiendas[] = htmlspecialchars($otra['nombre']) . ': ' . $otra['cantidad'];
+                    } ?>
+                    <div class="stock-otras" title="Stock en otras tiendas"><?PHP echo implode('<br>', $otrasTiendas); ?></div>
+                    <?PHP if ($esAdministrador && $stock <= 0) { ?>
+                        <a href="Traslados.php?pedir=<?PHP echo $product['idproducto']; ?>" class="btn btn-xs btn-info" style="margin-top: 3px;">
+                            <i class="arrow_left-right_alt"></i> Pedir
+                        </a>
+                    <?PHP } ?>
                 <?PHP } ?>
             </div>
         </div>

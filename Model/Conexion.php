@@ -30,10 +30,14 @@ class conexion{
         }
 
         $stmt->execute();
+        $this->filasAfectadas = $stmt->affected_rows;
         $resultado = $stmt->get_result();
 
         return $resultado === false ? true : $resultado;
     }
+
+    // filas que modifico el ultimo INSERT/UPDATE/DELETE (sirve para saber si un cambio de estado realmente se aplico)
+    private $filasAfectadas = 0;
 
     // convierte un resultado en un arreglo de filas (lo que devolvian las funciones que hacian el while a mano)
     private function filas($resultado)
@@ -73,7 +77,7 @@ class conexion{
 
    public function getMenuMain(){
 
-        return $this->filas($this->ejecutar("SELECT * FROM `menu`"));
+        return $this->filas($this->ejecutar("SELECT * FROM `menu` ORDER BY idmenu"));
 
     }
 
@@ -254,6 +258,156 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
                                                     FROM sucursal s
                                                     LEFT JOIN stock_sucursal st ON st.idSucursal = s.idSucursal AND st.idProducto = ?
                                                     WHERE s.estado = 'Activo' ORDER BY s.nombre", array((int) $idProducto)));
+    }
+
+    // stock disponible en las OTRAS sucursales activas, por producto: [idProducto => [[idSucursal, nombre, cantidad], ...]]
+    public function getStockOtrasSucursales($idSucursal)
+    {
+        $resultado = $this->ejecutar("SELECT st.idProducto, st.idSucursal, s.nombre, st.cantidad
+                                             FROM stock_sucursal st JOIN sucursal s ON s.idSucursal = st.idSucursal
+                                             WHERE st.idSucursal <> ? AND s.estado = 'Activo' AND st.cantidad > 0
+                                             ORDER BY s.nombre", array((int) $idSucursal));
+        $mapa = array();
+        while ($fila = $resultado->fetch_assoc()) {
+            $mapa[$fila['idProducto']][] = array('idSucursal' => (int) $fila['idSucursal'], 'nombre' => $fila['nombre'], 'cantidad' => (int) $fila['cantidad']);
+        }
+        return $mapa;
+    }
+
+//******************************Traslados entre sucursales*******************************************
+    /*
+     * Recorrido de un traslado: Pendiente -> Aprobada (o Rechazada) -> EnCamino -> Recibida; Cancelada si la tienda
+     * que pidio lo anula antes del envio. Cada cambio solo se aplica si el traslado esta en el estado esperado,
+     * asi dos personas no pueden, por ejemplo, enviar el mismo traslado dos veces.
+     */
+    public function crearTraslado($idProducto, $cantidad, $idSucursalOrigen, $idSucursalDestino, $motivo, $idUsuario)
+    {
+        $this->ejecutar("INSERT INTO traslado (idProducto, cantidad, idSucursalOrigen, idSucursalDestino, estado, motivo, idUsuarioSolicita, fechaSolicitud)
+                                VALUES (?, ?, ?, ?, 'Pendiente', ?, ?, NOW())",
+            array((int) $idProducto, (int) $cantidad, (int) $idSucursalOrigen, (int) $idSucursalDestino, $motivo, (int) $idUsuario));
+        return $this->con->insert_id;
+    }
+
+    private function sqlTraslado()
+    {
+        return "SELECT t.*, p.nombreProducto, p.imagen, so.nombre AS sucursalOrigen, sd.nombre AS sucursalDestino,
+                       us.nombre AS usuarioSolicita, ua.nombre AS usuarioAprueba, ue.nombre AS usuarioEnvia, ur.nombre AS usuarioRecibe
+                FROM traslado t
+                LEFT JOIN producto p ON p.idproducto = t.idProducto
+                LEFT JOIN sucursal so ON so.idSucursal = t.idSucursalOrigen
+                LEFT JOIN sucursal sd ON sd.idSucursal = t.idSucursalDestino
+                LEFT JOIN usuarios us ON us.id_usu = t.idUsuarioSolicita
+                LEFT JOIN usuarios ua ON ua.id_usu = t.idUsuarioAprueba
+                LEFT JOIN usuarios ue ON ue.id_usu = t.idUsuarioEnvia
+                LEFT JOIN usuarios ur ON ur.id_usu = t.idUsuarioRecibe";
+    }
+
+    public function getTraslado($idTraslado)
+    {
+        $filas = $this->filas($this->ejecutar($this->sqlTraslado() . " WHERE t.idTraslado = ?", array((int) $idTraslado)));
+        return empty($filas) ? null : $filas[0];
+    }
+
+    // $tipo 'recibidas' = lo que otras tiendas le piden a esta sucursal; 'enviadas' = lo que esta sucursal pidio
+    public function getTrasladosSucursal($idSucursal, $tipo)
+    {
+        $columna = $tipo == 'recibidas' ? 't.idSucursalOrigen' : 't.idSucursalDestino';
+        return $this->filas($this->ejecutar($this->sqlTraslado() . " WHERE $columna = ?
+                     ORDER BY FIELD(t.estado, 'Pendiente', 'Aprobada', 'EnCamino') DESC, t.idTraslado DESC LIMIT 100", array((int) $idSucursal)));
+    }
+
+    // solicitudes que esperan una accion de esta sucursal (para el contador del menu)
+    public function contarTrasladosPorAtender($idSucursal, $esAdministrador)
+    {
+        $estadosOrigen = $esAdministrador ? "'Pendiente', 'Aprobada'" : "'Aprobada'";
+        return (int) $this->ejecutar("SELECT
+                    (SELECT count(*) FROM traslado WHERE idSucursalOrigen = ? AND estado IN ($estadosOrigen))
+                  + (SELECT count(*) FROM traslado WHERE idSucursalDestino = ? AND estado = 'EnCamino') AS c",
+            array((int) $idSucursal, (int) $idSucursal))->fetch_assoc()['c'];
+    }
+
+    public function aprobarTraslado($idTraslado, $idUsuario)
+    {
+        $this->ejecutar("UPDATE traslado SET estado = 'Aprobada', idUsuarioAprueba = ?, fechaAprueba = NOW()
+                                WHERE idTraslado = ? AND estado = 'Pendiente'", array((int) $idUsuario, (int) $idTraslado));
+        return $this->filasAfectadas == 1;
+    }
+
+    public function rechazarTraslado($idTraslado, $idUsuario, $motivoRechazo)
+    {
+        $this->ejecutar("UPDATE traslado SET estado = 'Rechazada', idUsuarioAprueba = ?, fechaAprueba = NOW(), motivoRechazo = ?
+                                WHERE idTraslado = ? AND estado = 'Pendiente'", array((int) $idUsuario, $motivoRechazo, (int) $idTraslado));
+        return $this->filasAfectadas == 1;
+    }
+
+    public function cancelarTraslado($idTraslado)
+    {
+        $this->ejecutar("UPDATE traslado SET estado = 'Cancelada' WHERE idTraslado = ? AND estado IN ('Pendiente', 'Aprobada')",
+            array((int) $idTraslado));
+        return $this->filasAfectadas == 1;
+    }
+
+    /*
+     * Envia un traslado aprobado: descuenta el stock del origen y lo deja EnCamino, todo en una transaccion.
+     * Devuelve '' si salio bien o el motivo por el que no se pudo.
+     */
+    public function enviarTraslado($idTraslado, $idUsuario)
+    {
+        $this->con->begin_transaction();
+        try {
+            $traslado = $this->ejecutar("SELECT * FROM traslado WHERE idTraslado = ? FOR UPDATE", array((int) $idTraslado))->fetch_assoc();
+            if ($traslado === null || $traslado['estado'] != 'Aprobada') {
+                $this->con->rollback();
+                return "El traslado ya no esta aprobado (puede que otra persona ya lo haya enviado o cancelado).";
+            }
+
+            $fila = $this->ejecutar("SELECT cantidad FROM stock_sucursal WHERE idProducto = ? AND idSucursal = ? FOR UPDATE",
+                array((int) $traslado['idProducto'], (int) $traslado['idSucursalOrigen']))->fetch_assoc();
+            $stock = $fila === null ? 0 : (int) $fila['cantidad'];
+            // lo que ya esta en pedidos abiertos de la tienda esta apartado para esas ventas
+            $disponible = $stock - $this->getCantidadEnPreventa($traslado['idProducto'], $traslado['idSucursalOrigen']);
+
+            if ($disponible < (int) $traslado['cantidad']) {
+                $this->con->rollback();
+                return "No hay stock suficiente para enviarlo: disponibles " . max($disponible, 0) . ", se piden " . $traslado['cantidad'] . ".";
+            }
+
+            $this->ejecutar("UPDATE stock_sucursal SET cantidad = cantidad - ? WHERE idProducto = ? AND idSucursal = ?",
+                array((int) $traslado['cantidad'], (int) $traslado['idProducto'], (int) $traslado['idSucursalOrigen']));
+            $this->ejecutar("UPDATE traslado SET estado = 'EnCamino', idUsuarioEnvia = ?, fechaEnvio = NOW() WHERE idTraslado = ?",
+                array((int) $idUsuario, (int) $idTraslado));
+
+            $this->con->commit();
+            return '';
+        } catch (Exception $e) {
+            $this->con->rollback();
+            throw $e;
+        }
+    }
+
+    // confirma la llegada: suma el stock en el destino y lo marca Recibida, todo en una transaccion
+    public function recibirTraslado($idTraslado, $idUsuario)
+    {
+        $this->con->begin_transaction();
+        try {
+            $traslado = $this->ejecutar("SELECT * FROM traslado WHERE idTraslado = ? FOR UPDATE", array((int) $idTraslado))->fetch_assoc();
+            if ($traslado === null || $traslado['estado'] != 'EnCamino') {
+                $this->con->rollback();
+                return "El traslado no esta en camino (puede que ya se haya recibido).";
+            }
+
+            $this->ejecutar("INSERT INTO stock_sucursal (idProducto, idSucursal, cantidad) VALUES (?, ?, ?)
+                                    ON DUPLICATE KEY UPDATE cantidad = cantidad + VALUES(cantidad)",
+                array((int) $traslado['idProducto'], (int) $traslado['idSucursalDestino'], (int) $traslado['cantidad']));
+            $this->ejecutar("UPDATE traslado SET estado = 'Recibida', idUsuarioRecibe = ?, fechaRecibe = NOW() WHERE idTraslado = ?",
+                array((int) $idUsuario, (int) $idTraslado));
+
+            $this->con->commit();
+            return '';
+        } catch (Exception $e) {
+            $this->con->rollback();
+            throw $e;
+        }
     }
 
 //******************************funcion SQL permite traer todos los productos*******************************************
