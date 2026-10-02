@@ -755,30 +755,40 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
     }
 
     /************************Funciones SQL para sacar los reportes de ventas por dia, semana, mes y anio*******************************/
+    /*
+     * Todas reciben $idSucursal: el numero de una sucursal o 0 para todas.
+     * Los rangos de fecha son [desde, hasta): desde incluido, hasta excluido.
+     * Solo cuentan las ventas consolidadas.
+     */
 
-    public function getVentasDia($fechaInicial,$fechaFinal)
+    public function getVentasDia($fechaInicial, $fechaFinal, $idSucursal)
     {
-        return $this->ejecutar("SELECT * FROM `datosventatotal` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
-            array($fechaInicial, $fechaFinal));
+        return $this->ejecutar("SELECT d.*, s.nombre AS nombreSucursal FROM `datosventatotal` d LEFT JOIN sucursal s ON s.idSucursal = d.idSucursal
+                                       WHERE d.fechaVenta >= ? and d.fechaVenta < ? and d.estado = 'Consolidado' and (? = 0 OR d.idSucursal = ?)
+                                       ORDER BY d.fechaVenta",
+            array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal));
     }
 
 
-    public function getVentasTotalesDia($fechaInicial,$fechaFinal)
+    public function getVentasTotalesDia($fechaInicial, $fechaFinal, $idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM `datosventatotal` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
-            array($fechaInicial, $fechaFinal));
+        return $this->ejecutar("SELECT COALESCE(SUM(total), 0) as totalVentas FROM `datosventatotal`
+                                       WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)",
+            array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal));
     }
 
-    public function getVentasProductoByDia($fechaInicial,$fechaFinal)
+    public function getVentasProductoByDia($fechaInicial,$fechaFinal, $idSucursal)
     {
-        return $this->ejecutar("SELECT * FROM `datosventa` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
-            array($fechaInicial, $fechaFinal));
+        return $this->ejecutar("SELECT * FROM `datosventa` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)
+                                       ORDER BY fechaVenta",
+            array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal));
     }
 
-    public function getVentasProductoTotalesDia($fechaInicial,$fechaFinal)
+    public function getVentasProductoTotalesDia($fechaInicial,$fechaFinal, $idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM `datosventa` WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado'",
-            array($fechaInicial, $fechaFinal));
+        return $this->ejecutar("SELECT COALESCE(SUM(total), 0) as totalVentas FROM `datosventa`
+                                       WHERE fechaVenta >= ? and fechaVenta < ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)",
+            array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal));
     }
 
     public function getVentasMensuales()
@@ -787,39 +797,64 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
         return $this->ejecutar("SELECT MonthName(fechaVenta) as mes FROM datosventatotal GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
     }
 
-    public function getSumaTotalVentasByMes($mes, $anio)
+    public function getSumaTotalVentasByMes($mes, $anio, $idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM datosventatotal WHERE MONTH(fechaVenta) = ? AND YEAR(fechaVenta) = ?",
-            array($mes, $anio));
+        return $this->ejecutar("SELECT COALESCE(SUM(total), 0) as totalVentas FROM datosventatotal
+                                       WHERE MONTH(fechaVenta) = ? AND YEAR(fechaVenta) = ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)",
+            array($mes, $anio, (int) $idSucursal, (int) $idSucursal));
     }
 
 
-    public function getTotalVentasByMes($mes, $anio)
+    public function getTotalVentasByMes($mes, $anio, $idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as total, DAY(fechaVenta) as dia FROM datosventatotal WHERE MONTH(fechaVenta) = ? AND YEAR(fechaVenta) = ?
-                                          GROUP BY DAY(fechaVenta) ORDER BY DAY(fechaVenta) ASC", array($mes, $anio));
+        return $this->ejecutar("SELECT SUM(total) as total, DAY(fechaVenta) as dia FROM datosventatotal
+                                       WHERE MONTH(fechaVenta) = ? AND YEAR(fechaVenta) = ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)
+                                       GROUP BY DAY(fechaVenta) ORDER BY DAY(fechaVenta) ASC",
+            array($mes, $anio, (int) $idSucursal, (int) $idSucursal));
     }
 
 
-    public function getTotalVentasByYear($anio)
+    public function getTotalVentasByYear($anio, $idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM datosventatotal WHERE  YEAR(fechaVenta) = ?", array($anio));
+        return $this->ejecutar("SELECT COALESCE(SUM(total), 0) as totalVentas FROM datosventatotal
+                                       WHERE YEAR(fechaVenta) = ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)",
+            array($anio, (int) $idSucursal, (int) $idSucursal));
     }
 
-    public function getTotalVentasByAnio($anio)
+    public function getTotalVentasByAnio($anio, $idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE  YEAR(fechaVenta) = ?
-                                          GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC", array($anio));
+        return $this->ejecutar("SELECT SUM(total) as total, MonthName(fechaVenta) as mes FROM datosventatotal
+                                       WHERE YEAR(fechaVenta) = ? and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)
+                                       GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC",
+            array($anio, (int) $idSucursal, (int) $idSucursal));
     }
 
-    public function getTotalVentas6Meses()
+    public function getTotalVentas6Meses($idSucursal)
     {
-       return $this->ejecutar("SELECT SUM(total) as total, MonthName(fechaVenta) as mes FROM datosventatotal  WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW() GROUP BY MONTH(fechaVenta) ORDER BY MONTH(fechaVenta) ASC");
+       return $this->ejecutar("SELECT SUM(total) as total, MonthName(fechaVenta) as mes FROM datosventatotal
+                                      WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW() and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)
+                                      GROUP BY YEAR(fechaVenta), MONTH(fechaVenta) ORDER BY YEAR(fechaVenta), MONTH(fechaVenta) ASC",
+           array((int) $idSucursal, (int) $idSucursal));
     }
 
-    public function getGrandTotalVentas6Meses()
+    public function getGrandTotalVentas6Meses($idSucursal)
     {
-        return $this->ejecutar("SELECT SUM(total) as totalVentas FROM datosventatotal WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW()");
+        return $this->ejecutar("SELECT COALESCE(SUM(total), 0) as totalVentas FROM datosventatotal
+                                       WHERE fechaVenta BETWEEN date_sub(now(), interval 6 month) AND NOW() and estado = 'Consolidado' and (? = 0 OR idSucursal = ?)",
+            array((int) $idSucursal, (int) $idSucursal));
+    }
+
+    // total vendido por cada sucursal en un rango [desde, hasta), para el desglose de los reportes de "Todas las sucursales"
+    public function getVentasPorSucursal($desde, $hasta, $porProducto = false)
+    {
+        $tabla = $porProducto ? 'datosventa' : 'datosventatotal';
+        return $this->filas($this->ejecutar("SELECT s.nombre, COALESCE(SUM(v.total), 0) AS total
+                                                    FROM sucursal s
+                                                    LEFT JOIN $tabla v ON v.idSucursal = s.idSucursal AND v.estado = 'Consolidado'
+                                                         AND v.fechaVenta >= ? AND v.fechaVenta < ?
+                                                    GROUP BY s.idSucursal, s.nombre
+                                                    HAVING total > 0 OR MAX(s.estado) = 'Activo'
+                                                    ORDER BY s.nombre", array($desde, $hasta)));
     }
 
 }

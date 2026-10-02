@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__ . '/ReporteSucursalPdf.php');
 
 require('fpdf/fpdf.php');
 
@@ -122,6 +123,7 @@ $pdf = new PDF('L', 'mm', 'Letter');
 $pdf->AddPage();
 $pdf->SetMargins(20, 20, 20);
 $pdf->Ln(10);
+reporteEncabezadoSucursal($pdf, $nombreSucursalReporte, $periodoReporte);
 
 
 $pdf->SetWidths(array(15, 40, 25, 25, 25, 40, 35));
@@ -162,6 +164,8 @@ $pdf->Cell(0, 6, 'TOTAL DE VENTAS POR PRODUCTOS : ' . $fila['totalVentas'], 0, 1
 
 $pdf->Ln(10);
 
+
+reporteDesgloseSucursales($pdf, $desgloseSucursales);
 
 $pdf->Output();
 ?>

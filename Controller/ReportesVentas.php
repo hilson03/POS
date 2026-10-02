@@ -50,6 +50,7 @@ $imageUser = $foto;
 
 
 $menuMain = $con->getMenuMain();
+$sucursalesReporte = $con->getSucursales();
 
 
 require("../Views/ReporteViews.php");

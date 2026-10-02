@@ -1,3 +1,19 @@
+<?php
+// administrador: elige una sucursal o todas; vendedor: siempre la suya (el servidor tambien lo valida)
+if ($usuarioSesion['tipo'] == 'ADMINISTRADOR') {
+    $selectorSucursal = '<div class="form-group" style="margin: 0 15px 10px;"><label class="control-label">Sucursal:</label>'
+        . '<select class="form-control input-lg" name="idSucursal"><option value="0">Todas las sucursales</option>';
+    foreach ($sucursalesReporte as $sucursalOpcion) {
+        $selectorSucursal .= '<option value="' . (int) $sucursalOpcion['idSucursal'] . '"'
+            . ($sucursalOpcion['idSucursal'] == $usuarioSesion['idSucursalActiva'] ? ' selected' : '') . '>'
+            . htmlspecialchars($sucursalOpcion['nombre']) . '</option>';
+    }
+    $selectorSucursal .= '</select></div>';
+} else {
+    $selectorSucursal = '<p style="margin: 0 15px 10px;"><i class="icon_building"></i> Sucursal: <strong>'
+        . htmlspecialchars($usuarioSesion['nombreSucursal']) . '</strong></p>';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <?php
@@ -110,18 +126,16 @@ include('Head.php');
                                 </div>
 
                                 <div class="modal-body">
-                                    <?php
-
-                                    $fecha = date("d-m-Y");
-                                    $fechaActual = date("d-m-Y", strtotime($fecha . "0 days"));
-                                    echo 'Fecha Actual : <b> <span style="font-size: 172%; ">';
-                                    echo $fechaActual;
-                                    echo '</font></b>';
-                                    ?>
-                                    <input type="hidden" name="fechaVentas"
-                                           value="<?PHP echo $fechaActual = date("Y-m-d", strtotime($fecha . "- 1 days")); ?>"><br><br>
+                                    <!-- antes mostraba la fecha de hoy pero enviaba la de ayer -->
+                                    <label class="control-label col-lg-2">Fecha:</label>
+                                    <div class="col-lg-10">
+                                        <input class="form-control input-lg m-bot15" type="date" name="fechaVentas" required
+                                               value="<?php echo date('Y-m-d'); ?>">
+                                    </div>
+                                    <br><br><br>
 
                                 </div>
+                                <?php echo $selectorSucursal; ?>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
                                         <strong>Cerrar</strong>
@@ -164,6 +178,7 @@ include('Head.php');
                                     <br>
 
                                 </div>
+                                <?php echo $selectorSucursal; ?>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
                                         <strong>Cerrar</strong>
@@ -210,6 +225,7 @@ include('Head.php');
                                     <br>
 
                                 </div>
+                                <?php echo $selectorSucursal; ?>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
                                         <strong>Cerrar</strong>
@@ -243,42 +259,34 @@ include('Head.php');
 
                                         <select class="form-control input-lg m-bot15"
                                                 name="mes">
-                                            <option value="01">ENERO</option>
-                                            <option value="02">FEBRERO</option>
-                                            <option value="03">MARZO</option>
-                                            <option value="04">ABRIL</option>
-                                            <option value="05">MAYO</option>
-                                            <option value="06">JUNIO</option>
-                                            <option value="07">JULIO</option>
-                                            <option value="08">AGOSTO</option>
-                                            <option value="09">SEPTIEMBRE</option>
-                                            <option value="10">OCTUBRE</option>
-                                            <option value="11">NOVIEMBRE</option>
-                                            <option value="12">DICIEMBRE</option>
+                                            <option value="01"<?php echo '01' == date('m') ? ' selected' : ''; ?>>ENERO</option>
+                                            <option value="02"<?php echo '02' == date('m') ? ' selected' : ''; ?>>FEBRERO</option>
+                                            <option value="03"<?php echo '03' == date('m') ? ' selected' : ''; ?>>MARZO</option>
+                                            <option value="04"<?php echo '04' == date('m') ? ' selected' : ''; ?>>ABRIL</option>
+                                            <option value="05"<?php echo '05' == date('m') ? ' selected' : ''; ?>>MAYO</option>
+                                            <option value="06"<?php echo '06' == date('m') ? ' selected' : ''; ?>>JUNIO</option>
+                                            <option value="07"<?php echo '07' == date('m') ? ' selected' : ''; ?>>JULIO</option>
+                                            <option value="08"<?php echo '08' == date('m') ? ' selected' : ''; ?>>AGOSTO</option>
+                                            <option value="09"<?php echo '09' == date('m') ? ' selected' : ''; ?>>SEPTIEMBRE</option>
+                                            <option value="10"<?php echo '10' == date('m') ? ' selected' : ''; ?>>OCTUBRE</option>
+                                            <option value="11"<?php echo '11' == date('m') ? ' selected' : ''; ?>>NOVIEMBRE</option>
+                                            <option value="12"<?php echo '12' == date('m') ? ' selected' : ''; ?>>DICIEMBRE</option>
                                         </select>
 
                                     </div>
 
                                     <div class="col-sm-4">
 
-                                        <select class="form-control input-lg m-bot15"
-                                                name="anio">
-                                            <option value="2018">2018</option>
-                                            <option value="2019">2019</option>
-                                            <option value="2020">2020</option>
-                                            <option value="2021">2021</option>
-                                            <option value="2022">2022</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2024">2024</option>
-                                            <option value="2025">2025</option>
-                                            <option value="2026">2026</option>
-                                            <option value="2027">2027</option>
-                                            <option value="2028">2028</option>
+                                        <select class="form-control input-lg m-bot15" name="anio">
+                                            <?php for ($a = 2018; $a <= (int) date('Y') + 1; $a++) { ?>
+                                                <option value="<?php echo $a; ?>"<?php echo $a == (int) date('Y') ? ' selected' : ''; ?>><?php echo $a; ?></option>
+                                            <?php } ?>
                                         </select>
                                     </div>
 
                                     <br><br><br><br>
                                 </div>
+                                <?php echo $selectorSucursal; ?>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
                                         <strong>Cerrar</strong>
@@ -287,89 +295,6 @@ include('Head.php');
                                         <strong>Buscar</strong></button>
                                 </div>
                             </div>
-                        </div>
-                    </form>
-                </div>
-
-
-                <div id="utilidad" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                     aria-hidden="true">
-                    <form class="form-validate form-horizontal"  target="_blank" name="form2" action="Reportes.php"
-                          method="GET">
-                        <div class="modal-dialog">
-
-
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                                    </button>
-                                    <h3 id="myModalLabel" align="center">Mostrar Utilidad de la empresa</h3>
-                                </div>
-
-                                <div class="modal-body">
-                                    <label for="responsable" class="control-label col-lg-2">Fecha de Inicio:</label>
-                                    <div class="col-lg-10">
-                                        <input class="form-control input-lg m-bot15" type="date"  name="fechaInicialVentas" autocomplete="off" required value="<?php echo date('Y-m-d'); ?>"></div>
-                                    <br><br><br>
-                                    <br>
-
-                                    <label for="responsable" class="control-label col-lg-2">Fecha de Fin:</label>
-                                    <div class="col-lg-10">
-                                        <input class="form-control input-lg m-bot15" type="date"  name="fechaFinalVentas" autocomplete="off" required value="<?php echo date('Y-m-d'); ?>"></div>
-                                    <br><br><br>
-                                    <br>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
-                                        <strong>Cerrar</strong>
-                                    </button>
-                                    <button name="utilidad" type="submit" data-target="_blank" class="btn btn-primary">
-                                        <strong>Buscar</strong></button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </form>
-                </div>
-
-                <div id="Gastos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                     aria-hidden="true">
-                    <form class="form-validate form-horizontal"  target="_blank" name="form2" action="Reportes.php"
-                          method="GET">
-                        <div class="modal-dialog">
-
-
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                                    </button>
-                                    <h3 id="myModalLabel" align="center">Mostrar Gastos de la empresa</h3>
-                                </div>
-
-                                <div class="modal-body">
-                                    <label for="responsable" class="control-label col-lg-2">Fecha de Inicio:</label>
-                                    <div class="col-lg-10">
-                                        <input class="form-control input-lg m-bot15" type="date"  name="fechaInicialVentas" autocomplete="off" required value="<?php echo date('Y-m-d'); ?>"></div>
-                                    <br><br><br>
-                                    <br>
-
-                                    <label for="responsable" class="control-label col-lg-2">Fecha de Fin:</label>
-                                    <div class="col-lg-10">
-                                        <input class="form-control input-lg m-bot15" type="date"  name="fechaFinalVentas" autocomplete="off" required value="<?php echo date('Y-m-d'); ?>"></div>
-                                    <br><br><br>
-                                    <br>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
-                                        <strong>Cerrar</strong>
-                                    </button>
-                                    <button name="gastos" type="submit" data-target="_blank" class="btn btn-primary">
-                                        <strong>Buscar</strong></button>
-                                </div>
-                            </div>
-
                         </div>
                     </form>
                 </div>
@@ -392,24 +317,16 @@ include('Head.php');
 
                                     <div class="col-sm-8">
 
-                                        <select class="form-control input-lg m-bot15"
-                                                name="anio">
-                                            <option value="2018">2018</option>
-                                            <option value="2019">2019</option>
-                                            <option value="2020">2020</option>
-                                            <option value="2021">2021</option>
-                                            <option value="2022">2022</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2024">2024</option>
-                                            <option value="2025">2025</option>
-                                            <option value="2026">2026</option>
-                                            <option value="2027">2027</option>
-                                            <option value="2028">2028</option>
+                                        <select class="form-control input-lg m-bot15" name="anio">
+                                            <?php for ($a = 2018; $a <= (int) date('Y') + 1; $a++) { ?>
+                                                <option value="<?php echo $a; ?>"<?php echo $a == (int) date('Y') ? ' selected' : ''; ?>><?php echo $a; ?></option>
+                                            <?php } ?>
                                         </select>
                                     </div>
 
                                     <br><br><br><br>
                                 </div>
+                                <?php echo $selectorSucursal; ?>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
                                         <strong>Cerrar</strong>
@@ -439,6 +356,7 @@ include('Head.php');
                                 <div class="modal-body">
 
                                 </div>
+                                <?php echo $selectorSucursal; ?>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">
                                         <strong>Cerrar</strong>
