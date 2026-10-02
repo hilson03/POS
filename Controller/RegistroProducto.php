@@ -56,13 +56,19 @@ if (isset($_POST['nuevo_Producto'])) {
 
 
 if (isset($_GET['idborrar'])) {
-    $idborrar = $_GET['idborrar'];
+    $idborrar = (int) $_GET['idborrar'];
+    $trasladosActivos = $con->contarTrasladosActivosProducto($idborrar);
 
-    $mensaje = "Se elimino  los datos del producto correctamente !!!";
-    $alerta = "alert alert-danger";
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+    if ($trasladosActivos > 0) {
+        // si se borrara, esas unidades quedarian pendientes o en camino sin un producto al que sumarse
+        $updateMensaje = $con->updateMensajeAlert("No se puede eliminar el producto: tiene $trasladosActivos traslado(s) en curso entre tiendas. Terminalos o cancelalos primero.", "alert alert-danger");
+    } else {
+        $mensaje = "Se elimino  los datos del producto correctamente !!!";
+        $alerta = "alert alert-danger";
+        $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 
-    $deleteProducto = $con->deleteProduct($idborrar);
+        $deleteProducto = $con->deleteProduct($idborrar);
+    }
 
 
 }

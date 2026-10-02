@@ -20,15 +20,19 @@ function fechaCorta($fecha)
 // quien hizo cada paso del traslado
 function historialTraslado($t)
 {
-    $pasos = array('Pedido por ' . $t['usuarioSolicita'] . ' el ' . fechaCorta($t['fechaSolicitud']));
+    // si el usuario que hizo el paso ya fue eliminado, su nombre llega vacio
+    $quien = function ($nombre) {
+        return $nombre === null ? '(usuario eliminado)' : $nombre;
+    };
+    $pasos = array('Pedido por ' . $quien($t['usuarioSolicita']) . ' el ' . fechaCorta($t['fechaSolicitud']));
     if ($t['fechaAprueba']) {
-        $pasos[] = ($t['estado'] == 'Rechazada' ? 'Rechazado' : 'Aprobado') . ' por ' . $t['usuarioAprueba'] . ' el ' . fechaCorta($t['fechaAprueba']);
+        $pasos[] = ($t['estado'] == 'Rechazada' ? 'Rechazado' : 'Aprobado') . ' por ' . $quien($t['usuarioAprueba']) . ' el ' . fechaCorta($t['fechaAprueba']);
     }
     if ($t['fechaEnvio']) {
-        $pasos[] = 'Enviado por ' . $t['usuarioEnvia'] . ' el ' . fechaCorta($t['fechaEnvio']);
+        $pasos[] = 'Enviado por ' . $quien($t['usuarioEnvia']) . ' el ' . fechaCorta($t['fechaEnvio']);
     }
     if ($t['fechaRecibe']) {
-        $pasos[] = 'Recibido por ' . $t['usuarioRecibe'] . ' el ' . fechaCorta($t['fechaRecibe']);
+        $pasos[] = 'Recibido por ' . $quien($t['usuarioRecibe']) . ' el ' . fechaCorta($t['fechaRecibe']);
     }
     return $pasos;
 }
@@ -203,8 +207,13 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
                                         <tr>
                                             <td><?PHP echo $t['idTraslado']; ?></td>
                                             <td>
-                                                <img src="<?PHP echo $urlViews . $t['imagen']; ?>" width="40" height="40" style="border-radius: 4px;">
-                                                <?PHP echo htmlspecialchars($t['nombreProducto']); ?>
+                                                <?PHP if ($t['nombreProducto'] === null) { // el producto se elimino del catalogo despues del traslado ?>
+                                                    <img src="<?PHP echo $urlViews; ?>fotoproducto/NoPicture.jpg" width="40" height="40" style="border-radius: 4px;">
+                                                    <em class="text-muted">(producto eliminado)</em>
+                                                <?PHP } else { ?>
+                                                    <img src="<?PHP echo $urlViews . $t['imagen']; ?>" width="40" height="40" style="border-radius: 4px;">
+                                                    <?PHP echo htmlspecialchars($t['nombreProducto']); ?>
+                                                <?PHP } ?>
                                                 <?PHP if ($t['motivo'] != '') { ?><br><small class="text-muted">Motivo: <?PHP echo htmlspecialchars($t['motivo']); ?></small><?PHP } ?>
                                             </td>
                                             <td><strong><?PHP echo (int) $t['cantidad']; ?></strong></td>

@@ -339,6 +339,13 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
             array((int) $idSucursal, (int) $idSucursal))->fetch_assoc()['c'];
     }
 
+    // traslados de un producto que todavia no terminaron (pendientes, aprobados o en camino)
+    public function contarTrasladosActivosProducto($idProducto)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM traslado WHERE idProducto = ? AND estado IN ('Pendiente', 'Aprobada', 'EnCamino')",
+            array((int) $idProducto))->fetch_assoc()['c'];
+    }
+
     public function aprobarTraslado($idTraslado, $idUsuario)
     {
         $this->ejecutar("UPDATE traslado SET estado = 'Aprobada', idUsuarioAprueba = ?, fechaAprueba = NOW()
