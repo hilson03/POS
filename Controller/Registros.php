@@ -53,14 +53,20 @@ if(isset($_POST['nuevo_usuario'])){
 
 if (isset($_GET['idborrar'])) {
 
-        $idUsuario = $_GET['idborrar'];
+        $idUsuario = (int) $_GET['idborrar'];
+        $usuarioBorrar = $con->getOnlyUserData($idUsuario);
 
-        $mensaje = "Se Elimino un usuario";
-        $alerta = "alert alert-danger";
-
-        $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-
-        $deleteUser = $con->deleteUsuario($idUsuario);
+        if (empty($usuarioBorrar)) {
+            $updateMensaje = $con->updateMensajeAlert("Ese usuario ya no existe.", "alert alert-warning");
+        } elseif ($idUsuario === (int) $usuarioSesion['id_usu']) {
+            $updateMensaje = $con->updateMensajeAlert("No puedes eliminar tu propio usuario mientras estas conectado.", "alert alert-danger");
+        } elseif ($usuarioBorrar[0]['tipo'] == 'ADMINISTRADOR' && $con->contarAdministradores() <= 1) {
+            // sin ningun administrador nadie podria entrar a Configuracion ni aprobar traslados
+            $updateMensaje = $con->updateMensajeAlert("No se puede eliminar al ultimo administrador del sistema.", "alert alert-danger");
+        } else {
+            $deleteUser = $con->deleteUsuario($idUsuario);
+            $updateMensaje = $con->updateMensajeAlert("Se elimino al usuario " . $usuarioBorrar[0]['nombre'] . ".", "alert alert-danger");
+        }
 
 
 

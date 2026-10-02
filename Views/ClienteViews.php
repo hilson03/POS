@@ -219,7 +219,7 @@ include('Head.php');
                                 <a href="#a<?php echo $client[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
                                     <i class="icon_check_alt2"></i> </a>
-                                <a href="RegistroCliente.php?idborrar=<?PHP echo $client[0]; ?>"
+                                <a href="RegistroCliente.php?idborrar=<?PHP echo $client[0]; ?>" data-confirmar="al cliente <?php echo htmlspecialchars(trim($client['nombre'] . ' ' . $client['apellido'])); ?>"
                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                 </a>
                             </td>

@@ -98,6 +98,11 @@ class conexion{
     }
 
 
+    public function contarAdministradores()
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM usuarios WHERE tipo = 'ADMINISTRADOR'")->fetch_assoc()['c'];
+    }
+
     public function deleteUsuario($idUsuario)
     {
 
@@ -118,16 +123,24 @@ class conexion{
     }
 
 
+    /*
+     * Mensaje de aviso ("Se registro...", "No se puede...") que se muestra despues de una accion.
+     * Antes se guardaba en una sola fila de la tabla `alerta` compartida por todos, y con varios usuarios a la vez
+     * uno podia ver el aviso de otro; ahora se guarda en la sesion de cada usuario.
+     * Devuelve el mismo formato que antes: una fila con tipoAlerta y mensaje.
+     */
     public function getMensajeAlerta()
     {
-
-        return $this->filas($this->ejecutar("SELECT * FROM `alerta`"));
-
+        $aviso = isset($_SESSION['aviso']) ? $_SESSION['aviso'] : array('tipoAlerta' => '', 'mensaje' => '');
+        return array($aviso);
     }
 //*************esta funcion sirve para ver un mensaje de alerta ya se por que se creo, actualizo o elimino un usuario.**********
     public function updateMensajeAlert($mensaje, $alerta)
     {
-        return $this->ejecutar("UPDATE `alerta` SET `tipoAlerta` = ?, `mensaje` = ? WHERE `alerta`.`alertaId` = 1", array($alerta, $mensaje));
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $_SESSION['aviso'] = array('tipoAlerta' => (string) $alerta, 'mensaje' => (string) $mensaje);
+        }
+        return true;
     }
 
 //******************esta funciones sirven para obtener datos de facturas y actualizarlos al mismo tiempo*******************

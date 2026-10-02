@@ -120,7 +120,7 @@ include('Head.php');
                             <td>
                                 <a href="#a<?php echo $tipoProducto[0]; ?>" role="button" class="btn btn-success"
                                    data-toggle="modal"><i class="icon_check_alt2"></i></a>
-                                <a href="RegistroTipoProducto.php?idborrar=<?php echo $tipoProducto[0]; ?>"
+                                <a href="RegistroTipoProducto.php?idborrar=<?php echo $tipoProducto[0]; ?>" data-confirmar="el tipo de producto <?php echo htmlspecialchars($tipoProducto['tipoproducto']); ?>"
                                    class="btn btn-danger"><i class="icon_close_alt2"></i></a>
                             </td>
                         </tr>
