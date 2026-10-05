@@ -21,7 +21,7 @@
         </tr>
         <tr>
             <td>Precio :  </td>
-            <td><input name="nuevoPrecio"  id="nuevoPrecio"  class="textbox2"  readonly type="text" value="<?php echo $precio; ?>" /></td>
+            <td><input name="nuevoPrecio"  id="nuevoPrecio"  class="textbox2"  readonly type="text" value="<?php echo dinero($precio); ?>" /></td>
         </tr>
         <tr>
             <td height="10"></td>

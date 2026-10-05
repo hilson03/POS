@@ -32,7 +32,7 @@ function reporteDesgloseSucursales($pdf, $desglose)
     $pdf->SetFont('Arial', '', 10);
     foreach ($desglose as $fila) {
         $pdf->Cell(80, 6, textoPdf($fila['nombre']), 'B', 0);
-        $pdf->Cell(40, 6, number_format((float) $fila['total'], 2, '.', ','), 'B', 1, 'R');
+        $pdf->Cell(40, 6, dinero($fila['total']), 'B', 1, 'R');
     }
     $pdf->Ln(4);
 }

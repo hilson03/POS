@@ -1,4 +1,7 @@
 <?php
+// formato de los montos de dinero (dinero()), disponible en todas las pantallas
+require_once(__DIR__ . '/Formato.php');
+
 /*
  * URL_VIEWS: direccion web de la carpeta Views (estilos, iconos, fotos).
  * Se arma sola segun como se entro al sistema, asi funciona igual:

@@ -159,8 +159,8 @@ include('LiteralMoney.php');
                                 echo '<td>'.'</td>';
                                 echo '<td width="40"><span style="color: #2b2b2b;">'.$detallePedido['cantidad'].'</span></td>';
                                 echo '<td width="100"><span style="color: #2b2b2b;">'.$detallePedido['producto'].'</span></td>';
-                                echo '<td width="70"><span style="color: #2b2b2b;">'.$detallePedido['precio'].'</span></td>';
-                                echo '<td width="70"><span style="color: #2b2b2b;">'.$detallePedido['precio']*$detallePedido['cantidad'].'</span></td>';
+                                echo '<td width="70"><span style="color: #2b2b2b;">' . dinero($detallePedido['precio']) . '</span></td>';
+                                echo '<td width="70"><span style="color: #2b2b2b;">' . dinero($detallePedido['precio'] * $detallePedido['cantidad']) . '</span></td>';
                                 echo '<td width="70"><span style="color: #2b2b2b;"></span></td>';
                                 echo '</tr>';
                               }
@@ -177,13 +177,13 @@ include('LiteralMoney.php');
 
                             <tr>
 
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Total a Pagar : <?PHP echo $tipoMoneda; ?>  </b> <?PHP echo $totalAPagar; ?></span></td>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Total a Pagar : <?PHP echo $tipoMoneda; ?>  </b> <?PHP echo dinero($totalAPagar); ?></span></td>
                             </tr>
                             <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Efectivo : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo $efectivo; ?></span></td>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Efectivo : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo dinero($efectivo); ?></span></td>
                             </tr>
                             <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Cambio : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo $cambio; ?></span></td>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Cambio : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo dinero($cambio); ?></span></td>
                             </tr>
                             <tr>
                                 <td colspan="6">&nbsp;<span style="color: #2b2b2b;"> <b>Son : </b>

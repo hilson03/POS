@@ -41,7 +41,7 @@
                         <td>
                             <div class="col-lg-20">
                                 <input class="form-control input-lg m-bot15" type="text" required name="ingreso1"
-                                       readonly value="<?PHP echo $preventa; ?>" onKeyUp="Suma()">
+                                       readonly value="<?PHP echo dinero($preventa); ?>" onKeyUp="Suma()">
 
                             </div>
                         </td>
@@ -125,7 +125,7 @@
         try {
             ingreso1 = (isNaN(parseFloat(ingreso1))) ? 0 : parseFloat(ingreso1);
             ingreso2 = (isNaN(parseFloat(ingreso2))) ? 0 : parseFloat(ingreso2);
-            document.calculadora.resultado.value = ingreso2 - ingreso1;
+            document.calculadora.resultado.value = (ingreso2 - ingreso1).toFixed(2);
 
             if ((ingreso2 - ingreso1) >= 0) {
                 document.calculadora.registrar.disabled = false;

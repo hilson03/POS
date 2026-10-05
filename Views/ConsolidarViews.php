@@ -76,7 +76,7 @@ include('Head.php');
                             <td align="center"><?php echo $ventas['idVentas']; ?></td>
                             <td><?php echo $ventas['fechaVenta']; ?></td>
                             <td><?php echo $ventas['cliente']; ?></td>
-                            <td align="center" ><?php echo $ventas['total']; ?></td>
+                            <td align="center" ><?php echo dinero($ventas['total']); ?></td>
                             <td><?php echo $ventas['codigoControl']; ?></td>
                             <td><?php echo $ventas['estado']; ?></td>
                             <td><?php echo $ventas['comentario']; ?></td>

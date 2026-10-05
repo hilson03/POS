@@ -197,8 +197,8 @@ include('Head.php');
                             <td> <?PHP echo $product['nombreProducto']; ?></td>
                             <td> <?PHP echo $product['nombreProducto']; ?></td>
                             <td> <?PHP echo $product['cantidad']; ?></td>
-                            <td> <?PHP echo $product['precioCompra']; ?></td>
-                            <td> <?PHP echo $product['precioVenta']; ?></td>
+                            <td> <?PHP echo dinero($product['precioCompra']); ?></td>
+                            <td> <?PHP echo dinero($product['precioVenta']); ?></td>
                             <td> <?PHP echo $product['tipo']; ?></td>
                             <td> <?PHP echo $product['fechaRegistro']; ?></td>
                             <td>
@@ -292,7 +292,7 @@ include('Head.php');
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="pcompra" name="pcompra"
                                                                        placeholder="0.00" type="number" step="0.01" min="0" required
-                                                                       value="<?php echo $product['precioCompra']; ?>"/>
+                                                                       value="<?php echo dinero($product['precioCompra']); ?>"/>
                                                             </div>
 
                                                         </div>
@@ -307,7 +307,7 @@ include('Head.php');
                                                                        id="pventa"
                                                                        name="pventa" placeholder="0.00"
                                                                        type="number" step="0.01" min="0.01" required
-                                                                       value="<?php echo $product['precioVenta']; ?>"/>
+                                                                       value="<?php echo dinero($product['precioVenta']); ?>"/>
                                                             </div>
                                                             <label for="pventa"
                                                                    class="control-label col-lg-2">Fecha:</label>

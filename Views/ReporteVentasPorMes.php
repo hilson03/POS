@@ -132,7 +132,7 @@ $pdf->SetFillColor(85, 107, 47);
 $pdf->SetTextColor(255);
 
 for ($i = 0; $i < 1; $i++) {
-    $pdf->Row(array('NRO', 'DIA', 'VENTAS DEL DIA Bs.'));
+    $pdf->Row(array('NRO', 'DIA', 'VENTAS DEL DIA'));
 }
 
 $numfilas = mysqli_num_rows($totalVentasMensual);
@@ -144,11 +144,11 @@ for ($i = 0; $i < $numfilas; $i++) {
     if ($i % 2 == 1) {
         $pdf->SetFillColor(251, 251, 251);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, "Dia : ". $fila['dia'], $fila['total']));
+        $pdf->Row(array($numlista, "Dia : ". $fila['dia'], dinero($fila['total'])));
     } else {
         $pdf->SetFillColor(226, 226, 226);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, "Dia : ". $fila['dia'], $fila['total']));
+        $pdf->Row(array($numlista, "Dia : ". $fila['dia'], dinero($fila['total'])));
     }
 }
 
@@ -160,7 +160,7 @@ $pdf->Ln(10);
 /*******TOTAL DE VENTAS********/
 $fila = mysqli_fetch_array($sumVentasByMes);
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 6, 'TOTAL DE VENTAS: ' . $fila['totalVentas'], 0, 1);
+$pdf->Cell(0, 6, 'TOTAL DE VENTAS: ' . dinero($fila['totalVentas']), 0, 1);
 
 $pdf->Ln(10);
 
