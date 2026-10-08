@@ -203,7 +203,7 @@ include('Head.php');
                                                 <td> <?PHP echo htmlspecialchars($datosUsuarios['nombreSucursal']); ?></td>
                                                 <td>
                                                 <a href="#a<?php echo $datosUsuarios[0]; ?>" role="button" class="btn btn-success" data-toggle="modal">
-                                                    <i class="icon_check_alt2"></i> </a>
+                                                    <i class="fa fa-pencil" title="Editar"></i> </a>
                                                 <a href="Registros.php?idborrar=<?PHP echo $datosUsuarios[0]; ?>" data-confirmar="al usuario <?php echo htmlspecialchars($datosUsuarios['nombre'] . ' (' . $datosUsuarios['login'] . ')'); ?>"
                                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                                 </a>

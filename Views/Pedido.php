@@ -48,7 +48,7 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                 <?PHP
                     echo "<a style=\"cursor:pointer;\"  class='btn btn-success'   
                                onclick=\"editarPreventa('" . $preventa['idProducto'] . "','" . $preventa['tipo'] . "','" . $preventa['idUser'] . "')\">
-                               <i class='icon_pencil-edit'></i></a>";
+                               <i class='fa fa-pencil' title='Editar cantidad'></i></a>";
 
                     echo "<a style=\"cursor:pointer;\"  class='btn btn-danger'
                          onclick=\"deleteOnlyProducto('" . $preventa['idProducto'] . "','" . $preventa['tipo'] . "','" . $preventa['idUser'] . "')\">

@@ -88,7 +88,7 @@ include('Head.php');
 
                                                 <td>
                                                 <a href="#a<?php echo $datosUsuarioFactura[0]; ?>" role="button" class="btn btn-success" data-toggle="modal">
-                                                    <i class="icon_check_alt2"></i> </a>
+                                                    <i class="fa fa-pencil" title="Editar"></i> </a>
                                              
                                             </td>
                                         </tr>

@@ -92,7 +92,7 @@ include('Head.php');
                                     </td>
                                     <td>
                                         <a href="#s<?PHP echo $sucursal['idSucursal']; ?>" role="button" class="btn btn-success" data-toggle="modal">
-                                            <i class="icon_pencil-edit"></i></a>
+                                            <i class="fa fa-pencil" title="Editar"></i></a>
                                     </td>
                                 </tr>
 

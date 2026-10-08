@@ -204,7 +204,7 @@ include('Head.php');
                             <td>
                                 <a href="#a<?php echo $product[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
-                                    <i class="icon_check_alt2"></i> </a>
+                                    <i class="fa fa-pencil" title="Editar"></i> </a>
                                 <a href="RegistroProducto.php?idborrar=<?PHP echo $product[0]; ?>" data-confirmar="el producto <?php echo htmlspecialchars($product['nombreProducto']); ?>"
                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                 </a>
