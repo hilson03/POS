@@ -159,6 +159,7 @@ include('Head.php');
 <!--main content end-->
 
 <?PHP include("LibraryJs.php"); ?>
+<?PHP include(__DIR__ . "/FormaPago.php"); ?>
 
 
 </body>

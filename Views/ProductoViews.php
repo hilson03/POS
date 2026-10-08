@@ -251,10 +251,18 @@ include('Head.php');
                                                                     <?php
                                                                     // MenuTipoProducto.php nunca existio; se usa la misma lista de tipos del formulario de registro
                                                                     mysqli_data_seek($tipoProductos, 0);
+                                                                    $opcionesTipo = '';
+                                                                    $tipoEncontrado = false;
                                                                     while ($tipoProducto = mysqli_fetch_array($tipoProductos)) {
                                                                         $seleccionado = $tipoProducto['tipoproducto'] == $product['tipo'] ? ' selected' : '';
-                                                                        echo '<option value="' . $tipoProducto['tipoproducto'] . '"' . $seleccionado . '>' . $tipoProducto['tipoproducto'] . '</option>';
+                                                                        $tipoEncontrado = $tipoEncontrado || $seleccionado != '';
+                                                                        $opcionesTipo .= '<option value="' . htmlspecialchars($tipoProducto['tipoproducto']) . '"' . $seleccionado . '>' . htmlspecialchars($tipoProducto['tipoproducto']) . '</option>';
                                                                     }
+                                                                    // si el tipo del producto ya se borro de la lista, se muestra igual para no cambiarlo sin querer
+                                                                    if (!$tipoEncontrado && $product['tipo'] != '') {
+                                                                        echo '<option value="' . htmlspecialchars($product['tipo']) . '" selected>' . htmlspecialchars($product['tipo']) . ' (tipo eliminado)</option>';
+                                                                    }
+                                                                    echo $opcionesTipo;
                                                                     ?>
                                                                 </select>
                                                             </div>

@@ -74,7 +74,8 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                         $totalPreventaConsulta = $con->getTotalPreventa($idUsuarioPedido);
                         while ($totalVenta = mysqli_fetch_array($totalPreventaConsulta)) {
                             $userId = $totalVenta['idUser'];
-                            echo dinero($totalVenta['total']);
+                            $totalPedido = dinero($totalVenta['total']);
+                            echo $totalPedido;
                         }
                         ?>
                     </strong>
@@ -88,10 +89,11 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                 <?PHP
                 if (isset($userId)) {
 
-                    echo " <a  data-toggle='modal'  class='btn btn-primary enabled'
-                              href='Factura.php'
-                              data-target='#myModal'>
+                    // ACEPTAR abre la ventana de forma de pago (Views/FormaPago.php); "Efectivo" usa el enlace oculto al cobro
+                    echo " <a style=\"cursor:pointer;\" class='btn btn-primary enabled'
+                              onclick=\"abrirFormaPago('" . $totalPedido . "')\">
                     <i class='icon_check'></i><strong> ACEPTAR</strong> </a>
+                    <a id='abrirCobroEfectivo' data-toggle='modal' href='Factura.php' data-target='#myModal' style='display:none;'></a>
                     <div class='modal fade' id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>      
                        <div class='modal-dialog'>
                            <div class='modal-content'>

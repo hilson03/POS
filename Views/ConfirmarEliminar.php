@@ -1,6 +1,7 @@
 <!--
-    Ventana de confirmacion antes de eliminar. Cualquier enlace con el atributo data-confirmar="texto"
-    muestra esta ventana; solo si se presiona "Si, eliminar" se sigue el enlace.
+    Ventana de confirmacion. Cualquier enlace con el atributo data-confirmar="texto" muestra esta ventana;
+    solo si se confirma se sigue el enlace.
+    data-confirmar-tipo elige el modo: "eliminar" (por defecto, roja) o "consolidar" (verde).
 -->
 <style>
     .confirmar-fondo {
@@ -26,6 +27,10 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         overflow: hidden;
         font-family: Arial, sans-serif;
+    }
+
+    .confirmar-cabecera.verde {
+        background: #2e9d5b;
     }
 
     .confirmar-cabecera {
@@ -66,14 +71,14 @@
 
 <div class="confirmar-fondo" id="confirmarEliminar" hidden>
     <div class="confirmar-caja" role="dialog" aria-modal="true" aria-labelledby="confirmarTitulo">
-        <div class="confirmar-cabecera" id="confirmarTitulo"><i class="icon_error-triangle_alt"></i> Confirmar eliminación</div>
+        <div class="confirmar-cabecera" id="confirmarTitulo"><i class="icon_error-triangle_alt"></i> <span id="confirmarTituloTexto">Confirmar eliminación</span></div>
         <div class="confirmar-cuerpo">
-            ¿Seguro que deseas eliminar <strong id="confirmarNombre"></strong>?
-            <div class="confirmar-aviso">Esta acción no se puede deshacer.</div>
+            <span id="confirmarPregunta">¿Seguro que deseas eliminar</span> <strong id="confirmarNombre"></strong>?
+            <div class="confirmar-aviso" id="confirmarAviso">Esta acción no se puede deshacer.</div>
         </div>
         <div class="confirmar-botones">
             <button type="button" class="btn btn-default" id="confirmarCancelar">Cancelar</button>
-            <button type="button" class="btn btn-danger" id="confirmarAceptar"><i class="icon_trash_alt"></i> Sí, eliminar</button>
+            <button type="button" class="btn btn-danger" id="confirmarAceptar">Sí, eliminar</button>
         </div>
     </div>
 </div>
@@ -82,6 +87,19 @@
     (function () {
         var ventana = document.getElementById('confirmarEliminar');
         var destino = null;
+
+        // textos y color de cada modo
+        var modos = {
+            eliminar: {
+                titulo: 'Confirmar eliminación', pregunta: '¿Seguro que deseas eliminar',
+                aviso: 'Esta acción no se puede deshacer.', boton: 'Sí, eliminar', claseBoton: 'btn btn-danger', verde: false
+            },
+            consolidar: {
+                titulo: 'Confirmar consolidación', pregunta: '¿Deseas consolidar',
+                aviso: 'Una vez consolidada no se puede deshacer y la venta pasará a los reportes.',
+                boton: 'Aceptar', claseBoton: 'btn btn-success', verde: true
+            }
+        };
 
         function cerrar() {
             ventana.hidden = true;
@@ -95,6 +113,13 @@
             }
             evento.preventDefault();
             destino = enlace.getAttribute('href');
+            var modo = modos[enlace.getAttribute('data-confirmar-tipo')] || modos.eliminar;
+            document.getElementById('confirmarTituloTexto').textContent = modo.titulo;
+            document.getElementById('confirmarTitulo').className = 'confirmar-cabecera' + (modo.verde ? ' verde' : '');
+            document.getElementById('confirmarPregunta').textContent = modo.pregunta;
+            document.getElementById('confirmarAviso').textContent = modo.aviso;
+            document.getElementById('confirmarAceptar').textContent = modo.boton;
+            document.getElementById('confirmarAceptar').className = modo.claseBoton;
             document.getElementById('confirmarNombre').textContent = enlace.getAttribute('data-confirmar');
             ventana.hidden = false;
             document.getElementById('confirmarCancelar').focus();

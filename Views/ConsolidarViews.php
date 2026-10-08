@@ -86,6 +86,8 @@ include('Head.php');
                                 <a href="#a<?php echo $ventas[0]; ?>" role="button" class="btn btn-warning"
                                    data-toggle="modal"><i class="icon_pencil-edit_alt"></i></a>
                                 <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>"
+                                   data-confirmar-tipo="consolidar"
+                                   data-confirmar="la venta #<?php echo $ventas['idVentas']; ?> de <?php echo htmlspecialchars($ventas['cliente']); ?> por <?php echo dinero($ventas['total']); ?>"
                                    class="btn btn-success"><i class="icon_box-checked"></i></a>
                             </td>
                         </tr>
