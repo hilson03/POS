@@ -103,7 +103,7 @@ include('Head.php');
                                                             ?>
                                                         </select>
                                                     </div>
-                                                    <label class="col-sm-2 control-label">Codigo:</label>
+                                                    <label class="col-sm-2 control-label">Código/IMEI:</label>
                                                     <div class="col-sm-4">
                                                         <input class="form-control input-lg m-bot15" id="codigo"
                                                                name="codigo" type="text" required/>
@@ -175,7 +175,7 @@ include('Head.php');
                     <thead>
                     <tr>
                         <th>IMAGEN</th>
-                        <th> CODIGO</th>
+                        <th> CÓDIGO/IMEI</th>
                         <th> PRODUCTO</th>
                         <th> DESCRIPCION</th>
                         <th>STOCK (<?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?>)</th>
@@ -266,7 +266,7 @@ include('Head.php');
                                                                     ?>
                                                                 </select>
                                                             </div>
-                                                            <label class="col-sm-2 control-label">Codigo:</label>
+                                                            <label class="col-sm-2 control-label">Código/IMEI:</label>
                                                             <div class="col-sm-4">
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="codigo"
