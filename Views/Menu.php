@@ -4,7 +4,7 @@
         <?php
         $menuEsAdministrador = isset($usuarioSesion) && $usuarioSesion['tipo'] == 'ADMINISTRADOR';
         foreach ($menuMain as $menu){
-            // acceso 'D' = opcion solo para administradores (Configuracion)
+            // acceso 'D' = opcion solo para administradores (Configuracion, Clientes, Productos)
             if ($menu['acceso'] == 'D' && !$menuEsAdministrador) {
                 continue;
             }

@@ -13,7 +13,7 @@
                     <tr>
                         <td>
                             <label>
-                                NIT / CI :
+                                RTN / DNI :
                             </label>
                         </td>
                         <td colspan="7">

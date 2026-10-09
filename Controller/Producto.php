@@ -5,7 +5,7 @@ require_once('Sesion.php');
 
 iniciarSesionSegura();
 
-$usuarioSesion = requerirSesion();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
 
 $usuario = $usuarioSesion['login'];
 $password = '';

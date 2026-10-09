@@ -5,7 +5,7 @@ require_once('Sesion.php');
 require_once('SubirFoto.php');
 
 iniciarSesionSegura();
-$usuarioSesion = requerirSesion();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
 $usuario = $usuarioSesion['login'];
 
 $con = new conexion();

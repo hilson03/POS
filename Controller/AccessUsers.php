@@ -27,11 +27,8 @@ $nombres = $usuarioSesion['nombre'];
 $foto = $usuarioSesion['foto'];
 $usuario = $usuarioSesion['login'];
 
-// los vendedores trabajan directamente en la pantalla de ventas
-if ($tipo != 'ADMINISTRADOR') {
-    header("Location: Ventas.php");
-    exit;
-}
+// los vendedores tambien ven Principal, con los indicadores de lo que les corresponde
+$esAdministrador = $tipo == 'ADMINISTRADOR';
 
 $urlViews = URL_VIEWS;
 
@@ -52,8 +49,8 @@ $ventasDelDia = $con->getVentasDelDia(date('Y-m-d'), $usuarioSesion['idSucursalA
 
 // indicadores de la sucursal activa para los cuadros de arriba
 $indicadorVendidoHoy = $con->getTotalVendidoDia(date('Y-m-d'), $usuarioSesion['idSucursalActiva']);
-$indicadorPorConsolidar = mysqli_num_rows($con->getAllVentas($usuarioSesion['idSucursalActiva']));
+$indicadorPorConsolidar = mysqli_num_rows($con->getAllVentas($usuarioSesion['idSucursalActiva'], $esAdministrador ? 0 : $id_usuario));
 $indicadorSinStock = $con->contarProductosSinStock($usuarioSesion['idSucursalActiva']);
-$indicadorTraslados = $con->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], true);
+$indicadorTraslados = $con->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], $esAdministrador);
 
 require('../Views/Wellcome.php');

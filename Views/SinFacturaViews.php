@@ -29,7 +29,7 @@ include('LiteralMoney.php');
         <td colspan="6"><span style="color: #2b2b2b;"><b>Fecha de Venta : </b> <?PHP echo $fecha; ?></span></td>
     </tr>
     <tr>
-        <td colspan="6"><span style="color: #2b2b2b;"><b>Nit/CI : </b> <?PHP echo $ci; ?></span></td>
+        <td colspan="6"><span style="color: #2b2b2b;"><b>RTN/DNI : </b> <?PHP echo $ci; ?></span></td>
     </tr>
     <tr>
         <td colspan="6"><span style="color: #2b2b2b;"><b>Se&ntilde;or(es): </b> <?PHP echo $nombreCliente; ?></span>
@@ -48,7 +48,7 @@ include('LiteralMoney.php');
         <td width="100"><span style="color: #2b2b2b;"><b>Descripcion</b></span></td>
         <td width="70"><span style="color: #2b2b2b;"><b>Precio</b></span></td>
         <td width="70"><span style="color: #2b2b2b;"><b>Total</b></span></td>
-        <td width="70"><span style="color: #2b2b2b;"><b>Tipo</b></span></td>
+        <td width="70"><span style="color: #2b2b2b;"></span></td>
     </tr>
     <?PHP
     for ($i = 0; $i < $pedido; $i++) {
@@ -92,7 +92,7 @@ include('LiteralMoney.php');
         <td colspan="6">&nbsp;<span style="color: #2b2b2b;"> <b>Son : </b>
                                 <?PHP
                                 $literalMoney = new  EnLetras();
-                                $shoLiteralMoney = strtoupper($literalMoney->valorEnletras($totalAPagar, $contextMoneda));
+                                $shoLiteralMoney = mb_strtoupper($literalMoney->valorEnletras($totalAPagar, $contextMoneda), "UTF-8");
                                 echo "<b>" . $shoLiteralMoney . "</b>";
                                 ?>
                                       </span>

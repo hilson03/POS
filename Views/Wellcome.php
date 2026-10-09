@@ -85,7 +85,7 @@
                     'Vendido hoy', 'Ver reportes de ventas'),
                 array('Consolidar.php', 'brown-bg', 'icon_documents_alt', $indicadorPorConsolidar,
                     'Por consolidar', $indicadorPorConsolidar == 1 ? 'venta pendiente' : 'ventas pendientes'),
-                array('Producto.php', $indicadorSinStock > 0 ? 'dark-bg' : 'green-bg', 'fa fa-cubes', $indicadorSinStock,
+                array($esAdministrador ? 'Producto.php' : 'Ventas.php', $indicadorSinStock > 0 ? 'dark-bg' : 'green-bg', 'fa fa-cubes', $indicadorSinStock,
                     'Sin stock', $indicadorSinStock == 1 ? 'producto agotado aquí' : 'productos agotados aquí'),
                 array('Traslados.php', 'green-bg', 'arrow_left-right_alt', $indicadorTraslados,
                     'Traslados', $indicadorTraslados == 1 ? 'solicitud por atender' : 'solicitudes por atender'),

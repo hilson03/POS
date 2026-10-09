@@ -2,7 +2,7 @@
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
-$usuarioSesion = requerirSesion();
+$usuarioSesion = requerirSesion('ADMINISTRADOR');
 $con = new Conexion();
 
 if(isset($_GET['productos'])){
