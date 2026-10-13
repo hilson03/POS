@@ -28,6 +28,12 @@
     
     <![endif]-->
     <link href="Views/css/legibilidad.css?v=<?php echo filemtime(__DIR__ . '/css/legibilidad.css'); ?>" rel="stylesheet">
+    <style>
+        /* fondo blanco: se quita la imagen de la plantilla (computadora y logo iCont, img/bg-1a.jpg) */
+        body.login-img3-body {
+            background: #ffffff !important;
+        }
+    </style>
 </head>
 
 <body class="login-img3-body">
@@ -52,18 +58,13 @@
             <?php } ?>
             <div class="input-group">
                 <span class="input-group-addon"><i class="icon_profile"></i></span>
-                <input type="text" name="usuario"   class="form-control" placeholder="Nombre de Usuario" autofocus required>
+                <input type="text" name="usuario"   class="form-control" placeholder="Usuario" autofocus required>
             </div>
             <div class="input-group">
                 <span class="input-group-addon"><i class="icon_key_alt"></i></span>
-                <input type="password"  name="password" class="form-control" placeholder="Password" required>
+                <input type="password"  name="password" class="form-control" placeholder="Contraseña" required>
             </div>
-            <label class="checkbox">
-                <input type="checkbox" value="remember-me"> Remember me
-                <span class="pull-right"> <a href="#"> Forgot Password?</a></span>
-            </label>
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
-            <button class="btn btn-info btn-lg btn-block" type="submit">Signup</button>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Ingresar</button>
         </div>
     </form>
 </div>
