@@ -1,6 +1,8 @@
 <?php
 // formato de los montos de dinero (dinero()), disponible en todas las pantallas
 require_once(__DIR__ . '/Formato.php');
+// logos e imagenes personalizadas del negocio (imagenMarca())
+require_once(__DIR__ . '/Marca.php');
 
 /*
  * URL_VIEWS: direccion web de la carpeta Views (estilos, iconos, fotos).

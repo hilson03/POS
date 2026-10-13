@@ -223,6 +223,26 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 //******************************Sucursales*******************************************
+    // imagenes personalizadas (Configuracion > Apariencia) como clave => ruta
+    public function getApariencia()
+    {
+        $valores = array();
+        foreach ($this->filas($this->ejecutar("SELECT clave, valor FROM apariencia")) as $fila) {
+            $valores[$fila['clave']] = $fila['valor'];
+        }
+        return $valores;
+    }
+
+    // $valor vacio = volver a la imagen original
+    public function setApariencia($clave, $valor)
+    {
+        if ($valor === '') {
+            return $this->ejecutar("DELETE FROM apariencia WHERE clave = ?", array($clave));
+        }
+        return $this->ejecutar("INSERT INTO apariencia (clave, valor) VALUES (?, ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)",
+            array($clave, $valor));
+    }
+
     public function getSucursales($soloActivas = false)
     {
         if ($soloActivas) {

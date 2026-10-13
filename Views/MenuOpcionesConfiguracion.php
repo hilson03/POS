@@ -5,4 +5,5 @@
 <li><i class="fa fa-edit"></i><a href="DatosFactura.php">Registros de Datos Factura</a></li>
 <li><i class="fa fa-money"></i><a href="Moneda.php">Tipo de moneda</a></li>
 <li><i class="fa fa-language"></i><a href="Languaje.php">Idioma</a></li>
+<li><i class="fa fa-picture-o"></i><a href="Apariencia.php">Apariencia</a></li>
 
