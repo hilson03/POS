@@ -1,0 +1,54 @@
+/*
+ * Legibilidad de los campos donde se escribe (texto, numeros, fechas, listas).
+ * La plantilla original ponia el texto en gris claro (#8e8e93) y los textos de ejemplo casi blancos (#d7d7d7),
+ * dificiles de leer para personas con poca vista. Se carga al final de Head.php y del login.
+ */
+
+/* lo que el usuario escribe o elige: oscuro y en negrita */
+.form-control,
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([type="hidden"]),
+select,
+textarea,
+.textbox,
+.textbox2 {
+    color: #1f2329 !important;
+    font-weight: 600 !important;
+    border-color: #9aa0a8;
+}
+
+/* texto de ejemplo (placeholder): visible, pero mas claro y sin negrita para no confundirlo con un dato escrito */
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: #6f757d !important;
+    font-weight: 400 !important;
+    opacity: 1;
+}
+
+/* campos que no se pueden modificar (por ejemplo el total a pagar): el dato sigue siendo legible */
+.form-control[readonly],
+.form-control[disabled],
+input[readonly],
+input[disabled],
+select[disabled],
+textarea[readonly] {
+    color: #1f2329 !important;
+    background-color: #eceef1 !important;
+    -webkit-text-fill-color: #1f2329;
+    opacity: 1;
+}
+
+/* opciones de las listas desplegables */
+select option {
+    color: #1f2329;
+    font-weight: 600;
+}
+
+/* borde azul mas visible al escribir en un campo */
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #007aff !important;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.25);
+}

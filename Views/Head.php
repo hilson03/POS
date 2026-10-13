@@ -62,6 +62,9 @@
 
     <link href='<?php echo $urlViews; ?>css/adaptive-modal.css' rel='stylesheet' type='text/css'>
 
+    <!-- legibilidad: texto de los campos oscuro y en negrita (va al final para ganarle a la plantilla) -->
+    <link href="<?php echo $urlViews; ?>css/legibilidad.css?v=<?php echo filemtime(__DIR__ . '/css/legibilidad.css'); ?>" rel="stylesheet">
+
     <!-- letra style -->
     <!-- <link rel="stylesheet" href="css/letra.css">-->
 

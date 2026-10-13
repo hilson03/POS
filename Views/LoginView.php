@@ -27,6 +27,7 @@
     <script src="Views/js/respond.min.js"></script>
     
     <![endif]-->
+    <link href="Views/css/legibilidad.css?v=<?php echo filemtime(__DIR__ . '/css/legibilidad.css'); ?>" rel="stylesheet">
 </head>
 
 <body class="login-img3-body">
