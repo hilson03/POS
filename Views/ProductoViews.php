@@ -110,11 +110,11 @@ include('Head.php');
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label">Descripcion:</label>
+                                                    <label class="col-sm-2 control-label">Nombre del producto:</label>
                                                     <div class="col-sm-10">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="descripcion" name="descripcion" type="text"
-                                                               required/>
+                                                               placeholder="Ej: iPhone 15 Pro Max 256GB Negro" required/>
                                                     </div>
 
                                                 </div>
@@ -177,7 +177,6 @@ include('Head.php');
                         <th>IMAGEN</th>
                         <th> CÓDIGO/IMEI</th>
                         <th> PRODUCTO</th>
-                        <th> DESCRIPCION</th>
                         <th>STOCK (<?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?>)</th>
                         <th> PRECIO COMPRA</th>
                         <th> PRECIO VENTA</th>
@@ -194,8 +193,7 @@ include('Head.php');
                             <td><img src="<?php echo $urlViews . $product['imagen'] ?>" height="50"
                                      width="50"></td>
                             <td> <?PHP echo $product['codigo']; ?></td>
-                            <td> <?PHP echo $product['nombreProducto']; ?></td>
-                            <td> <?PHP echo $product['nombreProducto']; ?></td>
+                            <td> <?PHP echo htmlspecialchars($product['nombreProducto']); ?></td>
                             <td> <?PHP echo $product['cantidad']; ?></td>
                             <td> <?PHP echo dinero($product['precioCompra']); ?></td>
                             <td> <?PHP echo dinero($product['precioVenta']); ?></td>
@@ -275,12 +273,12 @@ include('Head.php');
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label class="col-sm-2 control-label">Descripcion:</label>
+                                                            <label class="col-sm-2 control-label">Nombre del producto:</label>
                                                             <div class="col-sm-10">
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="descripcion" name="descripcion"
                                                                        type="text"
-                                                                       value="<?php echo $product['nombreProducto']; ?>"/>
+                                                                       value="<?php echo htmlspecialchars($product['nombreProducto']); ?>" required/>
                                                             </div>
 
                                                         </div>
