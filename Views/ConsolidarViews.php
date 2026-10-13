@@ -62,6 +62,7 @@ include('Head.php');
                         <th><i class="icon_briefcase_alt"></i> CLIENTE</th>
                         <th><i class="icon_profile"></i> TOTAL Sus.</th>
                         <th><i class="icon_contacts_alt"></i> CODIGO CONTROL</th>
+                        <th><i class="fa fa-credit-card"></i> PAGO</th>
                         <th><i class="icon_contacts_alt"></i> ESTADO</th>
                         <th><i class="icon_contacts_alt"></i> COMMENTARIO</th>
                         <th><i class="icon_cog"></i> ACCIONES</th>
@@ -78,6 +79,7 @@ include('Head.php');
                             <td><?php echo $ventas['cliente']; ?></td>
                             <td align="center" ><?php echo dinero($ventas['total']); ?></td>
                             <td><?php echo $ventas['codigoControl']; ?></td>
+                            <td><?php $esTarjeta = strpos($ventas['formaPago'], 'Tarjeta') !== false; ?><span class="label <?php echo $esTarjeta ? 'label-primary' : 'label-success'; ?>"<?php echo $ventas['referenciaPago'] != '' ? ' title="Aut. ' . htmlspecialchars($ventas['referenciaPago']) . '"' : ''; ?>><?php echo htmlspecialchars($ventas['formaPago']); ?></span></td>
                             <td><?php echo $ventas['estado']; ?></td>
                             <td><?php echo $ventas['comentario']; ?></td>
 

@@ -611,11 +611,28 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $this->ejecutar("SELECT * FROM `dosificacion`");
     }
 
-     public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente, $idUser)
+    // datos del cobro en curso del vendedor; la forma de pago viaja aqui hasta que se registra la venta
+     public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente, $idUser,
+                                            $formaPago = 'Efectivo', $referenciaPago = '', $ultimos4 = '')
     {
-        return $this->ejecutar("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`)
-                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?)",
-            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idcliente, $idUser));
+        return $this->ejecutar("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`,
+                                                   `formaPago`, `referenciaPago`, `ultimos4`)
+                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?, ?, ?, ?)",
+            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idcliente, $idUser, $formaPago, $referenciaPago, $ultimos4));
+    }
+
+    // forma de pago del cobro en curso del vendedor (Efectivo si no hay ninguno)
+    public function getPagoEnCurso($idUser)
+    {
+        $fila = $this->ejecutar("SELECT formaPago, referenciaPago, ultimos4 FROM clientedato WHERE idUser = ? ORDER BY idCliente DESC LIMIT 1",
+            array((int) $idUser))->fetch_assoc();
+        return $fila ? $fila : array('formaPago' => 'Efectivo', 'referenciaPago' => '', 'ultimos4' => '');
+    }
+
+    public function registrarPago($idVenta, $formaPago, $monto, $referencia, $ultimos4, $fecha, $idSucursal, $idUsuario)
+    {
+        return $this->ejecutar("INSERT INTO pago (idVenta, formaPago, monto, referencia, ultimos4, fecha, idSucursal, idUsuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            array((int) $idVenta, $formaPago, (float) $monto, $referencia, $ultimos4, $fecha, (int) $idSucursal, (int) $idUsuario));
     }
 
 
@@ -745,11 +762,14 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
     // ventas pendientes de consolidar de una sucursal; con $idUsuario solo las de ese vendedor (0 = todas, para el administrador)
     public function getAllVentas($idSucursal, $idUsuario = 0)
     {
+        // forma(s) de pago de cada venta; las ventas anteriores a los pagos no tienen fila en `pago` y son efectivo
+        $sql = "SELECT d.*, COALESCE((SELECT GROUP_CONCAT(DISTINCT p.formaPago ORDER BY p.idPago SEPARATOR ' + ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0), 'Efectivo') AS formaPago,
+                       COALESCE((SELECT GROUP_CONCAT(p.referencia ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.referencia <> ''), '') AS referenciaPago
+                FROM datosventatotal d where d.estado = 'NoConsolidado' and d.idSucursal = ?";
         if ((int) $idUsuario > 0) {
-            return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' and idSucursal = ? and idUsuario = ? order by idVentas ASC",
-                array((int) $idSucursal, (int) $idUsuario));
+            return $this->ejecutar($sql . " and d.idUsuario = ? order by d.idVentas ASC", array((int) $idSucursal, (int) $idUsuario));
         }
-        return $this->ejecutar("SELECT * FROM datosventatotal where estado = 'NoConsolidado' and idSucursal = ? order by idVentas ASC", array((int) $idSucursal));
+        return $this->ejecutar($sql . " order by d.idVentas ASC", array((int) $idSucursal));
     }
 
     // fila de la lista de Consolidar (datosventatotal.idVentas)

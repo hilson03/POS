@@ -79,6 +79,17 @@ include('LiteralMoney.php');
                     style="color: #2b2b2b;"><b>Total a Pagar : <?PHP echo $tipoMoneda; ?>  </b> <?PHP echo dinero($totalAPagar); ?></span>
         </td>
     </tr>
+<?PHP if (isset($formaPago) && $formaPago == 'Tarjeta') { ?>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Tarjeta</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Autorizaci&oacute;n : </b> <?PHP echo htmlspecialchars($referenciaPago); ?><?PHP if ($ultimos4 != '') { echo ' &nbsp; <b>Tarjeta :</b> **** ' . htmlspecialchars($ultimos4); } ?></span></td>
+                            </tr>
+<?PHP } else { ?>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Efectivo</span></td>
+                            </tr>
     <tr>
         <td colspan="6"><span
                     style="color: #2b2b2b;"><b>Efectivo : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo dinero($efectivo); ?></span>
@@ -88,6 +99,7 @@ include('LiteralMoney.php');
         <td colspan="6"><span style="color: #2b2b2b;"><b>Cambio : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo dinero($cambio); ?></span>
         </td>
     </tr>
+<?PHP } ?>
     <tr>
         <td colspan="6">&nbsp;<span style="color: #2b2b2b;"> <b>Son : </b>
                                 <?PHP

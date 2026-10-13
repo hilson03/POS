@@ -1,6 +1,6 @@
 <!--
     Ventana para elegir la forma de pago antes del cobro (se abre con el boton ACEPTAR del pedido).
-    Efectivo sigue al cobro de siempre (Factura.php). Tarjeta y Transferencia se muestran pero todavia no funcionan.
+    Efectivo y Tarjeta abren el mismo cobro (Factura.php) en su modo. Transferencia se muestra pero todavia no funciona.
     Va fija en la pantalla de Ventas porque el pedido se recarga por ajax y ahi no se ejecutan scripts.
 -->
 <style>
@@ -149,8 +149,7 @@
                 Efectivo
                 <small>Continuar al cobro</small>
             </button>
-            <button type="button" class="pago-opcion" disabled>
-                <span class="pago-proximamente">Próximamente</span>
+            <button type="button" class="pago-opcion" id="pagoTarjeta">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#3b6fd8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>
                 </svg>
@@ -188,6 +187,15 @@
         document.getElementById('pagoEfectivo').addEventListener('click', function () {
             cerrar();
             var enlaceCobro = document.getElementById('abrirCobroEfectivo');
+            if (enlaceCobro) {
+                enlaceCobro.click();
+            }
+        });
+
+        // tarjeta: el mismo cobro, abierto en modo tarjeta (enlace oculto del pedido que carga Factura.php?forma=tarjeta)
+        document.getElementById('pagoTarjeta').addEventListener('click', function () {
+            cerrar();
+            var enlaceCobro = document.getElementById('abrirCobroTarjeta');
             if (enlaceCobro) {
                 enlaceCobro.click();
             }

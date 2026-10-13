@@ -19,6 +19,22 @@ $efectivo =$_POST['ingreso2'];
 $cambio=$_POST['resultado'];
 $fechaVenta = date("Y-m-d H:i:s");
 
+// forma de pago: con tarjeta se cobra el total exacto, sin cambio, y se guarda el numero de autorizacion
+$formaPago = (isset($_POST['formaPago']) && $_POST['formaPago'] == 'Tarjeta') ? 'Tarjeta' : 'Efectivo';
+$referenciaPago = '';
+$ultimos4 = '';
+if ($formaPago == 'Tarjeta') {
+    $referenciaPago = substr(preg_replace('/[^A-Za-z0-9\-]/', '', isset($_POST['referenciaPago']) ? $_POST['referenciaPago'] : ''), 0, 20);
+    $ultimos4 = (isset($_POST['ultimos4']) && preg_match('/^[0-9]{4}$/', $_POST['ultimos4'])) ? $_POST['ultimos4'] : '';
+    if ($referenciaPago == '') {
+        $con->updateMensajeAlert("Para cobrar con tarjeta escribe el numero de autorizacion del comprobante.", "alert alert-danger");
+        header("Location: Ventas.php?estado='Activo'");
+        exit;
+    }
+    $efectivo = $totalAPagar;
+    $cambio = 0;
+}
+
 $searchClient = $con->getClienteDatos($ci);
 
 if(empty($searchClient)){
@@ -47,7 +63,8 @@ if(!empty($searchClient)){
 $usuarioVenta = $con->getOnlyUserData($usuarioSesion['id_usu']);
 $idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
 
-$registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta);
+$registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta,
+    $formaPago, $referenciaPago, $ultimos4);
 
 
 $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
@@ -88,6 +105,9 @@ $datosFactura = $con-> getDatosFactura();
      $totalApagar = $datosCliente['totalApagar'];
      $efectivo = $datosCliente['efectivo'];
      $cambio = $datosCliente['cambio'];
+     $formaPago = $datosCliente['formaPago'];
+     $referenciaPago = $datosCliente['referenciaPago'];
+     $ultimos4 = $datosCliente['ultimos4'];
  }
 
  $pedidoTotalPreventa = $con->getPedidoTotalForFactura($idUsuarioVenta);

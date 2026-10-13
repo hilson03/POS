@@ -78,6 +78,9 @@ if (isset($_GET['RegistarVenta'])) {
     }
 
 
+    $formaPago = 'Efectivo';
+    $referenciaPago = '';
+    $ultimos4 = '';
     $obtenerDatosCliente = $con->getDataCliente($id_usuario);
     foreach ($obtenerDatosCliente as $datosCliente) {
         $nombreCliente = $datosCliente['nombre'];
@@ -86,6 +89,9 @@ if (isset($_GET['RegistarVenta'])) {
         $totalApagar = $datosCliente['totalApagar'];
         $efectivo = $datosCliente['efectivo'];
         $cambio = $datosCliente['cambio'];
+        $formaPago = $datosCliente['formaPago'];
+        $referenciaPago = $datosCliente['referenciaPago'];
+        $ultimos4 = $datosCliente['ultimos4'];
     }
 
     $getDatosFecha = explode("-", $fechaLimite);
@@ -102,6 +108,11 @@ if (isset($_GET['RegistarVenta'])) {
 
     // se usa el id de la venta recien creada (antes se tomaba la ultima de la tabla y podia ser la de otro vendedor)
     $idVentaNueva = $con->registrarVenta($nombreClienteDato, $ci, $totalAPagar, $efectivo, $cambio, $idClientei, $codigoControl, $fechaVenta, $id_usuario, $usuarioSesion['idSucursalActiva']);
+
+    // el pago de la venta con su forma (hoy uno por venta; la tabla admite varios para un futuro pago mixto)
+    if ($idVentaNueva > 0) {
+        $con->registrarPago($idVentaNueva, $formaPago, $totalAPagar, $referenciaPago, $ultimos4, $fechaVenta, $usuarioSesion['idSucursalActiva'], $id_usuario);
+    }
 
     $getDataClienteVenta = $con->getDatosVenta($idVentaNueva);
 

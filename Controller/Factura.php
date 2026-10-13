@@ -29,5 +29,8 @@ foreach ($getTotalPreventa as $preVentaTotal){
     $preventa = $preVentaTotal['total'];
 }
 
+// forma de pago elegida en la ventana "¿Como va a pagar el cliente?" (el formulario de cobro cambia segun ella)
+$formaPago = (isset($_GET['forma']) && $_GET['forma'] == 'tarjeta') ? 'Tarjeta' : 'Efectivo';
+
 require('../Views/FacturaViews.php');
 ?>

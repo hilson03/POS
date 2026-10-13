@@ -28,7 +28,10 @@ foreach ($searchClient as $cliente) {
 $usuarioVenta = $con->getOnlyUserData($usuarioSesion['id_usu']);
 $idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
 
-$registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta);
+// esta pantalla vuelve a guardar los datos del cobro: se conserva la forma de pago elegida en el cobro
+$pagoEnCurso = $con->getPagoEnCurso($idUsuarioVenta);
+$registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta,
+    $pagoEnCurso['formaPago'], $pagoEnCurso['referenciaPago'], $pagoEnCurso['ultimos4']);
 
 
 $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
@@ -69,6 +72,9 @@ $datosFactura = $con-> getDatosFactura();
      $totalApagar = $datosCliente['totalApagar'];
      $efectivo = $datosCliente['efectivo'];
      $cambio = $datosCliente['cambio'];
+     $formaPago = $datosCliente['formaPago'];
+     $referenciaPago = $datosCliente['referenciaPago'];
+     $ultimos4 = $datosCliente['ultimos4'];
  }
 
  $pedidoTotalPreventa = $con->getPedidoTotalForFactura($idUsuarioVenta);
