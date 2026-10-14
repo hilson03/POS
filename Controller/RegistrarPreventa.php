@@ -2,6 +2,7 @@
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
+require_once('PagoMixto.php');
 require_once('Codigo_control.class.php');
 
 iniciarSesionSegura();
@@ -14,17 +15,35 @@ $password = '';
 
 $ci =$_POST['ci'];
 
-$totalAPagar =$_POST['ingreso1'];
-$efectivo =$_POST['ingreso2'];
-$cambio=$_POST['resultado'];
+$totalAPagar = isset($_POST['ingreso1']) ? $_POST['ingreso1'] : 0;
+$efectivo = isset($_POST['ingreso2']) ? $_POST['ingreso2'] : 0;
+$cambio = isset($_POST['resultado']) ? $_POST['resultado'] : 0;
 $fechaVenta = date("Y-m-d H:i:s");
 
 // forma de pago: con tarjeta o transferencia se cobra el total exacto, sin cambio, y se guardan los datos del comprobante
-$formaPago = (isset($_POST['formaPago']) && in_array($_POST['formaPago'], array('Tarjeta', 'Transferencia'))) ? $_POST['formaPago'] : 'Efectivo';
+$formaPago = (isset($_POST['formaPago']) && in_array($_POST['formaPago'], array('Tarjeta', 'Transferencia', 'Mixto'))) ? $_POST['formaPago'] : 'Efectivo';
 $referenciaPago = '';
 $ultimos4 = '';
 $bancoDestino = '';
 $nombreTransfirio = '';
+$pagosDetalle = '';
+if ($formaPago == 'Mixto') {
+    // el total se toma del pedido guardado (no del formulario) para que las partes cuadren con lo que realmente se vende
+    $totalAPagar = 0;
+    foreach ($con->getTotalPreventa($usuarioSesion['id_usu']) as $preVentaTotal) {
+        $totalAPagar = $preVentaTotal['total'];
+    }
+    $cobroMixto = armarPagoMixto($con, $_POST, $totalAPagar, $faltante);
+    if ($cobroMixto === null) {
+        $con->updateMensajeAlert("Para cobrar con pago mixto " . $faltante . ".", "alert alert-danger");
+        header("Location: Ventas.php?estado='Activo'");
+        exit;
+    }
+    $pagosDetalle = json_encode($cobroMixto['partes']);
+    // efectivo = todo lo que entrego el cliente; asi efectivo - cambio sigue siendo el total, como en las otras formas
+    $efectivo = round($totalAPagar + $cobroMixto['cambio'], 2);
+    $cambio = $cobroMixto['cambio'];
+}
 if ($formaPago == 'Transferencia') {
     $referenciaPago = substr(preg_replace('/[^A-Za-z0-9\-]/', '', isset($_POST['referenciaPago']) ? $_POST['referenciaPago'] : ''), 0, 30);
     $cuenta = $con->getCuentaBancaria(isset($_POST['idCuentaDestino']) ? (int) $_POST['idCuentaDestino'] : 0);
@@ -60,20 +79,28 @@ if ($formaPago == 'Tarjeta') {
     $cambio = 0;
 }
 
-$searchClient = $con->getClienteDatos($ci);
-
-if(empty($searchClient)){
-
-    $nombreNewCliente = $_POST['nombreNewCliente'];
-
-    $registrarNewProveedor = $con->registerNewCliente("img/user.png","",$nombreNewCliente,"","","","",$fechaVenta,$ci);
-    $searchClient = $con->getClienteDatos($ci);
-    foreach ($searchClient as $cliente) {
-        $nombreClienteDato = $cliente['apellido'];
-    }
+/*
+ * Cliente: en efectivo el RTN/DNI y el nombre son opcionales; sin ellos la venta sale a "Consumidor Final"
+ * y no se registra ningun cliente. Tarjeta, transferencia y mixto siguen pidiendo el RTN/DNI.
+ */
+$ci = trim((string) $ci);
+$nombreNewCliente = isset($_POST['nombreNewCliente']) ? trim((string) $_POST['nombreNewCliente']) : '';
+if ($ci == '' && $formaPago != 'Efectivo') {
+    $con->updateMensajeAlert("Escribe el RTN/DNI del cliente (solo en pagos en efectivo puede quedar vacío).", "alert alert-danger");
+    header("Location: Ventas.php?estado='Activo'");
+    exit;
 }
 
-if(!empty($searchClient)){
+$nombreClienteDato = CONSUMIDOR_FINAL;
+if ($ci != '') {
+    $searchClient = $con->getClienteDatos($ci);
+
+    // cliente nuevo: se registra si se escribio su nombre (o si no es efectivo, como antes)
+    if (empty($searchClient) && ($nombreNewCliente != '' || $formaPago != 'Efectivo')) {
+        $registrarNewProveedor = $con->registerNewCliente("img/user.png","",$nombreNewCliente,"","","","",$fechaVenta,$ci);
+        $searchClient = $con->getClienteDatos($ci);
+    }
+
     foreach ($searchClient as $cliente) {
         $nombreClienteDato = $cliente['apellido'];
     }
@@ -89,7 +116,7 @@ $usuarioVenta = $con->getOnlyUserData($usuarioSesion['id_usu']);
 $idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
 
 $registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta,
-    $formaPago, $referenciaPago, $ultimos4, $bancoDestino, $nombreTransfirio);
+    $formaPago, $referenciaPago, $ultimos4, $bancoDestino, $nombreTransfirio, $pagosDetalle);
 
 
 $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
@@ -135,6 +162,7 @@ $datosFactura = $con-> getDatosFactura();
      $ultimos4 = $datosCliente['ultimos4'];
      $bancoDestino = $datosCliente['bancoDestino'];
      $nombreTransfirio = $datosCliente['nombreTransfirio'];
+     $pagosDetalle = $datosCliente['pagosDetalle'];
  }
 
  $pedidoTotalPreventa = $con->getPedidoTotalForFactura($idUsuarioVenta);
@@ -160,7 +188,7 @@ $fechaLimiteDia=$getDatosFecha[2];
 $fechaLimiteEmision = $fechaLimiteDia.' / '.$fechaLimiteMes.' / '.$fechaLimiteAnio;
 
 
-date_default_timezone_set("America/Caracas" ) ;
+date_default_timezone_set("America/Tegucigalpa");
 $dateInicial= date('Y-m-d');
 $dateFinal= date('Y-m-d');
 $getNumeroFicha = $con->getNumFicha($dateInicial,$dateFinal);

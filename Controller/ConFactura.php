@@ -2,6 +2,7 @@
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
+require_once('PagoMixto.php');
 require_once('Codigo_control.class.php');
 iniciarSesionSegura();
 $con = new conexion();
@@ -18,7 +19,9 @@ $efectivo =$_GET['ingreso2'];
 $cambio=$_GET['resultado'];
 $fechaVenta = date("Y-m-d H:i:s");
 
-$searchClient = $con->getClienteDatos($ci);
+// sin RTN/DNI (o sin cliente registrado con ese numero) la venta es de Consumidor Final
+$nombreClienteDato = CONSUMIDOR_FINAL;
+$searchClient = trim($ci) == '' ? array() : $con->getClienteDatos($ci);
 
 foreach ($searchClient as $cliente) {
     $nombreClienteDato = $cliente['apellido'];
@@ -31,7 +34,8 @@ $idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
 // esta pantalla vuelve a guardar los datos del cobro: se conserva la forma de pago elegida en el cobro
 $pagoEnCurso = $con->getPagoEnCurso($idUsuarioVenta);
 $registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta,
-    $pagoEnCurso['formaPago'], $pagoEnCurso['referenciaPago'], $pagoEnCurso['ultimos4'], $pagoEnCurso['bancoDestino'], $pagoEnCurso['nombreTransfirio']);
+    $pagoEnCurso['formaPago'], $pagoEnCurso['referenciaPago'], $pagoEnCurso['ultimos4'], $pagoEnCurso['bancoDestino'], $pagoEnCurso['nombreTransfirio'],
+    $pagoEnCurso['pagosDetalle']);
 
 
 $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
@@ -77,6 +81,7 @@ $datosFactura = $con-> getDatosFactura();
      $ultimos4 = $datosCliente['ultimos4'];
      $bancoDestino = $datosCliente['bancoDestino'];
      $nombreTransfirio = $datosCliente['nombreTransfirio'];
+     $pagosDetalle = $datosCliente['pagosDetalle'];
  }
 
  $pedidoTotalPreventa = $con->getPedidoTotalForFactura($idUsuarioVenta);
@@ -101,7 +106,7 @@ $fechaLimiteDia=$getDatosFecha[2];
 
 $fechaLimiteEmision = $fechaLimiteDia.' / '.$fechaLimiteMes.' / '.$fechaLimiteAnio;
 
-date_default_timezone_set("America/Caracas" ) ;
+date_default_timezone_set("America/Tegucigalpa");
 $dateInicial= date('Y-m-d');
 $dateFinal= date('Y-m-d');
 $getNumeroFicha = $con->getNumFicha($dateInicial,$dateFinal);

@@ -43,36 +43,49 @@ include('LiteralMoney.php');
                     </li>
                     <li>
                         <i class="fa fa-print"></i><a
-                            href="#">Vista Previa Facturacion</a>
+                            href="#">Vista previa del comprobante</a>
                     </li>
                     <li>
                         <i class="fa fa-save"></i><a
-                                href='RegistrarVenta.php?RegistarVenta="RegistarVenta"&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
-                             Nuevo Pedido </a></a>
+                                href="RegistrarVenta.php?RegistarVenta=1&<?PHP echo 'ci=' . urlencode($ci) . '&ingreso1=' . urlencode($totalApagar) . '&ingreso2=' . urlencode($efectivo) . '&resultado=' . urlencode($cambio); ?>">
+                             Guardar venta</a>
                     </li>
                 </ol>
             </div>
         </div>
 
-        <table>
-            <tr>
-                <td width="150" align="center">
-                    <a class="btnPrint"
-                       href='ConFactura.php?ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
-                        <img src="<?php echo $urlViews; ?>/ticket/images/impresora.png" alt="FACTURA"/><br>FACTURA </a>
-                </td>
-
-                <td width="150" align="center">
-                    <a class="btnPrint"
-                       href='SinFactura.php?ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
-                        <img src="<?php echo $urlViews; ?>/ticket/images/impresora.png" alt="FACTURA"/><br>SIN FACTURA
-                    </a></td>
-                <td width="150" align="center"><a
-                        href='RegistrarVenta.php?RegistarVenta="RegistarVenta"&ci=<?PHP echo $ci; ?>&ingreso1=<?PHP echo $totalApagar; ?>&ingreso2=<?PHP echo $efectivo; ?>&resultado=<?PHP echo $cambio; ?>'>
-                        <img src="<?php echo $urlViews; ?>/ticket/images/factura.png" alt="FACTURA"/><br> NUEVO
-                        PEDIDO </a></td>
-            </tr>
-        </table>
+        <?PHP $datosCobro = 'ci=' . urlencode($ci) . '&ingreso1=' . urlencode($totalApagar) . '&ingreso2=' . urlencode($efectivo) . '&resultado=' . urlencode($cambio); ?>
+        <style>
+            /* acciones del comprobante: iconos de la fuente del sistema (las imagenes del original nunca existieron) */
+            .acciones-venta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+            .accion-venta {
+                display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: 8px;
+                color: #fff !important; text-decoration: none !important; min-width: 230px;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); transition: transform 0.15s, box-shadow 0.15s;
+            }
+            .accion-venta:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2); }
+            .accion-venta i { font-size: 30px; width: 34px; text-align: center; }
+            .accion-venta strong { display: block; font-size: 15px; letter-spacing: 0.3px; }
+            .accion-venta small { display: block; font-size: 12px; opacity: 0.9; }
+            .accion-venta.imprimir { background: #3b6fd8; }
+            .accion-venta.ticket { background: #6c757d; }
+            .accion-venta.guardar { background: #2e9d5b; }
+        </style>
+        <div class="acciones-venta">
+            <a class="btnPrint accion-venta imprimir" href="ConFactura.php?<?PHP echo $datosCobro; ?>">
+                <i class="fa fa-print"></i>
+                <span><strong>IMPRIMIR COMPROBANTE</strong><small>Con los datos de la tienda</small></span>
+            </a>
+            <a class="btnPrint accion-venta ticket" href="SinFactura.php?<?PHP echo $datosCobro; ?>">
+                <i class="fa fa-file-text-o"></i>
+                <span><strong>TICKET SIMPLE</strong><small>Sin los datos de la tienda</small></span>
+            </a>
+            <!-- la venta se registra aqui (descuenta stock y pasa a Consolidar); imprimir no la guarda -->
+            <a class="accion-venta guardar" href="RegistrarVenta.php?RegistarVenta=1&<?PHP echo $datosCobro; ?>">
+                <i class="fa fa-check-circle"></i>
+                <span><strong>GUARDAR VENTA</strong><small>Registra la venta y empieza otro pedido</small></span>
+            </a>
+        </div>
         <br>
 
         <div class="row">
@@ -81,191 +94,13 @@ include('LiteralMoney.php');
                     <div class="col-md-6"></div>
                     <div class="col-md-6">
 
-                        <table align="left" bgcolor="#ffffff" class="breadcrumb">
-
-                            <tbody>
-                            <tr>
-                                <td colspan="6" align="Center">
-                                    <span style="color: #2b2b2b;">
-                                    <?PHP
-                                    echo '
-                                    <span style="font-size: x-large; "> <div style="text-align: center;"> <strong>'.$razon.'</strong>  </div></span>';
-                                    echo '<div style="text-align: center;">De: '.$propietario.' </div> ';
-                                    echo '<div style="text-align: center;">Casa Matriz: '.$direccion.'</div> ';
-                                    echo '<div style="text-align: center;">   N&ordm; '.$nro.' - Telefono : '.$telefono.'  </div> ';
-                                    echo '<div style="text-align: center;">  TEUPASENTI</div> ';
-                                    echo '<div style="text-align: center;">  FACTURA ORIGINAL</div> ';
-                                    echo ' -----------------------------------------------------------------------------------';
-                                    echo '<br>';
-                                    ?>
-                                   </span>
-                                </td>
-                            </tr>
-
-                            <tr>
-
-                                <td colspan="3"><span style="color: #2b2b2b;"><b>NIT : </b></span></td>
-                                <td colspan="3"><span style="color: #2b2b2b;"><?PHP echo $nit?></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3"><span style="color: #2b2b2b;"><b>N&ordm; FACTURA : </b></span></td>
-                                <td colspan="3"><span style="color: #2b2b2b;"><?PHP echo $factura?></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3"><span style="color: #2b2b2b;"><b>N&ordm; AUTORIZACION : </b></span></td>
-                                <td colspan="3"><span style="color: #2b2b2b;"><?PHP echo $autorizacion?></span></td>
-                            </tr>
-
-                            <tr>
-
-                                <td colspan="6" align="center">
-                                    <span style="color: #2b2b2b;">    -----------------------------------------------------------------------------------</span>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Fecha de Venta : </b> <?PHP echo $fecha; ?></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>RTN/DNI : </b> <?PHP echo $ci; ?></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Se&ntilde;or(es): </b> <?PHP echo $nombreCliente; ?></span></td>
-                            </tr>
-
-                            <tr>
-
-                                <td colspan="6" align="center">
-                                    <span style="color: #2b2b2b;">    -----------------------------------------------------------------------------------</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="10"></td>
-                                <td width="40"><span style="color: #2b2b2b;"><b>Cant.</b></span></td>
-                                <td width="100"><span style="color: #2b2b2b;"><b>Descripcion</b></span></td>
-                                <td width="70"><span style="color: #2b2b2b;"><b>Precio</b></span></td>
-                                <td width="70"><span style="color: #2b2b2b;"><b>Total</b></span></td>
-                                <td width="70"><span style="color: #2b2b2b;"></span></td>
-                            </tr>
-                            <?PHP
-                            for ($i=0; $i<$pedido; $i++){
-                                echo '<tr>';
-                                $detallePedido = mysqli_fetch_array($pedidoTotalPreventa);
-                                echo '<td>'.'</td>';
-                                echo '<td width="40"><span style="color: #2b2b2b;">'.$detallePedido['cantidad'].'</span></td>';
-                                echo '<td width="100"><span style="color: #2b2b2b;">'.$detallePedido['producto'].'</span></td>';
-                                echo '<td width="70"><span style="color: #2b2b2b;">' . dinero($detallePedido['precio']) . '</span></td>';
-                                echo '<td width="70"><span style="color: #2b2b2b;">' . dinero($detallePedido['precio'] * $detallePedido['cantidad']) . '</span></td>';
-                                echo '<td width="70"><span style="color: #2b2b2b;"></span></td>';
-                                echo '</tr>';
-                              }
-
-
-                            ?>
-
-                            <tr>
-
-                                <td colspan="6" align="center">
-                                    <span style="color: #2b2b2b;">    -----------------------------------------------------------------------------------</span>
-                                </td>
-                            </tr>
-
-                            <tr>
-
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Total a Pagar : <?PHP echo $tipoMoneda; ?>  </b> <?PHP echo dinero($totalAPagar); ?></span></td>
-                            </tr>
-<?PHP if (isset($formaPago) && $formaPago == 'Tarjeta') { ?>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Tarjeta</span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Autorizaci&oacute;n : </b> <?PHP echo htmlspecialchars($referenciaPago); ?><?PHP if ($ultimos4 != '') { echo ' &nbsp; <b>Tarjeta :</b> **** ' . htmlspecialchars($ultimos4); } ?></span></td>
-                            </tr>
-<?PHP } elseif (isset($formaPago) && $formaPago == 'Transferencia') { ?>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Transferencia</span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Referencia : </b> <?PHP echo htmlspecialchars($referenciaPago); ?></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Cuenta destino : </b> <?PHP echo htmlspecialchars($bancoDestino); ?></span></td>
-                            </tr>
-<?PHP if ($nombreTransfirio != '') { ?>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Transfiri&oacute; : </b> <?PHP echo htmlspecialchars($nombreTransfirio); ?></span></td>
-                            </tr>
-<?PHP } ?>
-<?PHP } else { ?>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Efectivo</span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Efectivo : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo dinero($efectivo); ?></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Cambio : <?PHP echo $tipoMoneda; ?> </b> <?PHP echo dinero($cambio); ?></span></td>
-                            </tr>
-<?PHP } ?>
-                            <tr>
-                                <td colspan="6">&nbsp;<span style="color: #2b2b2b;"> <b>Son : </b>
-                                <?PHP
-                                 $literalMoney = new  EnLetras();
-                                  $shoLiteralMoney = mb_strtoupper($literalMoney -> valorEnletras($totalAPagar,$contextMoneda), "UTF-8");
-                                  echo "<b>".$shoLiteralMoney."</b>";
-                                  ?>
-                                      </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Codigo de control : <?PHP echo $getCodigoControl; ?></b></span></td>
-                            </tr>
-
-                            <tr>
-                                <td colspan="6"><span style="color: #2b2b2b;"><b>Fecha Limite de Emision :  <?PHP echo $fechaLimiteEmision; ?></b></span></td>
-                            </tr>
-
-
-                            <tr>
-                                <td colspan="6" align="center"><b>
-                                    <?PHP // include ("Qr.php"); ?>
-                                    </b></td>
-                            </tr>
-
-                            <tr>
-
-                                <td colspan="6" align="center">
-                                    <span style="color: #2b2b2b;">    -----------------------------------------------------------------------------------</span>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td colspan="6" align="center"><span style="color: #2b2b2b;"> " Esta factura conttribuye al desarrollo del pais el uso
-                                    ilicito de esta sera sancionado de acuerdo a ley "</span>
-                                </td>
-                            </tr>
-
-                            <tr>
-
-                                <td colspan="6" align="center">
-                                    <span style="color: #2b2b2b;">    -----------------------------------------------------------------------------------</span>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td colspan="4">
-                                  <span style="color: #2b2b2b;">  Atendido por : <strong><?PHP echo $userLogueado;?> </strong></span>
-                                </td>
-
-                                <td colspan="2">
-                                    <span style="color: #2b2b2b;">  FICHA NRO :<strong> <?PHP echo  $ficha; ?> </strong> </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <!-- vista previa: el mismo comprobante que se imprime, con el ancho del rollo de la impresora termica -->
+                        <div style="display:inline-block; background:#fff; padding:6px 10px; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
+                            <?PHP $tipoComprobante = 'completo'; include(__DIR__ . '/Comprobante.php'); ?>
+                        </div>
+                        <p style="margin-top:8px; font-size:12px; color:#555;">
+                            Vista previa en rollo de <?PHP echo anchoPapel(); ?> mm (se cambia en Configuración → Impresora).
+                        </p>
 
 
                     </div>

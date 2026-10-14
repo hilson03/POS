@@ -36,6 +36,13 @@ function imagenesMarca()
     );
 }
 
+// ancho del rollo de la impresora termica en mm (80 o 58), se elige en Configuracion > Apariencia
+function anchoPapel()
+{
+    $valores = valoresMarca();
+    return (isset($valores['ancho_papel']) && $valores['ancho_papel'] == '58') ? 58 : 80;
+}
+
 // revisa la imagen subida contra lo recomendado; devuelve un consejo o '' si esta bien (no impide guardarla)
 function consejoMedidasMarca($clave, $ruta)
 {

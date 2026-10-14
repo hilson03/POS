@@ -165,6 +165,7 @@ $pdf->Cell(0, 6, 'TOTAL DE VENTAS de los ultimos 6 meses: ' . dinero($fila['tota
 $pdf->Ln(10);
 
 
+reporteResumenFormasPago($pdf, $totalesFormaPago);
 reporteDesgloseSucursales($pdf, $desgloseSucursales);
 
 $pdf->Output();

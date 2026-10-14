@@ -173,22 +173,6 @@ class conexion{
 
     }
 
-//*************************************Metodos para cambiar idiomas*********************************************
-    public function getIdioma()
-    {
-        return $this->ejecutar("SELECT * FROM `idioma`");
-    }
-
-    public function updateDataIdioma($idioma, $idIdioma)
-    {
-
-        return $this->ejecutar("UPDATE `idioma` SET `idioma` = ? WHERE `idioma`.`idIdioma` = ?", array($idioma, (int) $idIdioma));
-    }
-
-    public function updateIdiomaSistem($opcionMenu, $idIdioma)
-    {
-        return $this->ejecutar("UPDATE `menu` SET `opcion` = ? WHERE `menu`.`idmenu` = ?", array($opcionMenu, (int) $idIdioma));
-    }
 /**Funciones de proveedores que nos permiten obtener, crear, actualizar y borrar proveedores de la base de datos
 fueron borradas ya que el cliente no necesitaba ese modulo en esta version del POS************************/
 
@@ -633,21 +617,22 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 
     // datos del cobro en curso del vendedor; la forma de pago viaja aqui hasta que se registra la venta
      public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente, $idUser,
-                                            $formaPago = 'Efectivo', $referenciaPago = '', $ultimos4 = '', $bancoDestino = '', $nombreTransfirio = '')
+                                            $formaPago = 'Efectivo', $referenciaPago = '', $ultimos4 = '', $bancoDestino = '', $nombreTransfirio = '',
+                                           $pagosDetalle = '')
     {
         return $this->ejecutar("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`,
-                                                   `formaPago`, `referenciaPago`, `ultimos4`, `bancoDestino`, `nombreTransfirio`)
-                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?, ?, ?, ?, ?, ?)",
+                                                   `formaPago`, `referenciaPago`, `ultimos4`, `bancoDestino`, `nombreTransfirio`, `pagosDetalle`)
+                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?, ?, ?, ?, ?, ?, ?)",
             array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idcliente, $idUser, $formaPago, $referenciaPago, $ultimos4,
-                $bancoDestino, $nombreTransfirio));
+                $bancoDestino, $nombreTransfirio, $pagosDetalle));
     }
 
     // forma de pago del cobro en curso del vendedor (Efectivo si no hay ninguno)
     public function getPagoEnCurso($idUser)
     {
-        $fila = $this->ejecutar("SELECT formaPago, referenciaPago, ultimos4, bancoDestino, nombreTransfirio FROM clientedato WHERE idUser = ? ORDER BY idCliente DESC LIMIT 1",
+        $fila = $this->ejecutar("SELECT formaPago, referenciaPago, ultimos4, bancoDestino, nombreTransfirio, COALESCE(pagosDetalle, '') AS pagosDetalle FROM clientedato WHERE idUser = ? ORDER BY idCliente DESC LIMIT 1",
             array((int) $idUser))->fetch_assoc();
-        return $fila ? $fila : array('formaPago' => 'Efectivo', 'referenciaPago' => '', 'ultimos4' => '', 'bancoDestino' => '', 'nombreTransfirio' => '');
+        return $fila ? $fila : array('formaPago' => 'Efectivo', 'referenciaPago' => '', 'ultimos4' => '', 'bancoDestino' => '', 'nombreTransfirio' => '', 'pagosDetalle' => '');
     }
 
     public function registrarPago($idVenta, $formaPago, $monto, $referencia, $ultimos4, $fecha, $idSucursal, $idUsuario, $bancoDestino = '', $nombreTransfirio = '')
@@ -808,10 +793,12 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
     public function getAllVentas($idSucursal, $idUsuario = 0)
     {
         // forma(s) de pago de cada venta; las ventas anteriores a los pagos no tienen fila en `pago` y son efectivo
-        $sql = "SELECT d.*, COALESCE((SELECT GROUP_CONCAT(DISTINCT p.formaPago ORDER BY p.idPago SEPARATOR ' + ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0), 'Efectivo') AS formaPago,
+        $sql = "SELECT d.*, COALESCE((SELECT u.nombre FROM usuarios u WHERE u.id_usu = d.idUsuario), '(usuario eliminado)') AS vendedor,
+                       COALESCE((SELECT GROUP_CONCAT(DISTINCT p.formaPago ORDER BY p.idPago SEPARATOR ' + ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0), 'Efectivo') AS formaPago,
                        COALESCE((SELECT GROUP_CONCAT(p.referencia ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.referencia <> ''), '') AS referenciaPago,
                        COALESCE((SELECT GROUP_CONCAT(p.bancoDestino ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.bancoDestino <> ''), '') AS bancoDestino,
-                       COALESCE((SELECT GROUP_CONCAT(p.nombreTransfirio ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.nombreTransfirio <> ''), '') AS nombreTransfirio
+                       COALESCE((SELECT GROUP_CONCAT(p.nombreTransfirio ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.nombreTransfirio <> ''), '') AS nombreTransfirio,
+                       COALESCE((SELECT SUM(p.monto) FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.formaPago = 'Transferencia'), 0) AS montoTransferencia
                 FROM datosventatotal d where d.estado = 'NoConsolidado' and d.idSucursal = ?";
         if ((int) $idUsuario > 0) {
             return $this->ejecutar($sql . " and d.idUsuario = ? order by d.idVentas ASC", array((int) $idSucursal, (int) $idUsuario));
@@ -872,6 +859,41 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
             array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal));
     }
 
+
+    /*
+     * Ventas consolidadas separadas por forma de pago, para los reportes: una fila por cada parte del pago
+     * (una venta mixta sale en cada forma que uso, con el monto de esa parte). Las ventas anteriores a la tabla
+     * `pago` no tienen fila ahi y se cuentan como efectivo por su total.
+     */
+    public function getVentasPorFormaPago($fechaInicial, $fechaFinal, $idSucursal)
+    {
+        return $this->filas($this->ejecutar("SELECT d.cliente, d.cantidad, d.total, d.fechaVenta,
+                                                    COALESCE(p.formaPago, 'Efectivo') AS forma, COALESCE(p.monto, d.total) AS monto,
+                                                    COALESCE(p.referencia, '') AS referencia, COALESCE(p.ultimos4, '') AS ultimos4,
+                                                    COALESCE(p.bancoDestino, '') AS bancoDestino,
+                                                    (SELECT COUNT(*) FROM pago p2 WHERE p2.idVenta = d.idVentaTotal AND d.idVentaTotal > 0) AS partes
+                                             FROM datosventatotal d
+                                             LEFT JOIN pago p ON p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0
+                                             WHERE d.fechaVenta >= ? and d.fechaVenta < ? and d.estado = 'Consolidado' and (? = 0 OR d.idSucursal = ?)
+                                             ORDER BY d.fechaVenta, p.idPago",
+            array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal)));
+    }
+
+    // total cobrado con cada forma de pago en el periodo (siempre devuelve Efectivo, Tarjeta y Transferencia, aunque sea 0)
+    public function getTotalesFormaPago($fechaInicial, $fechaFinal, $idSucursal)
+    {
+        $totales = array('Efectivo' => 0, 'Tarjeta' => 0, 'Transferencia' => 0);
+        $filas = $this->filas($this->ejecutar("SELECT COALESCE(p.formaPago, 'Efectivo') AS forma, SUM(COALESCE(p.monto, d.total)) AS total
+                                                      FROM datosventatotal d
+                                                      LEFT JOIN pago p ON p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0
+                                                      WHERE d.fechaVenta >= ? and d.fechaVenta < ? and d.estado = 'Consolidado' and (? = 0 OR d.idSucursal = ?)
+                                                      GROUP BY COALESCE(p.formaPago, 'Efectivo')",
+            array($fechaInicial, $fechaFinal, (int) $idSucursal, (int) $idSucursal)));
+        foreach ($filas as $fila) {
+            $totales[$fila['forma']] = (float) $fila['total'];
+        }
+        return $totales;
+    }
 
     public function getVentasTotalesDia($fechaInicial, $fechaFinal, $idSucursal)
     {

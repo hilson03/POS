@@ -126,41 +126,62 @@ $pdf->Ln(10);
 reporteEncabezadoSucursal($pdf, $nombreSucursalReporte, $periodoReporte);
 
 
-$pdf->SetWidths(array(15, 40, 25, 25, 25, 40, 35));
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->SetFillColor(85, 107, 47);
-$pdf->SetTextColor(255);
-
-for ($i = 0; $i < 1; $i++) {
-    $pdf->Row(array('NRO', 'CLIENTE', 'CANTIDAD', 'PRECIO', 'TOTAL', 'CODIGO CONTROL', 'FECHA'));
+/*
+ * Una seccion por forma de pago (efectivo, tarjeta, transferencia), cada una con sus ventas y su total.
+ * Una venta mixta sale en cada forma que uso, con el monto que se pago de esa forma.
+ */
+$ventasPorForma = array('Efectivo' => array(), 'Tarjeta' => array(), 'Transferencia' => array());
+foreach ($ventasFormaPago as $venta) {
+    $ventasPorForma[$venta['forma']][] = $venta;
 }
 
-$numfilas = mysqli_num_rows($ventasByDia);
+$pdf->SetWidths(array(12, 45, 20, 28, 28, 71, 35));   // 239 mm: el ancho util de la hoja carta horizontal
+foreach ($ventasPorForma as $forma => $ventasForma) {
+    $pdf->CheckPageBreak(25);
+    list($r, $g, $b) = colorFormaPago($forma);
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetTextColor($r, $g, $b);
+    $pdf->Cell(0, 8, textoPdf('VENTAS EN ' . mb_strtoupper($forma, 'UTF-8')), 0, 1);
 
-for ($i = 0; $i < $numfilas; $i++) {
-    $fila = mysqli_fetch_array($ventasByDia);
+    $pdf->SetFont('Arial', 'B', 9);
+    $pdf->SetFillColor($r, $g, $b);
+    $pdf->SetTextColor(255);
+    $pdf->Row(array('NRO', 'CLIENTE', 'CANTIDAD', 'TOTAL VENTA', 'PAGADO',
+                    $forma == 'Efectivo' ? 'NOTA' : ($forma == 'Tarjeta' ? textoPdf('AUTORIZACIÓN') : 'REFERENCIA / CUENTA'), 'FECHA'));
+
     $pdf->SetFont('Arial', '', 8);
-    $numlista = $i + 1;
-    if ($i % 2 == 1) {
+    $pdf->SetTextColor(0);
+    $totalForma = 0;
+    if (empty($ventasForma)) {
         $pdf->SetFillColor(251, 251, 251);
-        $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, $fila['cliente'], $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']),$fila['codigoControl'], $fila['fechaVenta']));
-    } else {
-        $pdf->SetFillColor(226, 226, 226);
-        $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, $fila['cliente'], $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']),$fila['codigoControl'], $fila['fechaVenta']));
+        $pdf->Cell(239, 6, textoPdf('Sin ventas en ' . strtolower($forma) . ' en este periodo.'), 1, 1, 'C', true);
     }
+    foreach ($ventasForma as $i => $venta) {
+        if ($forma == 'Tarjeta') {
+            $detalle = 'Aut. ' . $venta['referencia'] . ($venta['ultimos4'] != '' ? '  **** ' . $venta['ultimos4'] : '');
+        } elseif ($forma == 'Transferencia') {
+            $detalle = 'Ref. ' . $venta['referencia'] . ($venta['bancoDestino'] != '' ? ' - ' . $venta['bancoDestino'] : '');
+        } else {
+            $detalle = '';
+        }
+        if ($venta['partes'] > 1) {
+            $detalle = 'Pago mixto' . ($detalle != '' ? ' - ' . $detalle : '');
+        }
+        $pdf->SetFillColor($i % 2 == 1 ? 251 : 226, $i % 2 == 1 ? 251 : 226, $i % 2 == 1 ? 251 : 226);
+        $pdf->Row(array($i + 1, textoPdf($venta['cliente']), $venta['cantidad'], dinero($venta['total']), dinero($venta['monto']),
+                        textoPdf($detalle), $venta['fechaVenta']));
+        $totalForma += $venta['monto'];
+    }
+
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetTextColor($r, $g, $b);
+    $pdf->Cell(0, 7, textoPdf('Total ' . strtolower($forma) . ': ' . dinero($totalForma)), 0, 1, 'R');
+    $pdf->SetTextColor(0);
+    $pdf->Ln(4);
 }
 
-
-$pdf->Ln(10);
-
-
-
-/*******TOTAL DE VENTAS********/
-$fila = mysqli_fetch_array($ventasTotalByDia);
-$pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 6, 'TOTAL DE VENTAS: ' . dinero($fila['totalVentas']), 0, 1);
+// la suma de las tres formas es el total de ventas del periodo
+reporteResumenFormasPago($pdf, $totalesFormaPago, 'TOTAL DE VENTAS');
 
 $pdf->Ln(10);
 

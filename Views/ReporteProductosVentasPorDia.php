@@ -126,13 +126,13 @@ $pdf->Ln(10);
 reporteEncabezadoSucursal($pdf, $nombreSucursalReporte, $periodoReporte);
 
 
-$pdf->SetWidths(array(15, 40, 25, 25, 25, 40, 35));
+$pdf->SetWidths(array(15, 90, 25, 30, 30, 45));
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->SetFillColor(85, 107, 47);
 $pdf->SetTextColor(255);
 
 for ($i = 0; $i < 1; $i++) {
-    $pdf->Row(array('NRO', 'PRODUCTO', 'CANTIDAD', 'PRECIO', 'TOTAL', 'CODIGO CONTROL', 'FECHA'));
+    $pdf->Row(array('NRO', 'PRODUCTO', 'CANTIDAD', 'PRECIO', 'TOTAL', 'FECHA'));
 }
 
 $numfilas = mysqli_num_rows($ventasProductoByDia);
@@ -144,11 +144,11 @@ for ($i = 0; $i < $numfilas; $i++) {
     if ($i % 2 == 1) {
         $pdf->SetFillColor(251, 251, 251);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, $fila['descripcion'], $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']),$fila['codigoControl'], $fila['fechaVenta']));
+        $pdf->Row(array($numlista, textoPdf($fila['descripcion']), $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']), $fila['fechaVenta']));
     } else {
         $pdf->SetFillColor(226, 226, 226);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, $fila['descripcion'], $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']),$fila['codigoControl'], $fila['fechaVenta']));
+        $pdf->Row(array($numlista, textoPdf($fila['descripcion']), $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']), $fila['fechaVenta']));
     }
 }
 
@@ -165,6 +165,7 @@ $pdf->Cell(0, 6, 'TOTAL DE VENTAS POR PRODUCTOS : ' . dinero($fila['totalVentas'
 $pdf->Ln(10);
 
 
+reporteResumenFormasPago($pdf, $totalesFormaPago);
 reporteDesgloseSucursales($pdf, $desgloseSucursales);
 
 $pdf->Output();

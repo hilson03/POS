@@ -1,6 +1,6 @@
 <!--
     Ventana para elegir la forma de pago antes del cobro (se abre con el boton ACEPTAR del pedido).
-    Efectivo, Tarjeta y Transferencia abren el mismo cobro (Factura.php) en su modo.
+    Efectivo, Tarjeta, Transferencia y Mixto (varias formas en una venta) abren el mismo cobro (Factura.php) en su modo.
     Va fija en la pantalla de Ventas porque el pedido se recarga por ajax y ahi no se ejecutan scripts.
 -->
 <style>
@@ -66,7 +66,7 @@
 
     .pago-opciones {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 14px;
         padding: 18px 20px 22px;
     }
@@ -163,6 +163,13 @@
                 Transferencia
                 <small>Depósito bancario</small>
             </button>
+            <button type="button" class="pago-opcion" id="pagoMixto">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#e08a1e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>
+                </svg>
+                Mixto
+                <small>Dos o más formas</small>
+            </button>
         </div>
     </div>
 </div>
@@ -209,12 +216,17 @@
             }
         });
 
-        document.getElementById('cerrarFormaPago').addEventListener('click', cerrar);
-        ventana.addEventListener('click', function (evento) {
-            if (evento.target === ventana) {
-                cerrar();
+        // mixto: el mismo cobro en modo pago mixto (enlace oculto del pedido que carga Factura.php?forma=mixto)
+        document.getElementById('pagoMixto').addEventListener('click', function () {
+            cerrar();
+            var enlaceCobro = document.getElementById('abrirCobroMixto');
+            if (enlaceCobro) {
+                enlaceCobro.click();
             }
         });
+
+        // solo se cierra con la X o con Escape: un clic afuera por accidente ya no la cierra
+        document.getElementById('cerrarFormaPago').addEventListener('click', cerrar);
         document.addEventListener('keydown', function (evento) {
             if (evento.key === 'Escape' && !ventana.hidden) {
                 cerrar();

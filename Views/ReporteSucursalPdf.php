@@ -21,6 +21,42 @@ function reporteEncabezadoSucursal($pdf, $nombreSucursal, $periodo)
     $pdf->Ln(4);
 }
 
+// colores de cada forma de pago (los mismos del cobro: verde, azul y morado)
+function colorFormaPago($forma)
+{
+    $colores = array('Efectivo' => array(46, 157, 91), 'Tarjeta' => array(59, 111, 216), 'Transferencia' => array(138, 79, 208));
+    return isset($colores[$forma]) ? $colores[$forma] : array(85, 107, 47);
+}
+
+/*
+ * Totales por forma de pago al final del reporte. En una venta mixta cada parte suma a su forma,
+ * asi la suma de las tres formas da el total de ventas.
+ */
+function reporteResumenFormasPago($pdf, $totales, $etiquetaTotal = 'TOTAL')
+{
+    // el bloque va entero en una pagina (si no cabe, el total quedaria solo en la siguiente)
+    if (method_exists($pdf, 'CheckPageBreak')) {
+        $pdf->CheckPageBreak(7 + 6 * count($totales) + 11);
+    }
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetTextColor(0);
+    $pdf->Cell(0, 7, textoPdf('TOTAL POR FORMA DE PAGO'), 0, 1);
+    $pdf->SetFont('Arial', '', 10);
+    $suma = 0;
+    foreach ($totales as $forma => $total) {
+        list($r, $g, $b) = colorFormaPago($forma);
+        $pdf->SetTextColor($r, $g, $b);
+        $pdf->Cell(80, 6, textoPdf($forma), 'B', 0);
+        $pdf->SetTextColor(0);
+        $pdf->Cell(40, 6, dinero($total), 'B', 1, 'R');
+        $suma += $total;
+    }
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->Cell(80, 7, textoPdf($etiquetaTotal), 0, 0);
+    $pdf->Cell(40, 7, dinero($suma), 0, 1, 'R');
+    $pdf->Ln(4);
+}
+
 function reporteDesgloseSucursales($pdf, $desglose)
 {
     if (empty($desglose)) {

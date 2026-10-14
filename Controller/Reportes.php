@@ -62,6 +62,8 @@ if (isset($_GET['reporte_dia'])) {
 
     $ventasByDia = $con->getVentasDia($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
     $ventasTotalByDia = $con->getVentasTotalesDia($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
+    $ventasFormaPago = $con->getVentasPorFormaPago($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
+    $totalesFormaPago = $con->getTotalesFormaPago($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
     if ($idSucursalReporte === 0) {
         $desgloseSucursales = $con->getVentasPorSucursal($fechaVentasInicial, $fechaVentasFinal);
     }
@@ -79,6 +81,8 @@ if (isset($_GET['rango_fecha'])) {
 
     $ventasByDia = $con->getVentasDia($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
     $ventasTotalByDia = $con->getVentasTotalesDia($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
+    $ventasFormaPago = $con->getVentasPorFormaPago($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
+    $totalesFormaPago = $con->getTotalesFormaPago($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
     if ($idSucursalReporte === 0) {
         $desgloseSucursales = $con->getVentasPorSucursal($fechaVentasInicial, $fechaVentasFinal);
     }
@@ -97,6 +101,7 @@ if (isset($_GET['reporte_producto'])) {
 
     $ventasProductoByDia = $con->getVentasProductoByDia($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
     $ventasTotalProductoByDia = $con->getVentasProductoTotalesDia($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
+    $totalesFormaPago = $con->getTotalesFormaPago($fechaVentasInicial, $fechaVentasFinal, $idSucursalReporte);
     if ($idSucursalReporte === 0) {
         $desgloseSucursales = $con->getVentasPorSucursal($fechaVentasInicial, $fechaVentasFinal, true);
     }
@@ -114,8 +119,9 @@ if (isset($_GET['reporte_mes'])) {
    $ventasMensuales = $con->getVentasMensuales();
    $sumVentasByMes = $con->getSumaTotalVentasByMes($mes, $anio, $idSucursalReporte);
    $totalVentasMensual = $con->getTotalVentasByMes($mes, $anio, $idSucursalReporte);
+    $inicioMes = sprintf('%04d-%02d-01', $anio, $mes);
+    $totalesFormaPago = $con->getTotalesFormaPago($inicioMes . ' 00:00:00', date('Y-m-d', strtotime($inicioMes . ' +1 month')) . ' 00:00:00', $idSucursalReporte);
     if ($idSucursalReporte === 0) {
-        $inicioMes = sprintf('%04d-%02d-01', $anio, $mes);
         $desgloseSucursales = $con->getVentasPorSucursal($inicioMes . ' 00:00:00', date('Y-m-d', strtotime($inicioMes . ' +1 month')) . ' 00:00:00');
     }
 
@@ -132,6 +138,7 @@ if (isset($_GET['reporte_anual'])) {
     $ventasMensuales = $con->getVentasMensuales();
     $sumVentasByMes = $con->getTotalVentasByYear($anio, $idSucursalReporte);
     $totalVentasMensual = $con->getTotalVentasByAnio($anio, $idSucursalReporte);
+    $totalesFormaPago = $con->getTotalesFormaPago($anio . '-01-01 00:00:00', ($anio + 1) . '-01-01 00:00:00', $idSucursalReporte);
     if ($idSucursalReporte === 0) {
         $desgloseSucursales = $con->getVentasPorSucursal($anio . '-01-01 00:00:00', ($anio + 1) . '-01-01 00:00:00');
     }
@@ -148,6 +155,7 @@ if (isset($_GET['reporte_6meses'])) {
     $ventasMensuales = $con->getVentasMensuales();
     $VentasByMes = $con->getTotalVentas6Meses($idSucursalReporte);
     $totalVentasMensual = $con->getGrandTotalVentas6Meses($idSucursalReporte);
+    $totalesFormaPago = $con->getTotalesFormaPago(date('Y-m-d H:i:s', strtotime('-6 months')), date('Y-m-d H:i:s', strtotime('+1 second')), $idSucursalReporte);
     if ($idSucursalReporte === 0) {
         $desgloseSucursales = $con->getVentasPorSucursal(date('Y-m-d H:i:s', strtotime('-6 months')), date('Y-m-d H:i:s', strtotime('+1 second')));
     }

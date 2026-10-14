@@ -165,6 +165,7 @@ $pdf->Cell(0, 6, 'TOTAL DE VENTAS: ' . dinero($fila['totalVentas']), 0, 1);
 $pdf->Ln(10);
 
 
+reporteResumenFormasPago($pdf, $totalesFormaPago);
 reporteDesgloseSucursales($pdf, $desgloseSucursales);
 
 $pdf->Output();

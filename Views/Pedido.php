@@ -94,21 +94,28 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                               onclick=\"abrirFormaPago('" . $totalPedido . "')\">
                     <i class='icon_check'></i><strong> ACEPTAR</strong> </a>
                     <a id='abrirCobroEfectivo' data-toggle='modal' href='Factura.php' data-target='#myModal' style='display:none;'></a>
-                    <div class='modal fade' id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                    <div class='modal fade' id='myModal' data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
                        <div class='modal-dialog'>
                            <div class='modal-content'>
                             </div>
                         </div>
                     </div>
                     <a id='abrirCobroTarjeta' data-toggle='modal' href='Factura.php?forma=tarjeta' data-target='#modalCobroTarjeta' style='display:none;'></a>
-                    <div class='modal fade' id='modalCobroTarjeta' tabindex='-1' role='dialog' aria-hidden='true'>
+                    <div class='modal fade' id='modalCobroTarjeta' data-backdrop='static' tabindex='-1' role='dialog' aria-hidden='true'>
                        <div class='modal-dialog'>
                            <div class='modal-content'>
                             </div>
                         </div>
                     </div>
                     <a id='abrirCobroTransferencia' data-toggle='modal' href='Factura.php?forma=transferencia' data-target='#modalCobroTransferencia' style='display:none;'></a>
-                    <div class='modal fade' id='modalCobroTransferencia' tabindex='-1' role='dialog' aria-hidden='true'>
+                    <a id='abrirCobroMixto' data-toggle='modal' href='Factura.php?forma=mixto' data-target='#modalCobroMixto' style='display:none;'></a>
+                    <div class='modal fade' id='modalCobroMixto' data-backdrop='static' tabindex='-1' role='dialog' aria-hidden='true'>
+                       <div class='modal-dialog'>
+                           <div class='modal-content'>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='modal fade' id='modalCobroTransferencia' data-backdrop='static' tabindex='-1' role='dialog' aria-hidden='true'>
                        <div class='modal-dialog'>
                            <div class='modal-content'>
                             </div>

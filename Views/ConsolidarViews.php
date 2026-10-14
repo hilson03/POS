@@ -58,7 +58,7 @@ include('Head.php');
         foreach ($listaVentas as $venta) {
             if (strpos($venta['formaPago'], 'Transferencia') !== false) {
                 $transferencias++;
-                $totalTransferencias += $venta['total'];
+                $totalTransferencias += $venta['montoTransferencia'];   // en un pago mixto, solo la parte transferida
             }
         }
         ?>
@@ -66,6 +66,7 @@ include('Head.php');
             /* transferencias resaltadas: el administrador las revisa contra el banco antes de consolidar */
             #dataTables-example tr.fila-transferencia > td { background-color: #f3ecfb !important; }
             .label-transferencia { background-color: #8a4fd0; }
+            .label-mixto { background-color: #e08a1e; }
         </style>
         <?php if ($transferencias > 0) { ?>
             <div class="alert" style="background:#f3ecfb; border:1px solid #d9c6f1; color:#4a2a7a; margin:10px 15px 0;">
@@ -85,11 +86,11 @@ include('Head.php');
                         <th><i class="icon_profile"></i> NUM FICHA</th>
                         <th><i class="icon_profile"></i> FECHA</th>
                         <th><i class="icon_briefcase_alt"></i> CLIENTE</th>
-                        <th><i class="icon_profile"></i> TOTAL Sus.</th>
-                        <th><i class="icon_contacts_alt"></i> CODIGO CONTROL</th>
+                        <th><i class="icon_profile"></i> TOTAL L.</th>
+                        <th><i class="icon_profile"></i> VENDEDOR</th>
                         <th><i class="fa fa-credit-card"></i> PAGO</th>
                         <th><i class="icon_contacts_alt"></i> ESTADO</th>
-                        <th><i class="icon_contacts_alt"></i> COMMENTARIO</th>
+                        <th><i class="icon_contacts_alt"></i> COMENTARIO</th>
                         <th><i class="icon_cog"></i> ACCIONES</th>
                     </tr>
                     </thead>
@@ -104,14 +105,15 @@ include('Head.php');
                             <td><?php echo $ventas['fechaVenta']; ?></td>
                             <td><?php echo $ventas['cliente']; ?></td>
                             <td align="center" ><?php echo dinero($ventas['total']); ?></td>
-                            <td><?php echo $ventas['codigoControl']; ?></td>
+                            <td><?php echo htmlspecialchars($ventas['vendedor']); ?></td>
                             <td><?php
                                 $esTarjeta = strpos($ventas['formaPago'], 'Tarjeta') !== false;
                                 if ($esTransferencia) {
                                     $claseEtiqueta = 'label-transferencia';
                                     $detallePago = 'Ref. ' . $ventas['referenciaPago'] . ' | ' . $ventas['bancoDestino'] . ($ventas['nombreTransfirio'] != '' ? ' | ' . $ventas['nombreTransfirio'] : '');
                                 } else {
-                                    $claseEtiqueta = $esTarjeta ? 'label-primary' : 'label-success';
+                                    // pago mixto sin transferencia (ej. "Tarjeta + Efectivo") en naranja
+                                    $claseEtiqueta = strpos($ventas['formaPago'], ' + ') !== false ? 'label-mixto' : ($esTarjeta ? 'label-primary' : 'label-success');
                                     $detallePago = $ventas['referenciaPago'] != '' ? 'Aut. ' . $ventas['referenciaPago'] : '';
                                 }
                                 ?><span class="label <?php echo $claseEtiqueta; ?>"<?php echo $detallePago != '' ? ' title="' . htmlspecialchars($detallePago) . '"' : ''; ?>><?php echo htmlspecialchars($ventas['formaPago']); ?></span>

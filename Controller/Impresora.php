@@ -7,27 +7,12 @@ iniciarSesionSegura();
 
 $usuarioSesion = requerirSesion('ADMINISTRADOR');
 
-$usuario = $usuarioSesion['login'];
-$password = '';
-
 $con = new Conexion();
 
+$tipo = $usuarioSesion['tipo'];
+$nombres = $usuarioSesion['nombre'];
+$foto = $usuarioSesion['foto'];
 
-$searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
-$allUsuarios = $con->getAllUserData();
-
-$tipo = '';
-$id_usuario = '';
-$nombres = '';
-$foto = '';
-
-
-foreach ($searchUser as $user) {
-    $tipo = $user['tipo'];
-    $id_usuario = $user['id_usu'];
-    $nombres = $user['nombre'];
-    $foto = $user['foto'];
-}
 $tipoDeAlerta = $con->getMensajeAlerta();
 foreach ($tipoDeAlerta as $tipoAlerta) {
     $alerta = $tipoAlerta['tipoAlerta'];
@@ -41,14 +26,10 @@ if (!isset($_GET['estado'])) {
     $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 }
 
-
 $urlViews = URL_VIEWS;
 $userLogueado = $nombres;
 $imageUser = $foto;
 
-$dataIdioma = $con->getIdioma();
+
 $menuMain = $con->getMenuMain();
-require("../Views/LanguajeViews.php");
-
-
-?>
+require("../Views/ImpresoraViews.php");

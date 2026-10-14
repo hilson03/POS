@@ -2,6 +2,7 @@
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
+require_once('PagoMixto.php');
 require_once('Codigo_control.class.php');
 iniciarSesionSegura();
 
@@ -21,7 +22,10 @@ if (isset($_GET['RegistarVenta'])) {
     $comentario = "";
     $fechaCodigoControl = date("Ymd");
 
-    $searchClient = $con->getClienteDatos($ci);
+    // sin RTN/DNI (o sin cliente registrado con ese numero) la venta es de Consumidor Final
+    $nombreClienteDato = CONSUMIDOR_FINAL;
+    $idClientei = 0;
+    $searchClient = trim($ci) == '' ? array() : $con->getClienteDatos($ci);
 
     foreach ($searchClient as $cliente) {
         $nombreClienteDato = $cliente['apellido'];
@@ -57,7 +61,7 @@ if (isset($_GET['RegistarVenta'])) {
         $tipoMoneda = $dataMonedaValues['tipoMoneda'];
     }
 
-    date_default_timezone_set("America/Caracas" ) ;
+    date_default_timezone_set("America/Tegucigalpa");
     $dateInicial= date('Y-m-d');
     $dateFinal= date('Y-m-d');
     $getNumeroFicha = $con-> getNumFicha($dateInicial,$dateFinal);
@@ -83,6 +87,7 @@ if (isset($_GET['RegistarVenta'])) {
     $ultimos4 = '';
     $bancoDestino = '';
     $nombreTransfirio = '';
+    $pagosDetalle = '';
     $obtenerDatosCliente = $con->getDataCliente($id_usuario);
     foreach ($obtenerDatosCliente as $datosCliente) {
         $nombreCliente = $datosCliente['nombre'];
@@ -96,6 +101,7 @@ if (isset($_GET['RegistarVenta'])) {
         $ultimos4 = $datosCliente['ultimos4'];
         $bancoDestino = $datosCliente['bancoDestino'];
         $nombreTransfirio = $datosCliente['nombreTransfirio'];
+        $pagosDetalle = $datosCliente['pagosDetalle'];
     }
 
     $getDatosFecha = explode("-", $fechaLimite);
@@ -115,8 +121,16 @@ if (isset($_GET['RegistarVenta'])) {
 
     // el pago de la venta con su forma (hoy uno por venta; la tabla admite varios para un futuro pago mixto)
     if ($idVentaNueva > 0) {
-        $con->registrarPago($idVentaNueva, $formaPago, $totalAPagar, $referenciaPago, $ultimos4, $fechaVenta, $usuarioSesion['idSucursalActiva'], $id_usuario,
-            $bancoDestino, $nombreTransfirio);
+        if ($formaPago == 'Mixto') {
+            // pago mixto: una fila por cada forma usada (tarjeta, transferencia, efectivo)
+            foreach (partesPagoMixto($pagosDetalle) as $parte) {
+                $con->registrarPago($idVentaNueva, $parte['forma'], $parte['monto'], $parte['referencia'], $parte['ultimos4'], $fechaVenta,
+                    $usuarioSesion['idSucursalActiva'], $id_usuario, $parte['bancoDestino'], $parte['nombreTransfirio']);
+            }
+        } else {
+            $con->registrarPago($idVentaNueva, $formaPago, $totalAPagar, $referenciaPago, $ultimos4, $fechaVenta, $usuarioSesion['idSucursalActiva'], $id_usuario,
+                $bancoDestino, $nombreTransfirio);
+        }
     }
 
     $getDataClienteVenta = $con->getDatosVenta($idVentaNueva);

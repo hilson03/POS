@@ -113,7 +113,7 @@ include('Head.php');
                                             </div>
                                             <br><br>
 
-                                            <label for="ci" class="control-label col-lg-3">CI:</label>
+                                            <label for="ci" class="control-label col-lg-3">DNI:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15" id="ci"
                                                        name="ci"
@@ -192,7 +192,7 @@ include('Head.php');
                     <tr>
                         <th><i class="icon_images"></i> FOTO</th>
                         <th><i class="icon_contacts"></i> NOMBRE</th>
-                        <th><i class="icon_folder"></i> CI</th>
+                        <th><i class="icon_folder"></i> DNI</th>
                         <th><i class="icon_contacts_alt"></i> DIRECCION</th>
                         <th><i class="icon_contacts_alt"></i> TELEFONO FIJO</th>
                         <th><i class="icon_contacts_alt"></i> TELEFONO MOBIL</th>
@@ -281,7 +281,7 @@ include('Head.php');
                                                     <br><br>
 
                                                     <label for="ci"
-                                                           class="control-label col-lg-3">CI:</label>
+                                                           class="control-label col-lg-3">DNI:</label>
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="ci" name="ci"
