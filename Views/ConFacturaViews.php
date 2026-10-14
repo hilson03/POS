@@ -107,6 +107,21 @@ include('LiteralMoney.php');
                             <tr>
                                 <td colspan="6"><span style="color: #2b2b2b;"><b>Autorizaci&oacute;n : </b> <?PHP echo htmlspecialchars($referenciaPago); ?><?PHP if ($ultimos4 != '') { echo ' &nbsp; <b>Tarjeta :</b> **** ' . htmlspecialchars($ultimos4); } ?></span></td>
                             </tr>
+<?PHP } elseif (isset($formaPago) && $formaPago == 'Transferencia') { ?>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Transferencia</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Referencia : </b> <?PHP echo htmlspecialchars($referenciaPago); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Cuenta destino : </b> <?PHP echo htmlspecialchars($bancoDestino); ?></span></td>
+                            </tr>
+<?PHP if ($nombreTransfirio != '') { ?>
+                            <tr>
+                                <td colspan="6"><span style="color: #2b2b2b;"><b>Transfiri&oacute; : </b> <?PHP echo htmlspecialchars($nombreTransfirio); ?></span></td>
+                            </tr>
+<?PHP } ?>
 <?PHP } else { ?>
                             <tr>
                                 <td colspan="6"><span style="color: #2b2b2b;"><b>Forma de pago : </b> Efectivo</span></td>

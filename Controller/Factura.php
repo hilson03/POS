@@ -30,7 +30,11 @@ foreach ($getTotalPreventa as $preVentaTotal){
 }
 
 // forma de pago elegida en la ventana "¿Como va a pagar el cliente?" (el formulario de cobro cambia segun ella)
-$formaPago = (isset($_GET['forma']) && $_GET['forma'] == 'tarjeta') ? 'Tarjeta' : 'Efectivo';
+$formasCobro = array('tarjeta' => 'Tarjeta', 'transferencia' => 'Transferencia');
+$formaPago = (isset($_GET['forma']) && isset($formasCobro[$_GET['forma']])) ? $formasCobro[$_GET['forma']] : 'Efectivo';
+
+// transferencia: el vendedor elige en cual cuenta de la tienda llego el dinero
+$cuentasTransferencia = $formaPago == 'Transferencia' ? $con->getCuentasBancarias(true) : array();
 
 require('../Views/FacturaViews.php');
 ?>

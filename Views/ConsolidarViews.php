@@ -50,6 +50,31 @@ include('Head.php');
         </div>
 
         <header class="panel-heading"> Consolidar Ventas</header>
+        <?php
+        // se leen todas las ventas antes de la tabla para avisar arriba cuantas transferencias hay que revisar
+        $listaVentas = $allVentas->fetch_all(MYSQLI_BOTH);
+        $transferencias = 0;
+        $totalTransferencias = 0;
+        foreach ($listaVentas as $venta) {
+            if (strpos($venta['formaPago'], 'Transferencia') !== false) {
+                $transferencias++;
+                $totalTransferencias += $venta['total'];
+            }
+        }
+        ?>
+        <style>
+            /* transferencias resaltadas: el administrador las revisa contra el banco antes de consolidar */
+            #dataTables-example tr.fila-transferencia > td { background-color: #f3ecfb !important; }
+            .label-transferencia { background-color: #8a4fd0; }
+        </style>
+        <?php if ($transferencias > 0) { ?>
+            <div class="alert" style="background:#f3ecfb; border:1px solid #d9c6f1; color:#4a2a7a; margin:10px 15px 0;">
+                <i class="fa fa-university"></i>
+                <strong><?php echo $transferencias == 1 ? 'Hay 1 venta' : 'Hay ' . $transferencias . ' ventas'; ?> por transferencia (<?php echo dinero($totalTransferencias); ?>).</strong>
+                Antes de consolidarlas, revisa en la app o el estado de cuenta del banco que cada referencia haya llegado.
+                Pasa el mouse sobre la etiqueta <span class="label label-transferencia">Transferencia</span> para ver la referencia y la cuenta.
+            </div>
+        <?php } ?>
 
 
         <div class="panel-body">
@@ -70,16 +95,27 @@ include('Head.php');
                     </thead>
                     <?php
 
-                    while ($ventas = mysqli_fetch_array($allVentas)) {
+                    foreach ($listaVentas as $ventas) {
+                        $esTransferencia = strpos($ventas['formaPago'], 'Transferencia') !== false;
                         ?>
 
-                        <tr>
+                        <tr<?php echo $esTransferencia ? ' class="fila-transferencia"' : ''; ?>>
                             <td align="center"><?php echo $ventas['idVentas']; ?></td>
                             <td><?php echo $ventas['fechaVenta']; ?></td>
                             <td><?php echo $ventas['cliente']; ?></td>
                             <td align="center" ><?php echo dinero($ventas['total']); ?></td>
                             <td><?php echo $ventas['codigoControl']; ?></td>
-                            <td><?php $esTarjeta = strpos($ventas['formaPago'], 'Tarjeta') !== false; ?><span class="label <?php echo $esTarjeta ? 'label-primary' : 'label-success'; ?>"<?php echo $ventas['referenciaPago'] != '' ? ' title="Aut. ' . htmlspecialchars($ventas['referenciaPago']) . '"' : ''; ?>><?php echo htmlspecialchars($ventas['formaPago']); ?></span></td>
+                            <td><?php
+                                $esTarjeta = strpos($ventas['formaPago'], 'Tarjeta') !== false;
+                                if ($esTransferencia) {
+                                    $claseEtiqueta = 'label-transferencia';
+                                    $detallePago = 'Ref. ' . $ventas['referenciaPago'] . ' | ' . $ventas['bancoDestino'] . ($ventas['nombreTransfirio'] != '' ? ' | ' . $ventas['nombreTransfirio'] : '');
+                                } else {
+                                    $claseEtiqueta = $esTarjeta ? 'label-primary' : 'label-success';
+                                    $detallePago = $ventas['referenciaPago'] != '' ? 'Aut. ' . $ventas['referenciaPago'] : '';
+                                }
+                                ?><span class="label <?php echo $claseEtiqueta; ?>"<?php echo $detallePago != '' ? ' title="' . htmlspecialchars($detallePago) . '"' : ''; ?>><?php echo htmlspecialchars($ventas['formaPago']); ?></span>
+                                <?php if ($esTransferencia) { ?><br><small style="color:#5b3a8c;">Ref. <?php echo htmlspecialchars($ventas['referenciaPago']); ?></small><?php } ?></td>
                             <td><?php echo $ventas['estado']; ?></td>
                             <td><?php echo $ventas['comentario']; ?></td>
 

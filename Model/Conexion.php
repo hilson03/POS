@@ -633,26 +633,51 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
 
     // datos del cobro en curso del vendedor; la forma de pago viaja aqui hasta que se registra la venta
      public function registrarDatosPreventa($ci, $nombre, $totalAPagar, $efectivo, $cambio, $fechaVenta, $idcliente, $idUser,
-                                            $formaPago = 'Efectivo', $referenciaPago = '', $ultimos4 = '')
+                                            $formaPago = 'Efectivo', $referenciaPago = '', $ultimos4 = '', $bancoDestino = '', $nombreTransfirio = '')
     {
         return $this->ejecutar("INSERT INTO `clientedato` (`idCliente`, `nombre`, `ci`, `fecha`, `totalApagar`, `efectivo`, `cambio`, `idClientei`, `tipoVenta`, `idUser`,
-                                                   `formaPago`, `referenciaPago`, `ultimos4`)
-                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?, ?, ?, ?)",
-            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idcliente, $idUser, $formaPago, $referenciaPago, $ultimos4));
+                                                   `formaPago`, `referenciaPago`, `ultimos4`, `bancoDestino`, `nombreTransfirio`)
+                                            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, 'Local', ?, ?, ?, ?, ?, ?)",
+            array($nombre, $ci, $fechaVenta, $totalAPagar, $efectivo, $cambio, $idcliente, $idUser, $formaPago, $referenciaPago, $ultimos4,
+                $bancoDestino, $nombreTransfirio));
     }
 
     // forma de pago del cobro en curso del vendedor (Efectivo si no hay ninguno)
     public function getPagoEnCurso($idUser)
     {
-        $fila = $this->ejecutar("SELECT formaPago, referenciaPago, ultimos4 FROM clientedato WHERE idUser = ? ORDER BY idCliente DESC LIMIT 1",
+        $fila = $this->ejecutar("SELECT formaPago, referenciaPago, ultimos4, bancoDestino, nombreTransfirio FROM clientedato WHERE idUser = ? ORDER BY idCliente DESC LIMIT 1",
             array((int) $idUser))->fetch_assoc();
-        return $fila ? $fila : array('formaPago' => 'Efectivo', 'referenciaPago' => '', 'ultimos4' => '');
+        return $fila ? $fila : array('formaPago' => 'Efectivo', 'referenciaPago' => '', 'ultimos4' => '', 'bancoDestino' => '', 'nombreTransfirio' => '');
     }
 
-    public function registrarPago($idVenta, $formaPago, $monto, $referencia, $ultimos4, $fecha, $idSucursal, $idUsuario)
+    public function registrarPago($idVenta, $formaPago, $monto, $referencia, $ultimos4, $fecha, $idSucursal, $idUsuario, $bancoDestino = '', $nombreTransfirio = '')
     {
-        return $this->ejecutar("INSERT INTO pago (idVenta, formaPago, monto, referencia, ultimos4, fecha, idSucursal, idUsuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            array((int) $idVenta, $formaPago, (float) $monto, $referencia, $ultimos4, $fecha, (int) $idSucursal, (int) $idUsuario));
+        return $this->ejecutar("INSERT INTO pago (idVenta, formaPago, monto, referencia, ultimos4, fecha, idSucursal, idUsuario, bancoDestino, nombreTransfirio)
+                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            array((int) $idVenta, $formaPago, (float) $monto, $referencia, $ultimos4, $fecha, (int) $idSucursal, (int) $idUsuario, $bancoDestino, $nombreTransfirio));
+    }
+
+    // cuentas de la tienda donde los clientes transfieren (Configuracion > Cuentas bancarias)
+    public function getCuentasBancarias($soloActivas = false)
+    {
+        return $this->filas($this->ejecutar("SELECT * FROM cuenta_bancaria" . ($soloActivas ? " WHERE estado = 'Activo'" : "") . " ORDER BY banco, numero"));
+    }
+
+    public function getCuentaBancaria($idCuenta)
+    {
+        $filas = $this->filas($this->ejecutar("SELECT * FROM cuenta_bancaria WHERE idCuenta = ?", array((int) $idCuenta)));
+        return empty($filas) ? null : $filas[0];
+    }
+
+    public function registrarCuentaBancaria($banco, $numero, $titular)
+    {
+        return $this->ejecutar("INSERT INTO cuenta_bancaria (banco, numero, titular, estado) VALUES (?, ?, ?, 'Activo')", array($banco, $numero, $titular));
+    }
+
+    public function updateCuentaBancaria($idCuenta, $banco, $numero, $titular, $estado)
+    {
+        return $this->ejecutar("UPDATE cuenta_bancaria SET banco = ?, numero = ?, titular = ?, estado = ? WHERE idCuenta = ?",
+            array($banco, $numero, $titular, $estado, (int) $idCuenta));
     }
 
 
@@ -784,7 +809,9 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
     {
         // forma(s) de pago de cada venta; las ventas anteriores a los pagos no tienen fila en `pago` y son efectivo
         $sql = "SELECT d.*, COALESCE((SELECT GROUP_CONCAT(DISTINCT p.formaPago ORDER BY p.idPago SEPARATOR ' + ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0), 'Efectivo') AS formaPago,
-                       COALESCE((SELECT GROUP_CONCAT(p.referencia ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.referencia <> ''), '') AS referenciaPago
+                       COALESCE((SELECT GROUP_CONCAT(p.referencia ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.referencia <> ''), '') AS referenciaPago,
+                       COALESCE((SELECT GROUP_CONCAT(p.bancoDestino ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.bancoDestino <> ''), '') AS bancoDestino,
+                       COALESCE((SELECT GROUP_CONCAT(p.nombreTransfirio ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.nombreTransfirio <> ''), '') AS nombreTransfirio
                 FROM datosventatotal d where d.estado = 'NoConsolidado' and d.idSucursal = ?";
         if ((int) $idUsuario > 0) {
             return $this->ejecutar($sql . " and d.idUsuario = ? order by d.idVentas ASC", array((int) $idSucursal, (int) $idUsuario));

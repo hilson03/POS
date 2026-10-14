@@ -31,7 +31,7 @@ $idUsuarioVenta = empty($usuarioVenta) ? 0 : $usuarioVenta[0]['id_usu'];
 // esta pantalla vuelve a guardar los datos del cobro: se conserva la forma de pago elegida en el cobro
 $pagoEnCurso = $con->getPagoEnCurso($idUsuarioVenta);
 $registrarDatoscliente = $con->registrarDatosPreventa($ci,$nombreClienteDato ,$totalAPagar,$efectivo,$cambio,$fechaVenta,'1',$idUsuarioVenta,
-    $pagoEnCurso['formaPago'], $pagoEnCurso['referenciaPago'], $pagoEnCurso['ultimos4']);
+    $pagoEnCurso['formaPago'], $pagoEnCurso['referenciaPago'], $pagoEnCurso['ultimos4'], $pagoEnCurso['bancoDestino'], $pagoEnCurso['nombreTransfirio']);
 
 
 $searchUser = $con->getOnlyUserData($usuarioSesion['id_usu']);
@@ -75,6 +75,8 @@ $datosFactura = $con-> getDatosFactura();
      $formaPago = $datosCliente['formaPago'];
      $referenciaPago = $datosCliente['referenciaPago'];
      $ultimos4 = $datosCliente['ultimos4'];
+     $bancoDestino = $datosCliente['bancoDestino'];
+     $nombreTransfirio = $datosCliente['nombreTransfirio'];
  }
 
  $pedidoTotalPreventa = $con->getPedidoTotalForFactura($idUsuarioVenta);

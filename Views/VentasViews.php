@@ -99,6 +99,12 @@ include('Head.php');
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
+                <?PHP if (!empty($mensaje)) { ?>
+                    <!-- aviso del cobro (por ejemplo, tarjeta o transferencia con datos incompletos) -->
+                    <div class="<?PHP echo htmlspecialchars($alerta); ?>" role="alert" style="margin-top:15px;">
+                        <strong><?PHP echo htmlspecialchars($mensaje); ?></strong>
+                    </div>
+                <?PHP } ?>
             </div></div>
         </div>
 <br><br><br>
