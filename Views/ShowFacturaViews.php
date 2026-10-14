@@ -68,17 +68,12 @@ include('LiteralMoney.php');
             .accion-venta strong { display: block; font-size: 15px; letter-spacing: 0.3px; }
             .accion-venta small { display: block; font-size: 12px; opacity: 0.9; }
             .accion-venta.imprimir { background: #3b6fd8; }
-            .accion-venta.ticket { background: #6c757d; }
             .accion-venta.guardar { background: #2e9d5b; }
         </style>
         <div class="acciones-venta">
             <a class="btnPrint accion-venta imprimir" href="ConFactura.php?<?PHP echo $datosCobro; ?>">
                 <i class="fa fa-print"></i>
                 <span><strong>IMPRIMIR COMPROBANTE</strong><small>Con los datos de la tienda</small></span>
-            </a>
-            <a class="btnPrint accion-venta ticket" href="SinFactura.php?<?PHP echo $datosCobro; ?>">
-                <i class="fa fa-file-text-o"></i>
-                <span><strong>TICKET SIMPLE</strong><small>Sin los datos de la tienda</small></span>
             </a>
             <!-- la venta se registra aqui (descuenta stock y pasa a Consolidar); imprimir no la guarda -->
             <a class="accion-venta guardar" href="RegistrarVenta.php?RegistarVenta=1&<?PHP echo $datosCobro; ?>">
@@ -96,7 +91,7 @@ include('LiteralMoney.php');
 
                         <!-- vista previa: el mismo comprobante que se imprime, con el ancho del rollo de la impresora termica -->
                         <div style="display:inline-block; background:#fff; padding:6px 10px; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
-                            <?PHP $tipoComprobante = 'completo'; include(__DIR__ . '/Comprobante.php'); ?>
+                            <?PHP include(__DIR__ . '/Comprobante.php'); ?>
                         </div>
                         <p style="margin-top:8px; font-size:12px; color:#555;">
                             Vista previa en rollo de <?PHP echo anchoPapel(); ?> mm (se cambia en Configuración → Impresora).

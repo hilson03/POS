@@ -188,13 +188,6 @@ $fechaLimiteDia=$getDatosFecha[2];
 $fechaLimiteEmision = $fechaLimiteDia.' / '.$fechaLimiteMes.' / '.$fechaLimiteAnio;
 
 
-date_default_timezone_set("America/Tegucigalpa");
-$dateInicial= date('Y-m-d');
-$dateFinal= date('Y-m-d');
-$getNumeroFicha = $con->getNumFicha($dateInicial,$dateFinal);
-foreach ( $getNumeroFicha as $numFicha){
-    $ficha = $numFicha['numficha'];
-}
 
 
 

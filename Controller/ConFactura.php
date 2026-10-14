@@ -14,9 +14,9 @@ $password = '';
 
 $ci =$_GET['ci'];
 
-$totalAPagar =$_GET['ingreso1'];
-$efectivo =$_GET['ingreso2'];
-$cambio=$_GET['resultado'];
+$totalAPagar = isset($_GET['ingreso1']) ? (float) $_GET['ingreso1'] : 0;   // montos siempre numericos aunque alteren el enlace
+$efectivo = isset($_GET['ingreso2']) ? (float) $_GET['ingreso2'] : 0;
+$cambio = isset($_GET['resultado']) ? (float) $_GET['resultado'] : 0;
 $fechaVenta = date("Y-m-d H:i:s");
 
 // sin RTN/DNI (o sin cliente registrado con ese numero) la venta es de Consumidor Final
@@ -106,14 +106,6 @@ $fechaLimiteDia=$getDatosFecha[2];
 
 $fechaLimiteEmision = $fechaLimiteDia.' / '.$fechaLimiteMes.' / '.$fechaLimiteAnio;
 
-date_default_timezone_set("America/Tegucigalpa");
-$dateInicial= date('Y-m-d');
-$dateFinal= date('Y-m-d');
-$getNumeroFicha = $con->getNumFicha($dateInicial,$dateFinal);
-
-foreach ( $getNumeroFicha as $numFicha){
-    $ficha = $numFicha['numficha'];
-}
 
 $menuMain = $con->getMenuMain();
 require('../Views/ConFacturaViews.php');

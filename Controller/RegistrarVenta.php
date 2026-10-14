@@ -14,9 +14,9 @@ if (isset($_GET['RegistarVenta'])) {
     $usuario = $usuarioSesion['login'];
     $password = '';
     $ci = $_GET['ci'];
-    $totalAPagar = $_GET['ingreso1'];
-    $efectivo = $_GET['ingreso2'];
-    $cambio = $_GET['resultado'];
+    $totalAPagar = isset($_GET['ingreso1']) ? (float) $_GET['ingreso1'] : 0;   // montos siempre numericos aunque alteren el enlace
+    $efectivo = isset($_GET['ingreso2']) ? (float) $_GET['ingreso2'] : 0;
+    $cambio = isset($_GET['resultado']) ? (float) $_GET['resultado'] : 0;
     $fechaVenta = date("Y-m-d H:i:s");
     $estado = "NoConsolidado";
     $comentario = "";
@@ -61,13 +61,6 @@ if (isset($_GET['RegistarVenta'])) {
         $tipoMoneda = $dataMonedaValues['tipoMoneda'];
     }
 
-    date_default_timezone_set("America/Tegucigalpa");
-    $dateInicial= date('Y-m-d');
-    $dateFinal= date('Y-m-d');
-    $getNumeroFicha = $con-> getNumFicha($dateInicial,$dateFinal);
-    foreach ( $getNumeroFicha as $numFicha){
-        $ficha = $numFicha['numficha'];
-    }
 
     $menuMain = $con->getMenuMain();
 

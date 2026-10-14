@@ -83,7 +83,7 @@ include('Head.php');
                 <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                     <thead>
                     <tr>
-                        <th><i class="icon_profile"></i> NUM FICHA</th>
+                        <th><i class="icon_profile"></i> N° VENTA</th>
                         <th><i class="icon_profile"></i> FECHA</th>
                         <th><i class="icon_briefcase_alt"></i> CLIENTE</th>
                         <th><i class="icon_profile"></i> TOTAL L.</th>

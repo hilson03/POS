@@ -677,11 +677,6 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
                                           FROM `preventa` WHERE idUser = ? GROUP BY idproducto", array((int) $idUser));
     }
 
-    public function getNumFicha($dateInicial, $dateFinal)
-    {
-        return $this->ejecutar("SELECT (COUNT(*) +1 ) as numficha FROM `ventatotal` WHERE fecha >= ? and fecha <= ?",
-            array($dateInicial . ' 00:00:00', $dateFinal . ' 23:59:00'));
-    }
 
 /***************************************************Funciones SQL para registrar una venta ************************************************/
 

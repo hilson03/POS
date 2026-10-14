@@ -1,14 +1,11 @@
 <?PHP
 /*
  * Comprobante de venta para impresora termica (rollo de 80 o 58 mm, se elige en Configuracion > Apariencia).
- * Lo usan la impresion completa (ConFacturaViews), el ticket simple (SinFacturaViews) y la vista previa (ShowFacturaViews).
- *
- * $tipoComprobante: 'completo' (con los datos de la tienda) o 'simple' (sin ellos, con la ficha grande).
+ * Lo usan la impresion (ConFacturaViews) y la vista previa (ShowFacturaViews).
  * Los datos de la venta llegan en las variables de siempre ($fecha, $ci, $nombreCliente, $pedidoTotalPreventa, ...).
  */
 include_once(__DIR__ . '/../Controller/LiteralMoney.php');
 
-$tipoComprobante = isset($tipoComprobante) ? $tipoComprobante : 'completo';
 $anchoPapel = anchoPapel();
 // area que imprime cada rollo: 72 mm en el de 80, 48 mm en el de 58
 $anchoImpresion = $anchoPapel == 58 ? 48 : 72;
@@ -38,7 +35,6 @@ if (!function_exists('filaComprobante')) {
     .comprobante .c-centro { text-align: center; }
     .comprobante .c-negocio { font-size: 1.6em; font-weight: bold; }
     .comprobante .c-titulo { font-size: 1.15em; font-weight: bold; margin-top: 2px; }
-    .comprobante .c-ficha { font-size: 1.8em; font-weight: bold; }
     .comprobante .c-linea { border-top: 1px dashed #000; margin: 5px 0; }
     .comprobante .c-fila { display: flex; justify-content: space-between; gap: 6px; }
     .comprobante .c-fila .c-valor { text-align: right; white-space: nowrap; }
@@ -50,7 +46,6 @@ if (!function_exists('filaComprobante')) {
 </style>
 
 <div class="comprobante">
-    <?PHP if ($tipoComprobante == 'completo') { ?>
         <div class="c-centro">
             <div class="c-negocio"><?PHP echo htmlspecialchars($razon); ?></div>
             <div>De: <?PHP echo htmlspecialchars($propietario); ?></div>
@@ -59,12 +54,6 @@ if (!function_exists('filaComprobante')) {
             <div>TEUPASENTI</div>
             <div class="c-titulo">COMPROBANTE DE VENTA</div>
         </div>
-    <?PHP } else { ?>
-        <div class="c-centro">
-            <div class="c-titulo">COMPROBANTE DE VENTA</div>
-            <div class="c-ficha">FICHA N&ordm; <?PHP echo htmlspecialchars($ficha); ?></div>
-        </div>
-    <?PHP } ?>
 
     <div class="c-linea"></div>
     <div><b>Fecha:</b> <?PHP echo htmlspecialchars($fecha); ?></div>
@@ -125,7 +114,4 @@ if (!function_exists('filaComprobante')) {
 
     <div class="c-linea"></div>
     <div>Atendido por: <b><?PHP echo htmlspecialchars($userLogueado); ?></b></div>
-    <?PHP if ($tipoComprobante == 'completo') { ?>
-        <div>Ficha N&ordm;: <b><?PHP echo htmlspecialchars($ficha); ?></b></div>
-    <?PHP } ?>
 </div>
