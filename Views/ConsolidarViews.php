@@ -108,16 +108,19 @@ include('Head.php');
                             <td><?php echo htmlspecialchars($ventas['vendedor']); ?></td>
                             <td><?php
                                 $esTarjeta = strpos($ventas['formaPago'], 'Tarjeta') !== false;
+                                // varios pagos de la misma forma (ej. dos tarjetas) tambien es pago mixto: se muestra cuantos fueron
+                                $esMixto = $ventas['partesPago'] > 1;
+                                $textoPago = $ventas['formaPago'] . ($ventas['partesPago'] > substr_count($ventas['formaPago'], ' + ') + 1 ? ' (' . $ventas['partesPago'] . ' pagos)' : '');
                                 if ($esTransferencia) {
                                     $claseEtiqueta = 'label-transferencia';
-                                    $detallePago = 'Ref. ' . $ventas['referenciaPago'] . ' | ' . $ventas['bancoDestino'] . ($ventas['nombreTransfirio'] != '' ? ' | ' . $ventas['nombreTransfirio'] : '');
+                                    $detallePago = $ventas['refsPago'] . ' | ' . $ventas['bancoDestino'] . ($ventas['nombreTransfirio'] != '' ? ' | ' . $ventas['nombreTransfirio'] : '');
                                 } else {
                                     // pago mixto sin transferencia (ej. "Tarjeta + Efectivo") en naranja
-                                    $claseEtiqueta = strpos($ventas['formaPago'], ' + ') !== false ? 'label-mixto' : ($esTarjeta ? 'label-primary' : 'label-success');
-                                    $detallePago = $ventas['referenciaPago'] != '' ? 'Aut. ' . $ventas['referenciaPago'] : '';
+                                    $claseEtiqueta = $esMixto ? 'label-mixto' : ($esTarjeta ? 'label-primary' : 'label-success');
+                                    $detallePago = $ventas['refsPago'];
                                 }
-                                ?><span class="label <?php echo $claseEtiqueta; ?>"<?php echo $detallePago != '' ? ' title="' . htmlspecialchars($detallePago) . '"' : ''; ?>><?php echo htmlspecialchars($ventas['formaPago']); ?></span>
-                                <?php if ($esTransferencia) { ?><br><small style="color:#5b3a8c;">Ref. <?php echo htmlspecialchars($ventas['referenciaPago']); ?></small><?php } ?></td>
+                                ?><span class="label <?php echo $claseEtiqueta; ?>"<?php echo $detallePago != '' ? ' title="' . htmlspecialchars($detallePago) . '"' : ''; ?>><?php echo htmlspecialchars($textoPago); ?></span>
+                                <?php if ($ventas['refsPago'] != '') { ?><br><small style="color:<?php echo $esTransferencia ? '#5b3a8c' : '#2c4f9e'; ?>;"><?php echo htmlspecialchars($ventas['refsPago']); ?></small><?php } ?></td>
                             <td><?php echo $ventas['estado']; ?></td>
                             <td><?php echo $ventas['comentario']; ?></td>
 

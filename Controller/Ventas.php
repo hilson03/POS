@@ -44,9 +44,10 @@ foreach ($tipoDeAlerta as $tipoAlerta) {
 if (!isset($_GET['estado'])) {
     $mensaje = "";
     $alerta = "";
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 }
+// el aviso se muestra una sola vez: si se recarga la pagina (aunque siga ?estado= en la direccion) ya no aparece,
+// asi un rechazo viejo no queda en pantalla despues de corregir el cobro
+$updateMensaje = $con->updateMensajeAlert("", "");
 
 
 $urlViews = URL_VIEWS;

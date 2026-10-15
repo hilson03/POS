@@ -99,15 +99,18 @@ include('Head.php');
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <?PHP if (!empty($mensaje)) { ?>
-                    <!-- aviso del cobro (por ejemplo, tarjeta o transferencia con datos incompletos) -->
-                    <div class="<?PHP echo htmlspecialchars($alerta); ?>" role="alert" style="margin-top:15px;">
-                        <strong><?PHP echo htmlspecialchars($mensaje); ?></strong>
-                    </div>
-                <?PHP } ?>
             </div></div>
         </div>
 <br><br><br>
+        <?PHP if (!empty($mensaje)) { ?>
+            <!-- aviso del cobro (por ejemplo, tarjeta o transferencia con datos incompletos); va despues del espacio
+                 de arriba para que la barra azul fija no lo tape -->
+            <div class="<?PHP echo htmlspecialchars($alerta); ?>" role="alert" style="font-size:15px; position:relative; padding-right:40px;">
+                <i class="fa fa-exclamation-triangle"></i> <strong><?PHP echo htmlspecialchars($mensaje); ?></strong>
+                <button type="button" title="Cerrar aviso" onclick="this.parentNode.remove()"
+                        style="position:absolute; top:8px; right:12px; border:none; background:none; font-size:22px; line-height:1; color:inherit; cursor:pointer;">&times;</button>
+            </div>
+        <?PHP } ?>
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">

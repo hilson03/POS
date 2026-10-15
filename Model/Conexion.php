@@ -793,7 +793,10 @@ modulo pedido dicho modulo no se necesitaba ya que el cliente no lo requeria****
                        COALESCE((SELECT GROUP_CONCAT(p.referencia ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.referencia <> ''), '') AS referenciaPago,
                        COALESCE((SELECT GROUP_CONCAT(p.bancoDestino ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.bancoDestino <> ''), '') AS bancoDestino,
                        COALESCE((SELECT GROUP_CONCAT(p.nombreTransfirio ORDER BY p.idPago SEPARATOR ', ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.nombreTransfirio <> ''), '') AS nombreTransfirio,
-                       COALESCE((SELECT SUM(p.monto) FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.formaPago = 'Transferencia'), 0) AS montoTransferencia
+                       COALESCE((SELECT SUM(p.monto) FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.formaPago = 'Transferencia'), 0) AS montoTransferencia,
+                       (SELECT COUNT(*) FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0) AS partesPago,
+                       -- numeros de cada pago con su tipo: Aut. (voucher de tarjeta) o Ref. (transferencia), en el orden en que se cobraron
+                       COALESCE((SELECT GROUP_CONCAT(CONCAT(IF(p.formaPago = 'Tarjeta', 'Aut. ', 'Ref. '), p.referencia) ORDER BY p.idPago SEPARATOR ' · ') FROM pago p WHERE p.idVenta = d.idVentaTotal AND d.idVentaTotal > 0 AND p.referencia <> ''), '') AS refsPago
                 FROM datosventatotal d where d.estado = 'NoConsolidado' and d.idSucursal = ?";
         if ((int) $idUsuario > 0) {
             return $this->ejecutar($sql . " and d.idUsuario = ? order by d.idVentas ASC", array((int) $idSucursal, (int) $idUsuario));
