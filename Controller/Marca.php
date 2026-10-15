@@ -36,6 +36,40 @@ function imagenesMarca()
     );
 }
 
+/*
+ * Datos del negocio que escribe el administrador en Configuracion > Datos del negocio
+ * (nombre, propietario, RTN, direccion, ciudad, telefono, correo, mensaje al pie). Se leen una vez por pagina.
+ */
+function datosNegocio()
+{
+    static $datos = null;
+    if ($datos === null) {
+        $datos = array('razon' => '', 'propietario' => '', 'nro' => '', 'direccion' => '', 'ciudad' => '', 'telefono' => '', 'correo' => '', 'mensajePie' => '');
+        try {
+            if (!class_exists('conexion')) {
+                require_once(__DIR__ . '/../Model/Conexion.php');
+            }
+            $con = new conexion();
+            $fila = $con->getDatosNegocio();
+            if ($fila !== null) {
+                foreach ($datos as $campo => $valor) {
+                    $datos[$campo] = isset($fila[$campo]) ? trim((string) $fila[$campo]) : '';
+                }
+            }
+        } catch (Throwable $e) {
+            // sin base de datos o sin la migracion 011: quedan vacios
+        }
+    }
+    return $datos;
+}
+
+// titulo de la pestana del navegador: "<nombre del negocio> - Punto de venta" (sin nombre, "Punto de venta")
+function tituloPagina()
+{
+    $nombre = datosNegocio()['razon'];
+    return ($nombre != '' ? $nombre . ' - ' : '') . 'Punto de venta';
+}
+
 // ancho del rollo de la impresora termica en mm (80 o 58), se elige en Configuracion > Apariencia
 function anchoPapel()
 {

@@ -144,18 +144,20 @@ class conexion{
     }
 
 //******************esta funciones sirven para obtener datos de facturas y actualizarlos al mismo tiempo*******************
-    public function getDataFactura(){
-
-        return $this->ejecutar("SELECT * FROM `datos`");
-
+    // datos del negocio (Configuracion > Datos del negocio): una sola fila en la tabla datos
+    public function getDatosNegocio()
+    {
+        $filas = $this->filas($this->ejecutar("SELECT * FROM `datos` ORDER BY iddatos LIMIT 1"));
+        return empty($filas) ? null : $filas[0];
     }
 
-
-    public function updateDataFactura($iddatos,$propietario, $razon, $direccion, $nro, $telefono){
-
-        return $this->ejecutar("UPDATE `datos` SET `propietario` = ?, `razon` = ?, `direccion` = ?, `nro` = ?, `telefono` = ? WHERE `datos`.`iddatos` = ?",
-            array($propietario, $razon, $direccion, $nro, $telefono, (int) $iddatos));
-
+    public function guardarDatosNegocio($datos)
+    {
+        $campos = array($datos['razon'], $datos['propietario'], $datos['nro'], $datos['direccion'], $datos['ciudad'], $datos['telefono'], $datos['correo'], $datos['mensajePie']);
+        if ($this->getDatosNegocio() === null) {
+            return $this->ejecutar("INSERT INTO `datos` (razon, propietario, nro, direccion, ciudad, telefono, correo, mensajePie) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", $campos);
+        }
+        return $this->ejecutar("UPDATE `datos` SET razon = ?, propietario = ?, nro = ?, direccion = ?, ciudad = ?, telefono = ?, correo = ?, mensajePie = ? ORDER BY iddatos LIMIT 1", $campos);
     }
 
 

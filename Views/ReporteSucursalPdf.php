@@ -11,6 +11,23 @@ function textoPdf($texto)
     return $convertido === false ? (string) $texto : $convertido;
 }
 
+/*
+ * Pie de todos los reportes PDF: quien lo genero y cuando (a la izquierda) y "Pagina X de Y" (a la derecha).
+ * Para el total de paginas, despues de crear el PDF hay que llamar $pdf->AliasNbPages().
+ */
+function reportePie($pdf)
+{
+    global $usuarioSesion;
+    $quien = isset($usuarioSesion['nombre']) ? $usuarioSesion['nombre'] : '';
+    $pdf->SetY(-15);
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetTextColor(90);
+    $pdf->Cell(0, 10, textoPdf('Generado por: ' . $quien . ' - ' . date('d/m/Y H:i')), 0, 0, 'L');
+    $pdf->SetX($pdf->GetX() - 60);
+    $pdf->Cell(60, 10, textoPdf('Página ' . $pdf->PageNo() . ' de {nb}'), 0, 0, 'R');
+    $pdf->SetTextColor(0);
+}
+
 function reporteEncabezadoSucursal($pdf, $nombreSucursal, $periodo)
 {
     $pdf->SetFont('Arial', 'B', 12);

@@ -47,11 +47,22 @@ if (!function_exists('filaComprobante')) {
 
 <div class="comprobante">
         <div class="c-centro">
-            <div class="c-negocio"><?PHP echo htmlspecialchars($razon); ?></div>
-            <div>De: <?PHP echo htmlspecialchars($propietario); ?></div>
-            <div>Casa Matriz: <?PHP echo htmlspecialchars($direccion); ?></div>
-            <div>N&ordm; <?PHP echo htmlspecialchars($nro); ?> - Tel: <?PHP echo htmlspecialchars($telefono); ?></div>
-            <div>TEUPASENTI</div>
+            <?PHP
+            // datos de Configuracion > Datos del negocio; las lineas vacias no se imprimen
+            $negocio = datosNegocio();
+            $lineasNegocio = array(
+                $negocio['propietario'] != '' ? 'De: ' . $negocio['propietario'] : '',
+                $negocio['nro'] != '' ? 'RTN: ' . $negocio['nro'] : '',
+                $negocio['direccion'],
+                $negocio['ciudad'],
+                $negocio['telefono'] != '' ? 'Tel: ' . $negocio['telefono'] : '',
+                $negocio['correo'],
+            );
+            ?>
+            <div class="c-negocio"><?PHP echo htmlspecialchars($negocio['razon']); ?></div>
+            <?PHP foreach ($lineasNegocio as $lineaNegocio) { if ($lineaNegocio != '') { ?>
+                <div><?PHP echo htmlspecialchars($lineaNegocio); ?></div>
+            <?PHP } } ?>
             <div class="c-titulo">COMPROBANTE DE VENTA</div>
         </div>
 
@@ -114,4 +125,7 @@ if (!function_exists('filaComprobante')) {
 
     <div class="c-linea"></div>
     <div>Atendido por: <b><?PHP echo htmlspecialchars($userLogueado); ?></b></div>
+    <?PHP if ($negocio['mensajePie'] != '') { ?>
+        <div class="c-centro" style="font-weight:bold; margin-top:6px;"><?PHP echo htmlspecialchars($negocio['mensajePie']); ?></div>
+    <?PHP } ?>
 </div>

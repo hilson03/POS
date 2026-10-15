@@ -7,7 +7,7 @@
     <meta name="keyword" content="Sistema modo tactil , para escritorio tabletas ">
     <link rel="shortcut icon" href="<?php echo $urlViews . imagenMarca('favicon'); ?>">
 
-    <title>iCONT - Sistema Profesional Para Empresas</title>
+    <title><?php echo htmlspecialchars(tituloPagina()); ?></title>
 
     <!-- Bootstrap CSS -->
     <link href="<?php echo $urlViews; ?>css/bootstrap.min.css" rel="stylesheet">

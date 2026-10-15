@@ -1,4 +1,6 @@
 <?php
+// pie compartido de los reportes (quien lo genero, cuando y numero de pagina)
+require_once(__DIR__ . '/ReporteSucursalPdf.php');
 
 require('fpdf/fpdf.php');
 
@@ -109,15 +111,14 @@ class PDF extends FPDF
 
     function Footer()
     {
-        $this->SetY(-15);
-        $this->SetFont('Arial', 'B', 8);
-        $this->Cell(100, 10, 'Reporte de productos en la empresa', 0, 0, 'L');
+        reportePie($this);
 
     }
 
 }
 
 $pdf = new PDF('L', 'mm', 'Letter');
+$pdf->AliasNbPages();   // total de paginas para el pie
 
 
 

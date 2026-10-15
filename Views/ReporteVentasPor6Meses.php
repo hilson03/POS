@@ -110,15 +110,14 @@ class PDF extends FPDF
 
     function Footer()
     {
-        $this->SetY(-15);
-        $this->SetFont('Arial', 'B', 8);
-        $this->Cell(100, 10, 'Generado por Sistema iCont', 0, 0, 'L');
+        reportePie($this);
 
     }
 
 }
 
 $pdf = new PDF('L', 'mm', 'Letter');
+$pdf->AliasNbPages();   // total de paginas para el pie
 //$pdf->Open();
 $pdf->AddPage();
 $pdf->SetMargins(20, 20, 20);

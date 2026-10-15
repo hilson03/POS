@@ -12,7 +12,7 @@ require_once(__DIR__ . '/../Controller/Marca.php');
     <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
     <link rel="shortcut icon" href="Views/<?php echo imagenMarca('favicon'); ?>">
 
-    <title>iCONT - Sistema Profesional Para Empresas</title>
+    <title><?php echo htmlspecialchars(tituloPagina()); ?></title>
     <!-- Bootstrap CSS -->
     <link href="Views/css/bootstrap.min.css" rel="stylesheet">
     <!-- bootstrap theme -->
@@ -54,7 +54,7 @@ require_once(__DIR__ . '/../Controller/Marca.php');
         .login-circulo {
             width: 170px;
             height: 170px;
-            margin: 0 auto 18px;
+            margin: 0 auto 26px;
             border: 3px solid #1a1a1a;
             border-radius: 50%;
             background: #fff;
@@ -119,8 +119,7 @@ require_once(__DIR__ . '/../Controller/Marca.php');
     <div class="login-circulo">
         <img src="Views/<?php echo imagenMarca('logo_login'); ?>" alt="Logo">
     </div>
-        <h1 class="login-nombre">REYCELL</h1>
-
+    
     <form class="login-form" action="Controller/AccessUsers.php" method="post">
         <div class="login-wrap">
             <?php if (isset($_GET['error'])) { ?>
