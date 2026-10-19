@@ -13,6 +13,11 @@ if (isset($_POST['usuario'], $_POST['password'])) {
         header("Location: ../index.php?error=login");
         exit;
     }
+    // usuario desactivado: sus datos siguen en el historial, pero ya no puede entrar
+    if (isset($searchUser[0]['estado']) && $searchUser[0]['estado'] == 'Inactivo') {
+        header("Location: ../index.php?error=inactivo");
+        exit;
+    }
 
     guardarSesion($searchUser[0]['id_usu'], $searchUser[0]['idSucursal']);
     header("Location: AccessUsers.php");

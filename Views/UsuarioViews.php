@@ -184,16 +184,21 @@ include('Head.php');
                                         <th><i class="icon_folder"></i> TIPO</th>
                                         <th><i class="icon_contacts_alt"></i> LOGIN</th>
                                         <th><i class="icon_building"></i> SUCURSAL</th>
+                                        <th><i class="icon_check_alt2"></i> ESTADO</th>
                                         <th><i class="icon_cog"></i> ACCIONES</th>
                                     </tr>
                                     </thead>
                                     <?php 
 
                                         while ($datosUsuarios = mysqli_fetch_array($allUsuarios)) {
+                                            $usuarioActivo = !isset($datosUsuarios['estado']) || $datosUsuarios['estado'] != 'Inactivo';
+                                            // con ventas o traslados no se puede borrar (solo desactivar), para no perder el historial
+                                            $puedeEliminar = !$con->usuarioTieneHistorial($datosUsuarios['id_usu']);
+                                            $nombreConfirmar = htmlspecialchars($datosUsuarios['nombre'] . ' (' . $datosUsuarios['login'] . ')');
 
                                     ?>
 
-                                    <tr>
+                                    <tr<?php echo $usuarioActivo ? '' : ' style="opacity:0.6;"'; ?>>
 
                                         <td><img src="<?php echo $urlViews . $datosUsuarios['foto'] ?>" height="50" width="50"></td>
 
@@ -201,12 +206,22 @@ include('Head.php');
                                                 <td> <?PHP echo $datosUsuarios['tipo']; ?></td>
                                                 <td> <?PHP echo $datosUsuarios['login']; ?></td>
                                                 <td> <?PHP echo htmlspecialchars($datosUsuarios['nombreSucursal']); ?></td>
+                                                <td><span class="label <?PHP echo $usuarioActivo ? 'label-success' : 'label-default'; ?>"><?PHP echo $usuarioActivo ? 'Activo' : 'Inactivo'; ?></span></td>
                                                 <td>
                                                 <a href="#a<?php echo $datosUsuarios[0]; ?>" role="button" class="btn btn-success" data-toggle="modal">
                                                     <i class="fa fa-pencil" title="Editar"></i> </a>
-                                                <a href="Registros.php?idborrar=<?PHP echo $datosUsuarios[0]; ?>" data-confirmar="al usuario <?php echo htmlspecialchars($datosUsuarios['nombre'] . ' (' . $datosUsuarios['login'] . ')'); ?>"
-                                                   role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
-                                                </a>
+                                                <?PHP if ($usuarioActivo) { ?>
+                                                    <a href="Registros.php?iddesactivar=<?PHP echo $datosUsuarios[0]; ?>" data-confirmar-tipo="desactivar" data-confirmar="a <?php echo $nombreConfirmar; ?>"
+                                                       role="button" class="btn btn-warning" title="Desactivar: ya no podrá entrar, su historial se conserva"><i class="fa fa-ban"></i></a>
+                                                <?PHP } else { ?>
+                                                    <a href="Registros.php?idactivar=<?PHP echo $datosUsuarios[0]; ?>" data-confirmar-tipo="activar" data-confirmar="a <?php echo $nombreConfirmar; ?>"
+                                                       role="button" class="btn btn-primary" title="Activar: podrá volver a entrar"><i class="fa fa-check"></i></a>
+                                                <?PHP } ?>
+                                                <?PHP if ($puedeEliminar) { ?>
+                                                    <a href="Registros.php?idborrar=<?PHP echo $datosUsuarios[0]; ?>" data-confirmar="al usuario <?php echo $nombreConfirmar; ?>"
+                                                       role="button" class="btn btn-danger" title="Eliminar (no tiene ventas ni traslados)"> <i class="icon_close_alt2"></i>
+                                                    </a>
+                                                <?PHP } ?>
                                             </td>
 
                                     </tr>

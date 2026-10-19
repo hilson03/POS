@@ -86,7 +86,8 @@ class conexion{
 //***************************esta funcion atraves de una consulta trae toda la informacion de los usuarios.******************************
     public function getAllUserData(){
 
-        return $this->ejecutar("SELECT u.*, COALESCE(s.nombre, '(sin sucursal)') AS nombreSucursal FROM `usuarios` u LEFT JOIN sucursal s ON s.idSucursal = u.idSucursal");
+        return $this->ejecutar("SELECT u.*, COALESCE(s.nombre, '(sin sucursal)') AS nombreSucursal FROM `usuarios` u LEFT JOIN sucursal s ON s.idSucursal = u.idSucursal
+                                       ORDER BY u.estado = 'Inactivo', u.nombre");
 
     }
 
@@ -102,7 +103,35 @@ class conexion{
 
     public function contarAdministradores()
     {
-        return (int) $this->ejecutar("SELECT count(*) c FROM usuarios WHERE tipo = 'ADMINISTRADOR'")->fetch_assoc()['c'];
+        return (int) $this->ejecutar("SELECT count(*) c FROM usuarios WHERE tipo = 'ADMINISTRADOR' AND estado = 'Activo'")->fetch_assoc()['c'];
+    }
+
+    // true si ya hay otro usuario (activo o inactivo) con ese login: cada login identifica a una sola persona en el historial
+    public function loginEnUso($login, $exceptoIdUsuario = 0)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM usuarios WHERE login = ? AND id_usu <> ?", array(trim((string) $login), (int) $exceptoIdUsuario))->fetch_assoc()['c'] > 0;
+    }
+
+    // activa o desactiva a un usuario (un inactivo no puede entrar, pero su nombre sigue en el historial)
+    public function setEstadoUsuario($idUsuario, $estado)
+    {
+        return $this->ejecutar("UPDATE usuarios SET estado = ? WHERE id_usu = ?", array($estado == 'Inactivo' ? 'Inactivo' : 'Activo', (int) $idUsuario));
+    }
+
+    /*
+     * true si el usuario aparece en alguna venta, pago o traslado: a esos no se les borra (se desactivan),
+     * para que siempre se sepa quien vendio, aprobo, envio o recibio.
+     */
+    public function usuarioTieneHistorial($idUsuario)
+    {
+        $id = (int) $idUsuario;
+        $fila = $this->ejecutar("SELECT
+                (SELECT count(*) FROM ventatotal WHERE idUsuario = ?) +
+                (SELECT count(*) FROM datosventatotal WHERE idUsuario = ?) +
+                (SELECT count(*) FROM pago WHERE idUsuario = ?) +
+                (SELECT count(*) FROM traslado WHERE ? IN (idUsuarioSolicita, idUsuarioAprueba, idUsuarioEnvia, idUsuarioRecibe)) AS total",
+            array($id, $id, $id, $id))->fetch_assoc();
+        return (int) $fila['total'] > 0;
     }
 
     public function deleteUsuario($idUsuario)

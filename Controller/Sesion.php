@@ -68,12 +68,20 @@ function requerirSesion($tipoRequerido = '', $esAjax = false)
         }
     }
 
+    // si lo desactivaron mientras tenia la sesion abierta, se le cierra en su siguiente clic
+    $motivoSalida = 'sesion';
+    if ($usuarioSesion !== null && isset($usuarioSesion['estado']) && $usuarioSesion['estado'] == 'Inactivo') {
+        $usuarioSesion = null;
+        $motivoSalida = 'inactivo';
+        $_SESSION = array();
+    }
+
     if ($usuarioSesion === null) {
         if ($esAjax) {
             http_response_code(401);
             echo "<div class='alert alert-danger'>Tu sesion termino. <a href='../index.php'>Inicia sesion de nuevo</a>.</div>";
         } else {
-            header("Location: ../index.php?error=sesion");
+            header("Location: ../index.php?error=" . $motivoSalida);
         }
         exit;
     }

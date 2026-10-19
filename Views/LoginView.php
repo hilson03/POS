@@ -127,6 +127,8 @@ require_once(__DIR__ . '/../Controller/Marca.php');
                     <?php
                     if ($_GET['error'] == 'login') {
                         echo 'Usuario o contraseña incorrectos, intenta de nuevo.';
+                    } elseif ($_GET['error'] == 'inactivo') {
+                        echo 'Este usuario está desactivado. Habla con el administrador.';
                     } else {
                         echo 'Tu sesión terminó, vuelve a iniciar sesión.';
                     }

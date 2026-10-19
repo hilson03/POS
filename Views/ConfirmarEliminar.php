@@ -1,7 +1,7 @@
 <!--
     Ventana de confirmacion. Cualquier enlace con el atributo data-confirmar="texto" muestra esta ventana;
     solo si se confirma se sigue el enlace.
-    data-confirmar-tipo elige el modo: "eliminar" (por defecto, roja) o "consolidar" (verde).
+    data-confirmar-tipo elige el modo: "eliminar" (por defecto, roja), "consolidar" (verde), "desactivar" o "activar" (usuarios).
 -->
 <style>
     .confirmar-fondo {
@@ -95,9 +95,19 @@
                 aviso: 'Esta acción no se puede deshacer.', boton: 'Sí, eliminar', claseBoton: 'btn btn-danger', verde: false
             },
             consolidar: {
-                titulo: 'Confirmar consolidación', pregunta: '¿Deseas consolidar',
-                aviso: 'Una vez consolidada no se puede deshacer y la venta pasará a los reportes.',
-                boton: 'Aceptar', claseBoton: 'btn btn-success', verde: true
+                titulo: 'Cerrar venta', pregunta: '¿Deseas cerrar',
+                aviso: 'Una vez cerrada no se puede deshacer y la venta pasará a los reportes.',
+                boton: 'Sí, cerrar venta', claseBoton: 'btn btn-success', verde: true
+            },
+            desactivar: {
+                titulo: 'Desactivar usuario', pregunta: '¿Deseas desactivar',
+                aviso: 'Ya no podrá entrar al sistema. Sus ventas y traslados siguen registrados con su nombre y se puede volver a activar cuando quieras.',
+                boton: 'Sí, desactivar', claseBoton: 'btn btn-warning', verde: false
+            },
+            activar: {
+                titulo: 'Activar usuario', pregunta: '¿Deseas activar',
+                aviso: 'Podrá volver a entrar al sistema con su usuario y contraseña.',
+                boton: 'Sí, activar', claseBoton: 'btn btn-success', verde: true
             }
         };
 

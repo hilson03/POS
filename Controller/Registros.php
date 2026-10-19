@@ -29,7 +29,10 @@ if(isset($_POST['nuevo_usuario'])){
     $password = $_POST['password'];
     $sucursalElegida = isset($_POST['idSucursal']) ? $con->getSucursal($_POST['idSucursal']) : null;
 
-    if ($sucursalElegida === null || $sucursalElegida['estado'] != 'Activo') {
+    if (trim($usuario) == '' || $con->loginEnUso($usuario)) {
+        // el login identifica a una sola persona (tambien a los usuarios desactivados, que siguen en el historial)
+        $updateMensaje = $con->updateMensajeAlert("No se registro el usuario: el login \"" . $usuario . "\" ya lo usa otro usuario (puede estar desactivado). Elige otro.", "alert alert-danger");
+    } elseif ($sucursalElegida === null || $sucursalElegida['estado'] != 'Activo') {
         // sin sucursal el usuario no tendria donde trabajar: no se registra
         $updateMensaje = $con->updateMensajeAlert("No se registro el usuario: elige la sucursal donde va a trabajar.", "alert alert-danger");
     } else {
@@ -63,6 +66,9 @@ if (isset($_GET['idborrar'])) {
         } elseif ($usuarioBorrar[0]['tipo'] == 'ADMINISTRADOR' && $con->contarAdministradores() <= 1) {
             // sin ningun administrador nadie podria entrar a Configuracion ni aprobar traslados
             $updateMensaje = $con->updateMensajeAlert("No se puede eliminar al ultimo administrador del sistema.", "alert alert-danger");
+        } elseif ($con->usuarioTieneHistorial($idUsuario)) {
+            // con ventas o traslados no se borra: se desactiva, para no perder quien hizo cada movimiento
+            $updateMensaje = $con->updateMensajeAlert("No se puede eliminar a " . $usuarioBorrar[0]['nombre'] . " porque tiene ventas o traslados registrados. Desactívalo para que ya no pueda entrar.", "alert alert-warning");
         } else {
             $deleteUser = $con->deleteUsuario($idUsuario);
             $updateMensaje = $con->updateMensajeAlert("Se elimino al usuario " . $usuarioBorrar[0]['nombre'] . ".", "alert alert-danger");
@@ -71,6 +77,29 @@ if (isset($_GET['idborrar'])) {
 
 
     }
+
+/*
+ * Desactivar / activar: el usuario inactivo no puede entrar al sistema, pero sigue apareciendo en las ventas,
+ * Consolidar y traslados que hizo. No se puede desactivar uno mismo ni al ultimo administrador activo.
+ */
+if (isset($_GET['iddesactivar']) || isset($_GET['idactivar'])) {
+    $desactivar = isset($_GET['iddesactivar']);
+    $idUsuario = (int) ($desactivar ? $_GET['iddesactivar'] : $_GET['idactivar']);
+    $usuarioCambiar = $con->getOnlyUserData($idUsuario);
+
+    if (empty($usuarioCambiar)) {
+        $con->updateMensajeAlert("Ese usuario ya no existe.", "alert alert-warning");
+    } elseif ($desactivar && $idUsuario === (int) $usuarioSesion['id_usu']) {
+        $con->updateMensajeAlert("No puedes desactivar tu propio usuario mientras estas conectado.", "alert alert-danger");
+    } elseif ($desactivar && $usuarioCambiar[0]['tipo'] == 'ADMINISTRADOR' && $usuarioCambiar[0]['estado'] == 'Activo' && $con->contarAdministradores() <= 1) {
+        $con->updateMensajeAlert("No se puede desactivar al ultimo administrador activo del sistema.", "alert alert-danger");
+    } else {
+        $con->setEstadoUsuario($idUsuario, $desactivar ? 'Inactivo' : 'Activo');
+        $con->updateMensajeAlert($desactivar
+            ? "Se desactivo a " . $usuarioCambiar[0]['nombre'] . ": ya no puede entrar al sistema, pero sus ventas y traslados siguen registrados con su nombre."
+            : "Se activo a " . $usuarioCambiar[0]['nombre'] . ": ya puede volver a entrar.", $desactivar ? "alert alert-warning" : "alert alert-success");
+    }
+}
 
 //aqui viene a dar la informacion cuando se actualizan los datos de usuario 
 
@@ -82,6 +111,21 @@ if (isset($_POST['update_usuario'])) {
         $nombre = $_POST['nombre'];
         $password = $_POST['password'];
         $imagen = $_POST['imagen'];
+
+        if (trim($login) == '' || $con->loginEnUso($login, (int) $idUsuarioData)) {
+            $con->updateMensajeAlert("No se guardaron los cambios: el login \"" . $login . "\" ya lo usa otro usuario (puede estar desactivado).", "alert alert-danger");
+            header("Location: Usuario.php?estado='Activo'");
+            exit;
+        }
+
+        // si se le quita el tipo administrador al ultimo administrador activo, nadie podria entrar a Configuracion
+        $usuarioEditar = $con->getOnlyUserData((int) $idUsuarioData);
+        if (!empty($usuarioEditar) && $usuarioEditar[0]['tipo'] == 'ADMINISTRADOR' && $tipo != 'ADMINISTRADOR'
+            && $usuarioEditar[0]['estado'] == 'Activo' && $con->contarAdministradores() <= 1) {
+            $con->updateMensajeAlert("No se puede quitar el tipo administrador al ultimo administrador activo del sistema.", "alert alert-danger");
+            header("Location: Usuario.php?estado='Activo'");
+            exit;
+        }
 
         $imagenUsuario = subirFoto('userfileEdit', $imagen, $errorFoto);
 
