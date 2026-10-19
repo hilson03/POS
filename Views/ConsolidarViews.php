@@ -36,20 +36,20 @@ include('Head.php');
         <!--overview start-->
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="page-header"><i class="fa fa-laptop"></i> PRINCIPAL</h3>
+                <h3 class="page-header"><i class="icon_documents_alt"></i> CIERRE DE VENTAS</h3>
                 <div class="<?PHP echo $alerta; ?>" role="alert">
                     <strong><?PHP echo $mensaje; ?></strong>
                 </div>
 
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a href="AccessUsers.php">Inicio</a></li>
-                    <li><i class="fa fa-truck"></i>Consolidar Ventas</li>
+                    <li><i class="icon_documents_alt"></i> Cierre de ventas</li>
 
                 </ol>
             </div>
         </div>
 
-        <header class="panel-heading"> Consolidar Ventas</header>
+        <header class="panel-heading"> Ventas pendientes de cierre</header>
         <?php
         // se leen todas las ventas antes de la tabla para avisar arriba cuantas transferencias hay que revisar
         $listaVentas = $allVentas->fetch_all(MYSQLI_BOTH);
@@ -72,7 +72,7 @@ include('Head.php');
             <div class="alert" style="background:#f3ecfb; border:1px solid #d9c6f1; color:#4a2a7a; margin:10px 15px 0;">
                 <i class="fa fa-university"></i>
                 <strong><?php echo $transferencias == 1 ? 'Hay 1 venta' : 'Hay ' . $transferencias . ' ventas'; ?> por transferencia (<?php echo dinero($totalTransferencias); ?>).</strong>
-                Antes de consolidarlas, revisa en la app o el estado de cuenta del banco que cada referencia haya llegado.
+                Antes de cerrarlas, revisa en la app o el estado de cuenta del banco que cada referencia haya llegado.
                 Pasa el mouse sobre la etiqueta <span class="label label-transferencia">Transferencia</span> para ver la referencia y la cuenta.
             </div>
         <?php } ?>
@@ -121,7 +121,7 @@ include('Head.php');
                                 }
                                 ?><span class="label <?php echo $claseEtiqueta; ?>"<?php echo $detallePago != '' ? ' title="' . htmlspecialchars($detallePago) . '"' : ''; ?>><?php echo htmlspecialchars($textoPago); ?></span>
                                 <?php if ($ventas['refsPago'] != '') { ?><br><small style="color:<?php echo $esTransferencia ? '#5b3a8c' : '#2c4f9e'; ?>;"><?php echo htmlspecialchars($ventas['refsPago']); ?></small><?php } ?></td>
-                            <td><?php echo $ventas['estado']; ?></td>
+                            <td><?php echo $ventas['estado'] == 'Consolidado' ? 'Cerrada' : 'Pendiente'; ?></td>
                             <td><?php echo $ventas['comentario']; ?></td>
 
 
@@ -131,7 +131,7 @@ include('Head.php');
                                 <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>"
                                    data-confirmar-tipo="consolidar"
                                    data-confirmar="la venta #<?php echo $ventas['idVentas']; ?> de <?php echo htmlspecialchars($ventas['cliente']); ?> por <?php echo dinero($ventas['total']); ?>"
-                                   class="btn btn-success"><i class="icon_box-checked"></i></a>
+                                   class="btn btn-success" title="Cerrar venta"><i class="icon_box-checked"></i></a>
                             </td>
                         </tr>
 

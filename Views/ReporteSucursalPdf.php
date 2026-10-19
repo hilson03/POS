@@ -34,7 +34,7 @@ function reporteEncabezadoSucursal($pdf, $nombreSucursal, $periodo)
     $pdf->SetTextColor(0);
     $pdf->Cell(0, 7, textoPdf('Sucursal: ' . $nombreSucursal), 0, 1);
     $pdf->SetFont('Arial', '', 10);
-    $pdf->Cell(0, 6, textoPdf('Periodo: ' . $periodo . '   -   Solo ventas consolidadas'), 0, 1);
+    $pdf->Cell(0, 6, textoPdf('Periodo: ' . $periodo . '   -   Solo ventas cerradas'), 0, 1);
     $pdf->Ln(4);
 }
 

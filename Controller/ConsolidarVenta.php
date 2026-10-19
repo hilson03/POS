@@ -23,9 +23,9 @@ if (isset($_GET['idConsolidar'])) {
 
     if (puedeModificarVenta($con->getVentaConsolidar($idVenta), $usuarioSesion)) {
         $con->consolidarVenta($idVenta);
-        $updateMensaje = $con->updateMensajeAlert("Se Consolido la venta  correctamente !!!", "alert alert-success");
+        $updateMensaje = $con->updateMensajeAlert("Se cerró la venta correctamente.", "alert alert-success");
     } else {
-        $updateMensaje = $con->updateMensajeAlert("No puedes consolidar esa venta: no existe o la hizo otro vendedor.", "alert alert-danger");
+        $updateMensaje = $con->updateMensajeAlert("No puedes cerrar esa venta: no existe o la hizo otro vendedor.", "alert alert-danger");
     }
 
 }

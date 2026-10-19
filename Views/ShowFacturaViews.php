@@ -75,7 +75,7 @@ include('LiteralMoney.php');
                 <i class="fa fa-print"></i>
                 <span><strong>IMPRIMIR COMPROBANTE</strong><small>Con los datos de la tienda</small></span>
             </a>
-            <!-- la venta se registra aqui (descuenta stock y pasa a Consolidar); imprimir no la guarda -->
+            <!-- la venta se registra aqui (descuenta stock y pasa a Cierre de ventas); imprimir no la guarda -->
             <a class="accion-venta guardar" href="RegistrarVenta.php?RegistarVenta=1&<?PHP echo $datosCobro; ?>">
                 <i class="fa fa-check-circle"></i>
                 <span><strong>GUARDAR VENTA</strong><small>Registra la venta y empieza otro pedido</small></span>

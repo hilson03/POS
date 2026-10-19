@@ -212,7 +212,7 @@ include('Head.php');
 
                 <p class="reportes-intro">
                     Elige un reporte. Se abre en una pestaña nueva, listo para imprimir o guardar.
-                    Solo se incluyen las ventas consolidadas.
+                    Solo se incluyen las ventas cerradas (en Cierre de ventas).
                 </p>
 
                 <?php
