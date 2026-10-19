@@ -50,7 +50,7 @@ include('Head.php');
                                 <input class="form-control input-lg" name="nombre" placeholder="Nombre de la sucursal" maxlength="100" required>
                             </div>
                             <div class="form-group">
-                                <input class="form-control input-lg" name="direccion" placeholder="Dirección" maxlength="200">
+                                <input class="form-control input-lg" name="direccion" placeholder="Dirección (sale en el comprobante)" maxlength="200">
                             </div>
                             <div class="form-group">
                                 <input class="form-control input-lg" name="telefono" placeholder="Teléfono" maxlength="50">

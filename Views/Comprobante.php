@@ -50,6 +50,15 @@ if (!function_exists('filaComprobante')) {
             <?PHP
             // datos de Configuracion > Datos del negocio; las lineas vacias no se imprimen
             $negocio = datosNegocio();
+            // cada tienda imprime su propia direccion (Configuracion > Sucursales); si no tiene, va la general del negocio
+            global $usuarioSesion;
+            if (isset($usuarioSesion['idSucursalActiva'])) {
+                $conSucursal = new conexion();
+                $sucursalVenta = $conSucursal->getSucursal($usuarioSesion['idSucursalActiva']);
+                if ($sucursalVenta !== null && trim((string) $sucursalVenta['direccion']) != '') {
+                    $negocio['direccion'] = trim($sucursalVenta['direccion']);
+                }
+            }
             $lineasNegocio = array(
                 $negocio['propietario'] != '' ? 'De: ' . $negocio['propietario'] : '',
                 $negocio['nro'] != '' ? 'RTN: ' . $negocio['nro'] : '',
