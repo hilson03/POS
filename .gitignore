@@ -1,2 +1,8 @@
 # registros de errores que genera el servidor
 error_log
+
+# configuracion de cada instalacion (contrasena de la base): nunca al repositorio publico
+config.php
+
+# registros de errores del sistema en el hosting
+registros/

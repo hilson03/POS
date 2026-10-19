@@ -1,0 +1,13 @@
+# Proteccion del sistema en el hosting (Apache / LiteSpeed de Hostinger).
+
+# no mostrar la lista de archivos de una carpeta sin index
+Options -Indexes
+
+# archivos que nunca deben verse desde el navegador: configuracion con la contrasena de la base,
+# migraciones de la base de datos, guias, registros de errores y archivos de git
+<FilesMatch "^(config\.php|config\.ejemplo\.php|\.gitignore|\.htaccess|error_log)$|\.(sql|md|log|sh|bak|ini)$">
+    Require all denied
+</FilesMatch>
+
+# carpetas internas: el sistema las usa por dentro, pero nadie debe entrar a ellas desde el navegador
+RedirectMatch 403 /(database|registros|Model|\.git)(/|$)

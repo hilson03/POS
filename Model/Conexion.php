@@ -1,14 +1,16 @@
 <?php
+// datos de la base y manejo de errores de esta instalacion (config.php, fuera de GitHub)
+require_once(__DIR__ . '/Configuracion.php');
+
 class conexion{
 
     public $con;
 
     public function __construct(){
-        $user = 'root';
-        $password = '';
-        $server = 'localhost';
-        $database = 'icontpos';
-        $this-> con = new mysqli($server, $user, $password, $database);
+        $config = configuracion();
+        $this-> con = new mysqli($config['db_servidor'], $config['db_usuario'], $config['db_clave'], $config['db_nombre']);
+        // tildes y ñ iguales en cualquier servidor (el hosting puede tener otro juego de caracteres por defecto)
+        $this->con->set_charset('utf8mb4');
         $this->con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }
 

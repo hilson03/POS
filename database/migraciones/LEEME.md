@@ -48,10 +48,17 @@ El sistema guarda archivos en estas carpetas, así que deben tener permiso de es
 - `Views/fotoproducto/` (fotos de productos y usuarios)
 - `Views/img/personalizado/` (logos de Configuración → Apariencia)
 
-## 4. Conexión a la base
+## 4. Configuración (base de datos y errores)
 
-Poner en `Model/Conexion.php` los datos de la base del hosting (servidor, usuario, contraseña y nombre de la base).
-**No subir esos datos a GitHub**: el repositorio es público.
+1. En la carpeta del sistema, copiar `config.ejemplo.php` con el nombre **`config.php`**.
+2. En `config.php` poner los datos de la base creada en el hosting (servidor, usuario, contraseña y nombre de la base).
+3. Cambiar `'mostrar_errores' => true` a **`false`**: así los errores no se muestran en pantalla y se guardan en `registros/errores.log`.
+
+`config.php` **no se sube a GitHub** (está en `.gitignore`) y el `.htaccess` impide abrirlo desde el navegador.
+
+## 4b. Protección incluida
+
+El archivo `.htaccess` de la carpeta principal bloquea desde el navegador: `config.php`, las migraciones `.sql`, esta guía, `Model/`, `registros/` y el listado de carpetas. En `Views/fotoproducto/` y `Views/img/personalizado/` impide ejecutar programas aunque alguien lograra subir uno. Si al subir el sistema se ve un error 500, revisar que el hosting permita archivos `.htaccess` (Hostinger los permite).
 
 ## 5. Comprobar después de instalar
 
@@ -60,4 +67,5 @@ Poner en `Model/Conexion.php` los datos de la base del hosting (servidor, usuari
 - [ ] Generar un reporte PDF.
 - [ ] Subir la foto de un producto y un logo en Apariencia (confirma los permisos de las carpetas).
 - [ ] Revisar que la hora de las ventas sea la de Honduras (el sistema la fija solo, no depende del servidor).
+- [ ] Abrir en el navegador `tudominio.com/config.php` y `tudominio.com/database/migraciones/LEEME.md`: deben dar "Forbidden" (403).
 - [ ] Borrar la venta de prueba.

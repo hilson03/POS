@@ -1,4 +1,7 @@
 <?php
+// configuracion de la instalacion (config.php): base de datos y errores ocultos en el hosting
+require_once(__DIR__ . '/../Model/Configuracion.php');
+
 // hora de Honduras para todo el sistema: sin esto PHP usa UTC (6 horas adelantado) y una venta de la noche
 // quedaba con fecha del dia siguiente en los reportes. En el hosting tambien evita depender de la hora del servidor.
 date_default_timezone_set('America/Tegucigalpa');
