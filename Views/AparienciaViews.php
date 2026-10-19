@@ -6,6 +6,17 @@ include('Head.php');
 <style>
     /* tarjetas del mismo alto aunque tengan textos de distinto largo */
     .marca-fila { display: flex; flex-wrap: wrap; }
+    /* colores de la barra superior: cuadritos para elegir */
+    .colores-barra { display: flex; flex-wrap: wrap; gap: 14px; margin: 6px 0 16px; }
+    .color-opcion { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; font-weight: normal; margin: 0; }
+    .color-opcion input { position: absolute; opacity: 0; pointer-events: none; }
+    .color-muestra { width: 64px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+                     color: #fff; font-size: 20px; border: 3px solid transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .color-muestra i { visibility: hidden; }
+    .color-opcion input:checked + .color-muestra { border-color: #1a1a1a; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1a1a1a; }
+    .color-opcion input:checked + .color-muestra i { visibility: visible; }
+    .color-opcion input:focus-visible + .color-muestra { outline: 2px solid #007aff; outline-offset: 3px; }
+    .color-nombre { font-size: 12px; color: #3a3f45; }
     .marca-fila > div { display: flex; }
     .marca-tarjeta { width: 100%; display: flex; flex-direction: column; }
     .marca-tarjeta .panel-body { flex: 1; display: flex; flex-direction: column; border: 1px solid #e3e6ea; border-top: none; }
@@ -67,6 +78,33 @@ include('Head.php');
                 <ol class="breadcrumb">
                     <?PHP include("MenuOpcionesConfiguracion.php"); ?>
                 </ol>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading"><i class="fa fa-paint-brush"></i> Color de la barra superior</header>
+                    <div class="panel-body">
+                        <p class="help-block" style="margin-top:0;">
+                            Al tocar un color, la barra de arriba cambia para que veas cómo queda; se aplica en todo el sistema al presionar <b>Guardar color</b>.
+                            Son colores oscuros para que el logo y los textos en blanco se lean bien.
+                        </p>
+                        <form action="GuardarApariencia.php" method="post">
+                            <div class="colores-barra">
+                                <?PHP foreach (coloresBarra() as $hex => $nombreColor) { ?>
+                                    <label class="color-opcion" title="<?PHP echo $nombreColor; ?>">
+                                        <input type="radio" name="color_barra" value="<?PHP echo $hex; ?>"<?PHP echo colorBarra() == $hex ? ' checked' : ''; ?>
+                                               onchange="verColorBarra('<?PHP echo $hex; ?>')">
+                                        <span class="color-muestra" style="background: <?PHP echo $hex; ?>;"><i class="fa fa-check"></i></span>
+                                        <span class="color-nombre"><?PHP echo $nombreColor; ?></span>
+                                    </label>
+                                <?PHP } ?>
+                            </div>
+                            <button name="guardar_color" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar color</button>
+                        </form>
+                    </div>
+                </section>
             </div>
         </div>
 
@@ -134,6 +172,15 @@ include('Head.php');
 <?PHP include("LibraryJs.php"); ?>
 
 <script>
+    // vista previa del color: pinta la barra de arriba de esta misma pagina (se guarda con "Guardar color")
+    function verColorBarra(color) {
+        var barra = document.querySelector('.header.dark-bg');
+        if (barra) {
+            barra.style.setProperty('background', color, 'important');
+            barra.style.setProperty('background-color', color, 'important');
+        }
+    }
+
     // muestra la imagen elegida antes de guardarla y avisa si su medida o forma no es la recomendada
     function verAntes(input, clave) {
         var aviso = document.getElementById('aviso_' + clave);

@@ -70,6 +70,31 @@ function tituloPagina()
     return ($nombre != '' ? $nombre . ' - ' : '') . 'Punto de venta';
 }
 
+/*
+ * Colores para la barra superior (Configuracion > Apariencia). Todos son oscuros a proposito: en la barra van
+ * el logo y los textos en blanco, y con colores claros dejarian de leerse. El primero es el original.
+ */
+function coloresBarra()
+{
+    return array(
+        '#007FFF' => 'Azul (original)',
+        '#060147' => 'Azul marino',
+        '#4C2882' => 'Morado',
+        '#008000' => 'Verde',
+        '#9B1B30' => 'Vino',
+        '#2F3640' => 'Gris carbón',
+    );
+}
+
+// color elegido para la barra superior (si no hay uno valido, el azul original)
+function colorBarra()
+{
+    $valores = valoresMarca();
+    $colores = coloresBarra();
+    $elegido = isset($valores['color_barra']) ? strtoupper($valores['color_barra']) : '';
+    return isset($colores[$elegido]) ? $elegido : '#007FFF';
+}
+
 // ancho del rollo de la impresora termica en mm (80 o 58), se elige en Configuracion > Apariencia
 function anchoPapel()
 {

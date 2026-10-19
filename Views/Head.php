@@ -65,6 +65,11 @@
     <!-- legibilidad: texto de los campos oscuro y en negrita (va al final para ganarle a la plantilla) -->
     <link href="<?php echo $urlViews; ?>css/legibilidad.css?v=<?php echo filemtime(__DIR__ . '/css/legibilidad.css'); ?>" rel="stylesheet">
 
+    <!-- color de la barra superior elegido en Configuracion > Apariencia (solo de la lista de colores oscuros) -->
+    <style>
+        .header.dark-bg { background: <?php echo colorBarra(); ?> !important; background-color: <?php echo colorBarra(); ?> !important; }
+    </style>
+
     <!-- letra style -->
     <!-- <link rel="stylesheet" href="css/letra.css">-->
 

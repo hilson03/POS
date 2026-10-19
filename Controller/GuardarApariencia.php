@@ -8,6 +8,21 @@ $usuarioSesion = requerirSesion('ADMINISTRADOR');
 
 $con = new conexion();
 
+// color de la barra superior: solo se acepta uno de la lista (coloresBarra en Marca.php)
+if (isset($_POST['guardar_color'])) {
+    $colores = coloresBarra();
+    $color = isset($_POST['color_barra']) ? strtoupper(trim((string) $_POST['color_barra'])) : '';
+    if (!isset($colores[$color])) {
+        $con->updateMensajeAlert("No se cambió el color: elige uno de la lista.", "alert alert-danger");
+    } else {
+        // el azul original no se guarda (queda como si nunca se hubiera cambiado)
+        $con->setApariencia('color_barra', $color == '#007FFF' ? '' : $color);
+        $con->updateMensajeAlert("La barra superior ahora es de color " . $colores[$color] . ".", "alert alert-success");
+    }
+    header("Location: Apariencia.php?estado=1");
+    exit;
+}
+
 $imagenes = imagenesMarca();
 $clave = isset($_POST['clave']) ? $_POST['clave'] : '';
 
