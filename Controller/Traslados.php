@@ -16,6 +16,9 @@ $id_usuario = $usuarioSesion['id_usu'];
 $nombres = $usuarioSesion['nombre'];
 $foto = $usuarioSesion['foto'];
 $esAdministrador = $tipo == 'ADMINISTRADOR';
+// desde 2026-10-19 los vendedores gestionan traslados igual que el administrador (pedir, aprobar, rechazar, enviar, recibir
+// y cancelar), siempre como usuarios de su sucursal: aprueba y envia la tienda que tiene el producto, recibe la que lo pidio
+$gestionaTraslados = true;
 $idSucursalActiva = (int) $usuarioSesion['idSucursalActiva'];
 
 $tipoDeAlerta = $con->getMensajeAlerta();
@@ -39,11 +42,11 @@ $imageUser = $foto;
 $trasladosRecibidos = $con->getTrasladosSucursal($idSucursalActiva, 'recibidas');
 $trasladosEnviados = $con->getTrasladosSucursal($idSucursalActiva, 'enviadas');
 
-// formulario para pedir (solo administradores): productos y stock disponible en las otras tiendas
+// formulario para pedir: productos y stock disponible en las otras tiendas
 $productosPedir = array();
 $stockOtras = array();
 $idProductoPedir = isset($_GET['pedir']) ? (int) $_GET['pedir'] : 0;
-if ($esAdministrador) {
+if ($gestionaTraslados) {
     $stockOtras = $con->getStockOtrasSucursales($idSucursalActiva);
     $resultado = $con->getAllProducto($idSucursalActiva);
     while ($producto = mysqli_fetch_array($resultado)) {

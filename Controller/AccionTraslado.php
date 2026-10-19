@@ -8,7 +8,9 @@ $usuarioSesion = requerirSesion();
 
 $con = new conexion();
 
-$esAdministrador = $usuarioSesion['tipo'] == 'ADMINISTRADOR';
+// desde 2026-10-19 los vendedores gestionan traslados igual que el administrador (pedir, aprobar, rechazar, enviar, recibir
+// y cancelar), siempre como usuarios de su sucursal: aprueba y envia la tienda que tiene el producto, recibe la que lo pidio
+$gestionaTraslados = true;
 $idSucursalActiva = (int) $usuarioSesion['idSucursalActiva'];
 $idUsuario = (int) $usuarioSesion['id_usu'];
 $accion = isset($_POST['accion']) ? $_POST['accion'] : '';
@@ -19,7 +21,7 @@ function avisar($con, $mensaje, $alerta)
 }
 
 if ($accion == 'crear') {
-    // solo un administrador pide productos, y los pide para la sucursal en la que esta trabajando
+    // se piden productos para la sucursal en la que se esta trabajando
     $idProducto = (int) $_POST['idProducto'];
     $idOrigen = (int) $_POST['idSucursalOrigen'];
     $cantidad = (int) $_POST['cantidad'];
@@ -27,8 +29,8 @@ if ($accion == 'crear') {
     $origen = $con->getSucursal($idOrigen);
     $producto = $con->getProductoElegido($idProducto, $idOrigen);
 
-    if (!$esAdministrador) {
-        avisar($con, "Solo un administrador puede pedir productos a otra tienda.", "alert alert-danger");
+    if (!$gestionaTraslados) {
+        avisar($con, "No tienes permiso para pedir productos a otra tienda.", "alert alert-danger");
     } elseif ($origen === null || $origen['estado'] != 'Activo' || $idOrigen == $idSucursalActiva) {
         avisar($con, "Elige una tienda distinta a la tuya para pedir el producto.", "alert alert-danger");
     } elseif (empty($producto)) {
@@ -53,9 +55,9 @@ if ($accion == 'crear') {
         $detalle = $traslado['cantidad'] . " x " . $traslado['nombreProducto'];
 
         if ($accion == 'aprobar' || $accion == 'rechazar') {
-            // aprueba o rechaza un administrador de la tienda que tiene el producto
-            if (!$esAdministrador || !$esOrigen) {
-                avisar($con, "Solo un administrador de " . $traslado['sucursalOrigen'] . " puede aprobar o rechazar esta solicitud.", "alert alert-danger");
+            // aprueba o rechaza un usuario de la tienda que tiene el producto
+            if (!$gestionaTraslados || !$esOrigen) {
+                avisar($con, "Solo la tienda " . $traslado['sucursalOrigen'] . " puede aprobar o rechazar esta solicitud.", "alert alert-danger");
             } elseif ($accion == 'aprobar') {
                 $hecho = $con->aprobarTraslado($id, $idUsuario);
                 avisar($con, $hecho ? "Solicitud #$id aprobada ($detalle). Ya se puede enviar." : "La solicitud #$id ya no esta pendiente.",
@@ -85,8 +87,8 @@ if ($accion == 'crear') {
             }
         } elseif ($accion == 'cancelar') {
             // la tienda que pidio puede anular su solicitud mientras no se haya enviado
-            if (!$esAdministrador || !$esDestino) {
-                avisar($con, "Solo un administrador de " . $traslado['sucursalDestino'] . " puede cancelar esta solicitud.", "alert alert-danger");
+            if (!$gestionaTraslados || !$esDestino) {
+                avisar($con, "Solo la tienda " . $traslado['sucursalDestino'] . " puede cancelar esta solicitud.", "alert alert-danger");
             } else {
                 $hecho = $con->cancelarTraslado($id);
                 avisar($con, $hecho ? "Solicitud #$id cancelada." : "La solicitud #$id ya fue enviada o cerrada y no se puede cancelar.",

@@ -83,7 +83,7 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
             </div>
         </div>
 
-        <?PHP if ($esAdministrador) { ?>
+        <?PHP if ($gestionaTraslados) { ?>
         <div class="row">
             <div class="col-lg-12">
                 <section class="panel">
@@ -226,7 +226,7 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
                                             <td>
                                                 <?PHP
                                                 if ($pestana == 'recibidas') {
-                                                    if ($t['estado'] == 'Pendiente' && $esAdministrador) {
+                                                    if ($t['estado'] == 'Pendiente' && $gestionaTraslados) {
                                                         botonAccion($t['idTraslado'], 'aprobar', '<i class="icon_check"></i> Aprobar', 'btn-success', '¿Aprobar el traslado de ' . (int) $t['cantidad'] . ' unidades?');
                                                         ?>
                                                         <form action="AccionTraslado.php" method="post" style="display:inline-block; margin:2px;" onsubmit="return confirm('¿Rechazar esta solicitud?');">
@@ -237,14 +237,14 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
                                                         </form>
                                                         <?PHP
                                                     } elseif ($t['estado'] == 'Pendiente') {
-                                                        echo '<small class="text-muted">Esperando aprobación de un administrador</small>';
+                                                        echo '<small class="text-muted">Esperando aprobación</small>';
                                                     } elseif ($t['estado'] == 'Aprobada') {
                                                         botonAccion($t['idTraslado'], 'enviar', '<i class="arrow_right"></i> Marcar como enviado', 'btn-primary', '¿Ya enviaste ' . (int) $t['cantidad'] . ' unidades? Se descontarán de tu stock.');
                                                     }
                                                 } else {
                                                     if ($t['estado'] == 'EnCamino') {
                                                         botonAccion($t['idTraslado'], 'recibir', '<i class="icon_check_alt2"></i> Confirmar que llegó', 'btn-success', '¿Llegaron las ' . (int) $t['cantidad'] . ' unidades? Se sumarán a tu stock.');
-                                                    } elseif (in_array($t['estado'], array('Pendiente', 'Aprobada')) && $esAdministrador) {
+                                                    } elseif (in_array($t['estado'], array('Pendiente', 'Aprobada')) && $gestionaTraslados) {
                                                         botonAccion($t['idTraslado'], 'cancelar', '<i class="icon_close_alt2"></i> Cancelar', 'btn-default', '¿Cancelar esta solicitud?');
                                                     }
                                                 }

@@ -13,7 +13,7 @@
             $contador = '';
             if ($menu['location'] == 'Traslados.php' && isset($usuarioSesion)) {
                 $conMenu = new conexion();
-                $porAtender = $conMenu->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], $menuEsAdministrador);
+                $porAtender = $conMenu->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], true);
                 if ($porAtender > 0) {
                     $contador = " <span class='badge' style='background-color: #d9534f;'>" . $porAtender . "</span>";
                 }

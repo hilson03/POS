@@ -51,6 +51,6 @@ $ventasDelDia = $con->getVentasDelDia(date('Y-m-d'), $usuarioSesion['idSucursalA
 $indicadorVendidoHoy = $con->getTotalVendidoDia(date('Y-m-d'), $usuarioSesion['idSucursalActiva']);
 $indicadorPorConsolidar = mysqli_num_rows($con->getAllVentas($usuarioSesion['idSucursalActiva'], $esAdministrador ? 0 : $id_usuario));
 $indicadorSinStock = $con->contarProductosSinStock($usuarioSesion['idSucursalActiva']);
-$indicadorTraslados = $con->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], $esAdministrador);
+$indicadorTraslados = $con->contarTrasladosPorAtender($usuarioSesion['idSucursalActiva'], true);   // todos gestionan traslados
 
 require('../Views/Wellcome.php');
