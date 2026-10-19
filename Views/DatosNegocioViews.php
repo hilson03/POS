@@ -14,6 +14,10 @@ $camposNegocio = array(
     'correo'      => array('Correo', 'Opcional.', 100, false),
     'mensajePie'  => array('Mensaje al pie del comprobante', 'Opcional. Ej: ¡Gracias por su compra!', 200, false),
 );
+// la vista previa muestra el comprobante de la sucursal en la que se esta trabajando (con su propia direccion)
+$sucursalVista = $con->getSucursal($usuarioSesion['idSucursalActiva']);
+$nombreSucursalVista = $sucursalVista === null ? '' : $sucursalVista['nombre'];
+$direccionSucursalVista = $sucursalVista === null ? '' : trim((string) $sucursalVista['direccion']);
 ?>
 <style>
     /* vista previa del encabezado del comprobante (misma letra y orden que Comprobante.php) */
@@ -97,7 +101,7 @@ $camposNegocio = array(
 
             <div class="col-lg-5">
                 <section class="panel">
-                    <header class="panel-heading"><i class="fa fa-eye"></i> Así se ve en el comprobante</header>
+                    <header class="panel-heading"><i class="fa fa-eye"></i> Así se ve en el comprobante de <b><?PHP echo htmlspecialchars($nombreSucursalVista); ?></b></header>
                     <div class="panel-body" style="background:#eee;">
                         <div class="vista-negocio">
                             <div class="v-nombre" id="v_razon"></div>
@@ -116,6 +120,13 @@ $camposNegocio = array(
                         <p class="help-block" style="margin:10px 0 0; text-align:center;">
                             La vista cambia mientras escribes; se aplica a los comprobantes al presionar <b>Guardar</b>.
                         </p>
+                        <p class="help-block" style="margin:6px 0 0; text-align:center;">
+                            <?PHP if ($direccionSucursalVista != '') { ?>
+                                La dirección sale de <b>Sucursales</b>: cada tienda imprime la suya. Para ver otra, cámbiala arriba a la derecha.
+                            <?PHP } else { ?>
+                                Esta sucursal no tiene dirección propia, por eso usa la <b>Dirección general</b>. Puedes ponérsela en <b>Sucursales</b>.
+                            <?PHP } ?>
+                        </p>
                     </div>
                 </section>
             </div>
@@ -129,13 +140,15 @@ $camposNegocio = array(
 
 <script>
     // vista previa del encabezado: mismo texto y orden que el comprobante (las lineas vacias no salen)
+    var direccionSucursal = <?PHP echo json_encode($direccionSucursalVista); ?>;
     function verNegocio() {
         function valor(campo) { return document.getElementById('neg_' + campo).value.trim(); }
         var formatos = {
             razon: function (v) { return v || 'Nombre del negocio'; },
             propietario: function (v) { return v ? 'De: ' + v : ''; },
             nro: function (v) { return v ? 'RTN: ' + v : ''; },
-            direccion: function (v) { return v; },
+            // si la sucursal tiene direccion propia, esa es la que imprime (la general queda de respaldo)
+            direccion: function (v) { return direccionSucursal || v; },
             ciudad: function (v) { return v; },
             telefono: function (v) { return v ? 'Tel: ' + v : ''; },
             correo: function (v) { return v; },
