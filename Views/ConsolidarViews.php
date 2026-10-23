@@ -101,9 +101,9 @@ include('Head.php');
                         ?>
 
                         <tr<?php echo $esTransferencia ? ' class="fila-transferencia"' : ''; ?>>
-                            <td align="center"><?php echo $ventas['idVentas']; ?></td>
-                            <td><?php echo $ventas['fechaVenta']; ?></td>
-                            <td><?php echo $ventas['cliente']; ?></td>
+                            <td align="center"><?php echo htmlspecialchars((string) $ventas['idVentas']); ?></td>
+                            <td><?php echo htmlspecialchars((string) $ventas['fechaVenta']); ?></td>
+                            <td><?php echo htmlspecialchars((string) $ventas['cliente']); ?></td>
                             <td align="center" ><?php echo dinero($ventas['total']); ?></td>
                             <td><?php echo htmlspecialchars($ventas['vendedor']); ?></td>
                             <td><?php
@@ -122,7 +122,7 @@ include('Head.php');
                                 ?><span class="label <?php echo $claseEtiqueta; ?>"<?php echo $detallePago != '' ? ' title="' . htmlspecialchars($detallePago) . '"' : ''; ?>><?php echo htmlspecialchars($textoPago); ?></span>
                                 <?php if ($ventas['refsPago'] != '') { ?><br><small style="color:<?php echo $esTransferencia ? '#5b3a8c' : '#2c4f9e'; ?>;"><?php echo htmlspecialchars($ventas['refsPago']); ?></small><?php } ?></td>
                             <td><?php echo $ventas['estado'] == 'Consolidado' ? 'Cerrada' : 'Pendiente'; ?></td>
-                            <td><?php echo $ventas['comentario']; ?></td>
+                            <td><?php echo htmlspecialchars((string) $ventas['comentario']); ?></td>
 
 
                             <td>
@@ -130,7 +130,7 @@ include('Head.php');
                                    data-toggle="modal"><i class="icon_pencil-edit_alt"></i></a>
                                 <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>"
                                    data-confirmar-tipo="consolidar"
-                                   data-confirmar="la venta #<?php echo $ventas['idVentas']; ?> de <?php echo htmlspecialchars($ventas['cliente']); ?> por <?php echo dinero($ventas['total']); ?>"
+                                   data-confirmar="la venta #<?php echo htmlspecialchars((string) $ventas['idVentas']); ?> de <?php echo htmlspecialchars($ventas['cliente']); ?> por <?php echo dinero($ventas['total']); ?>"
                                    class="btn btn-success" title="Cerrar venta"><i class="icon_box-checked"></i></a>
                             </td>
                         </tr>
@@ -140,7 +140,7 @@ include('Head.php');
                             <form class="form-validate form-horizontal" name="form2" action="ConsolidarVenta.php"
                                   method="post">
                                 <input type="hidden" name="idVentas"
-                                       value="<?php echo $ventas['idVentas']; ?>">
+                                       value="<?php echo htmlspecialchars((string) $ventas['idVentas']); ?>">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">

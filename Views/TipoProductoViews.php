@@ -116,7 +116,7 @@ include('Head.php');
                         ?>
 
                         <tr>
-                            <td><?php echo $tipoProducto['tipoproducto']; ?></td>
+                            <td><?php echo htmlspecialchars((string) $tipoProducto['tipoproducto']); ?></td>
                             <td>
                                 <a href="#a<?php echo $tipoProducto[0]; ?>" role="button" class="btn btn-success"
                                    data-toggle="modal"><i class="fa fa-pencil" title="Editar"></i></a>
@@ -130,7 +130,7 @@ include('Head.php');
                             <form class="form-validate form-horizontal" name="form2" action="RegistroTipoProducto.php"
                                   method="post">
                                 <input type="hidden" name="idtipoproducto"
-                                       value="<?php echo $tipoProducto['idtipoproducto']; ?>">
+                                       value="<?php echo htmlspecialchars((string) $tipoProducto['idtipoproducto']); ?>">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -151,7 +151,7 @@ include('Head.php');
                                                     <input class="form-control input-lg m-bot15"
                                                            id="tipoProducto"
                                                            name="tipoProducto" type="text"
-                                                           value="<?php echo $tipoProducto['tipoproducto']; ?>"/>
+                                                           value="<?php echo htmlspecialchars((string) $tipoProducto['tipoproducto']); ?>"/>
                                                 </div>
 
                                             </div>

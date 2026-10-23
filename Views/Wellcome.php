@@ -137,7 +137,7 @@
                                 ?>
                                 <tr>
                                     <td><?PHP echo htmlspecialchars($venta['descripcion']); ?></td>
-                                    <td><?PHP echo $venta['cantidad']; ?></td>
+                                    <td><?PHP echo htmlspecialchars((string) $venta['cantidad']); ?></td>
                                     <td><?PHP echo dinero($venta['precio']) . ' ' . $tipoMonedaElegida; ?></td>
                                     <td><?PHP echo dinero($venta['totalVendido']) . ' ' . $tipoMonedaElegida; ?></td>
                                     <td><?PHP echo date('d/m/Y', strtotime($venta['fecha'])); ?></td>

@@ -3,6 +3,7 @@ require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
 require_once('SubirFoto.php');
+require_once('Validar.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion('ADMINISTRADOR');
@@ -10,34 +11,59 @@ $usuario = $usuarioSesion['login'];
 
 $con = new conexion();
 
-if (isset($_POST['nuevo_cliente'])) {
+// datos del formulario de cliente, limpios y cortados al largo de cada columna
+function datosClientePost()
+{
+    return array(
+        'nombre' => textoPost('nombre', 200),
+        'apellido' => textoPost('apellido', 200),
+        'direccion' => textoPost('direccion', 200),
+        'telefonoFijo' => textoPost('telefonoFijo', 30),
+        'telefonoCelular' => textoPost('telefonoCelular', 30),
+        'email' => textoPost('email', 200),
+        'ci' => textoPost('ci', 100),
+    );
+}
 
-
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $direccion = $_POST['direccion'];
-    $telefonoFijo = $_POST['telefonoFijo'];
-    $telefonoCelular = $_POST['telefonoCelular'];
-    $email = $_POST['email'];
-    $fechaRegistro = $_POST['fechaRegistro'];
-    $ci = $_POST['ci'];
-
-
-    $destino = subirFoto('userfile', "img/user.png", $errorFoto);
-
-
-    $mensaje = "Se registro un nuevo cliente  correctamente !!!";
-    $alerta = "alert alert-success";
-    if ($errorFoto != "") {
-        $mensaje = "Se registro el cliente, pero la foto no se guardo: " . $errorFoto;
-        $alerta = "alert alert-warning";
+// motivo por el que los datos del cliente no son validos, o vacio si estan bien
+function validarDatosCliente($cliente)
+{
+    if ($cliente['nombre'] == '') {
+        return "el nombre es obligatorio.";
     }
+    if (!correoValido($cliente['email'])) {
+        return "el correo no es valido (ejemplo: nombre@gmail.com).";
+    }
+    return "";
+}
 
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
+if (isset($_POST['nuevo_cliente'])) {
+    $cliente = datosClientePost();
+    $errorDatos = validarDatosCliente($cliente);
+    // la fecha de registro es la del dia (en el formulario es solo de lectura)
+    $fechaRegistro = date('Y-m-d');
 
-    $registrarNewProveedor = $con->registerNewCliente($destino,$nombre,$apellido,$direccion,$telefonoFijo,$telefonoCelular,$email,$fechaRegistro,$ci);
+    if ($errorDatos != "") {
+        $con->updateMensajeAlert("No se registro el cliente: " . $errorDatos, "alert alert-danger");
+    } else {
+        $destino = subirFoto('userfile', "img/user.png", $errorFoto);
 
+        $mensaje = "Se registro un nuevo cliente  correctamente !!!";
+        $alerta = "alert alert-success";
+        if ($errorFoto != "") {
+            $mensaje = "Se registro el cliente, pero la foto no se guardo: " . $errorFoto;
+            $alerta = "alert alert-warning";
+        }
 
+        try {
+            $con->registerNewCliente($destino, $cliente['nombre'], $cliente['apellido'], $cliente['direccion'], $cliente['telefonoFijo'], $cliente['telefonoCelular'], $cliente['email'], $fechaRegistro, $cliente['ci']);
+            $con->updateMensajeAlert($mensaje, $alerta);
+        } catch (Throwable $e) {
+            // el mensaje de exito solo sale si de verdad se guardo
+            error_log('No se registro el cliente: ' . $e->getMessage());
+            $con->updateMensajeAlert("No se pudo registrar el cliente. Revisa los datos e intenta de nuevo.", "alert alert-danger");
+        }
+    }
 }
 
 if (isset($_GET['idborrar'])) {
@@ -55,17 +81,25 @@ if (isset($_GET['idborrar'])) {
 
 if (isset($_POST['update_cliente'])) {
 
-        $idcliente = $_POST['idcliente'];
-        $imagen = $_POST['imagen'];
-    
-        $nombre = $_POST['nombre'];
-        $apellido = $_POST['apellido'];
-        $direccion = $_POST['direccion'];
-        $telefonoFijo = $_POST['telefonoFijo'];
-        $telefonoCelular = $_POST['telefonoCelular'];
-        $email = $_POST['email'];
+        $idcliente = enteroPost('idcliente');
+        $cliente = datosClientePost();
         $fechaRegistro = date('Y-m-d');
-        $ci = $_POST['ci'];
+        // la foto actual se lee de la base (no del formulario, que se puede alterar)
+        $clienteActual = $con->getCliente($idcliente);
+        $errorDatos = $clienteActual === null ? "no se encontro el cliente." : validarDatosCliente($cliente);
+        if ($errorDatos != "") {
+            $con->updateMensajeAlert("No se actualizo el cliente: " . $errorDatos, "alert alert-danger");
+            header("Location: Cliente.php?estado='Activo'");
+            exit;
+        }
+        $imagen = $clienteActual['foto'];
+        $nombre = $cliente['nombre'];
+        $apellido = $cliente['apellido'];
+        $direccion = $cliente['direccion'];
+        $telefonoFijo = $cliente['telefonoFijo'];
+        $telefonoCelular = $cliente['telefonoCelular'];
+        $email = $cliente['email'];
+        $ci = $cliente['ci'];
 
         $destino = subirFoto('userfileEdit', $imagen, $errorFoto);
 

@@ -12,7 +12,7 @@
                     <select name="idSucursal" onchange="this.form.submit()" title="Sucursal en la que estás trabajando"
                             style="height: 30px; border-radius: 4px; border: none; padding: 0 6px; color: #333;">
                         <?PHP foreach ($listaSucursales as $sucursalMenu) { ?>
-                            <option value="<?PHP echo $sucursalMenu['idSucursal']; ?>"<?PHP echo $sucursalMenu['idSucursal'] == $usuarioSesion['idSucursalActiva'] ? ' selected' : ''; ?>>
+                            <option value="<?PHP echo htmlspecialchars((string) $sucursalMenu['idSucursal']); ?>"<?PHP echo $sucursalMenu['idSucursal'] == $usuarioSesion['idSucursalActiva'] ? ' selected' : ''; ?>>
                                 <?PHP echo htmlspecialchars($sucursalMenu['nombre']); ?>
                             </option>
                         <?PHP } ?>

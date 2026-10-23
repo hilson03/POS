@@ -2,6 +2,7 @@
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
+require_once('Validar.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion();
@@ -32,8 +33,8 @@ if (isset($_GET['idConsolidar'])) {
 
 
 if (isset($_POST['insertarComentario'])) {
-    $idVentas = $_POST['idVentas'];
-    $comentario = $_POST['comentario'];
+    $idVentas = enteroPost('idVentas');
+    $comentario = textoPost('comentario', 150);
 
     if (puedeModificarVenta($con->getVentaConsolidar($idVentas), $usuarioSesion)) {
         $updateComentario = $con->insertarComentarioFicha($idVentas, $comentario);

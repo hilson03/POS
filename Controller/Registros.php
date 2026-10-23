@@ -3,6 +3,7 @@ require("../Model/Conexion.php");
 require("Constans.php");
 require_once('Sesion.php');
 require_once("SubirFoto.php");
+require_once("Validar.php");
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion('ADMINISTRADOR');
@@ -17,19 +18,44 @@ function sucursalValida($con, $idSucursal)
     return ($sucursal !== null && $sucursal['estado'] == 'Activo') ? (int) $idSucursal : 1;
 }
 
+// tipos de usuario que existen en el sistema
+$tiposUsuario = array('ADMINISTRADOR', 'VENTAS');
+
+// motivo por el que los datos del usuario no son validos, o vacio si estan bien ($password vacio = no se cambia)
+function validarDatosUsuario($login, $nombre, $tipo, $password, $passwordObligatorio, $tiposUsuario)
+{
+    if ($nombre == '') {
+        return "el nombre es obligatorio.";
+    }
+    if (!loginValido($login)) {
+        return "el login debe tener de 3 a 50 letras o numeros, sin espacios (se permiten . - _).";
+    }
+    if (!in_array($tipo, $tiposUsuario, true)) {
+        return "elige el tipo de usuario: ADMINISTRADOR o VENTAS.";
+    }
+    if (($passwordObligatorio || $password !== '') && !passwordValido($password)) {
+        return "la contrasena debe tener al menos 6 caracteres.";
+    }
+    return "";
+}
+
 $allUsuarios = $con->getAllUserData();
 $menuMain = $con->getMenuMain();
 
 
 if(isset($_POST['nuevo_usuario'])){
 
-    $usuario = $_POST['login'];
-    $tipo = $_POST['tipo'];
-    $nombre = $_POST['nombre'];
-    $password = $_POST['password'];
-    $sucursalElegida = isset($_POST['idSucursal']) ? $con->getSucursal($_POST['idSucursal']) : null;
+    $usuario = textoPost('login', 50);
+    $tipo = textoPost('tipo', 50);
+    $nombre = textoPost('nombre', 50);
+    // la contrasena no se recorta ni se limpia: se guarda cifrada tal como la escribieron
+    $password = (isset($_POST['password']) && is_string($_POST['password'])) ? $_POST['password'] : '';
+    $sucursalElegida = $con->getSucursal(enteroPost('idSucursal'));
+    $errorDatos = validarDatosUsuario($usuario, $nombre, $tipo, $password, true, $tiposUsuario);
 
-    if (trim($usuario) == '' || $con->loginEnUso($usuario)) {
+    if ($errorDatos != '') {
+        $updateMensaje = $con->updateMensajeAlert("No se registro el usuario: " . $errorDatos, "alert alert-danger");
+    } elseif ($con->loginEnUso($usuario)) {
         // el login identifica a una sola persona (tambien a los usuarios desactivados, que siguen en el historial)
         $updateMensaje = $con->updateMensajeAlert("No se registro el usuario: el login \"" . $usuario . "\" ya lo usa otro usuario (puede estar desactivado). Elige otro.", "alert alert-danger");
     } elseif ($sucursalElegida === null || $sucursalElegida['estado'] != 'Activo') {
@@ -105,14 +131,24 @@ if (isset($_GET['iddesactivar']) || isset($_GET['idactivar'])) {
 
 if (isset($_POST['update_usuario'])) {
 
-        $idUsuarioData = $_POST['idUsuario'];
-        $login = $_POST['login'];
-        $tipo = $_POST['tipo'];
-        $nombre = $_POST['nombre'];
-        $password = $_POST['password'];
-        $imagen = $_POST['imagen'];
+        $idUsuarioData = enteroPost('idUsuario');
+        $login = textoPost('login', 50);
+        $tipo = textoPost('tipo', 50);
+        $nombre = textoPost('nombre', 50);
+        $password = (isset($_POST['password']) && is_string($_POST['password'])) ? $_POST['password'] : '';
 
-        if (trim($login) == '' || $con->loginEnUso($login, (int) $idUsuarioData)) {
+        // la foto actual se lee de la base (no del formulario, que se puede alterar)
+        $usuarioActual = $con->getOnlyUserData($idUsuarioData);
+        $imagen = empty($usuarioActual) ? 'img/user.png' : $usuarioActual[0]['foto'];
+        $errorDatos = empty($usuarioActual) ? "ese usuario ya no existe." : validarDatosUsuario($login, $nombre, $tipo, $password, false, $tiposUsuario);
+
+        if ($errorDatos != '') {
+            $con->updateMensajeAlert("No se guardaron los cambios: " . $errorDatos, "alert alert-danger");
+            header("Location: Usuario.php?estado='Activo'");
+            exit;
+        }
+
+        if ($con->loginEnUso($login, (int) $idUsuarioData)) {
             $con->updateMensajeAlert("No se guardaron los cambios: el login \"" . $login . "\" ya lo usa otro usuario (puede estar desactivado).", "alert alert-danger");
             header("Location: Usuario.php?estado='Activo'");
             exit;
@@ -138,7 +174,7 @@ if (isset($_POST['update_usuario'])) {
 
         $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
 
-        $updateUser = $con->updateUsuario($login, $tipo, $nombre, $password, $imagenUsuario, $idUsuarioData, sucursalValida($con, $_POST['idSucursal']));
+        $updateUser = $con->updateUsuario($login, $tipo, $nombre, $password, $imagenUsuario, $idUsuarioData, sucursalValida($con, enteroPost('idSucursal')));
 
         
 

@@ -101,7 +101,7 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
                                         <option value="">— Elige un producto —</option>
                                         <?PHP foreach ($productosPedir as $producto) {
                                             if (empty($stockOtras[$producto['idproducto']])) continue; ?>
-                                            <option value="<?PHP echo $producto['idproducto']; ?>"<?PHP echo $producto['idproducto'] == $idProductoPedir ? ' selected' : ''; ?>>
+                                            <option value="<?PHP echo htmlspecialchars((string) $producto['idproducto']); ?>"<?PHP echo $producto['idproducto'] == $idProductoPedir ? ' selected' : ''; ?>>
                                                 <?PHP echo htmlspecialchars($producto['nombreProducto']); ?> (aquí: <?PHP echo (int) $producto['cantidad']; ?>)
                                             </option>
                                         <?PHP } ?>
@@ -205,13 +205,13 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
                                     <?PHP foreach ($traslados as $t) {
                                         $etiqueta = isset($etiquetasEstado[$t['estado']]) ? $etiquetasEstado[$t['estado']] : array('label-default', $t['estado']); ?>
                                         <tr>
-                                            <td><?PHP echo $t['idTraslado']; ?></td>
+                                            <td><?PHP echo htmlspecialchars((string) $t['idTraslado']); ?></td>
                                             <td>
                                                 <?PHP if ($t['nombreProducto'] === null) { // el producto se elimino del catalogo despues del traslado ?>
                                                     <img src="<?PHP echo $urlViews; ?>fotoproducto/NoPicture.jpg" width="40" height="40" style="border-radius: 4px;">
                                                     <em class="text-muted">(producto eliminado)</em>
                                                 <?PHP } else { ?>
-                                                    <img src="<?PHP echo $urlViews . $t['imagen']; ?>" width="40" height="40" style="border-radius: 4px;">
+                                                    <img src="<?PHP echo $urlViews . htmlspecialchars((string) $t['imagen']); ?>" width="40" height="40" style="border-radius: 4px;">
                                                     <?PHP echo htmlspecialchars($t['nombreProducto']); ?>
                                                 <?PHP } ?>
                                                 <?PHP if ($t['motivo'] != '') { ?><br><small class="text-muted">Motivo: <?PHP echo htmlspecialchars($t['motivo']); ?></small><?PHP } ?>
@@ -230,7 +230,7 @@ function botonAccion($idTraslado, $accion, $texto, $clase, $confirmacion)
                                                         botonAccion($t['idTraslado'], 'aprobar', '<i class="icon_check"></i> Aprobar', 'btn-success', '¿Aprobar el traslado de ' . (int) $t['cantidad'] . ' unidades?');
                                                         ?>
                                                         <form action="AccionTraslado.php" method="post" style="display:inline-block; margin:2px;" onsubmit="return confirm('¿Rechazar esta solicitud?');">
-                                                            <input type="hidden" name="idTraslado" value="<?PHP echo $t['idTraslado']; ?>">
+                                                            <input type="hidden" name="idTraslado" value="<?PHP echo htmlspecialchars((string) $t['idTraslado']); ?>">
                                                             <input type="hidden" name="accion" value="rechazar">
                                                             <input type="text" name="motivoRechazo" class="form-control input-sm" placeholder="Motivo (opcional)" maxlength="255" style="display:inline-block; width:150px;">
                                                             <button type="submit" class="btn btn-sm btn-danger"><i class="icon_close"></i> Rechazar</button>

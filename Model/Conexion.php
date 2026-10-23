@@ -234,6 +234,12 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 
+    public function getCliente($idCliente)
+    {
+        $filas = $this->filas($this->ejecutar("SELECT * FROM cliente WHERE idcliente = ?", array((int) $idCliente)));
+        return empty($filas) ? null : $filas[0];
+    }
+
      public function deleteClient($idClient)
     {
         return $this->ejecutar("Delete from cliente where idcliente = ?", array((int) $idClient));
@@ -528,6 +534,12 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     {
         return $this->ejecutar("INSERT INTO `tipoproducto` (`idtipoproducto`, `tipoproducto`) VALUES (NULL, ?)", array($tipoProducto));
 
+    }
+
+    // true si ya hay un tipo de producto con ese nombre (sin contar el que se esta editando)
+    public function tipoProductoExiste($nombre, $exceptoId = 0)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM tipoproducto WHERE tipoproducto = ? AND idtipoproducto <> ?", array(trim((string) $nombre), (int) $exceptoId))->fetch_assoc()['c'] > 0;
     }
 
     public function deleteTipoProduct($tipoProductoId)

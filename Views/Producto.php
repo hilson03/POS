@@ -84,17 +84,17 @@ while ($product = mysqli_fetch_array($allProducto)) {
          style="background-image: url('<?PHP echo $urlViews; ?>img/fondoCelulares.svg');">
         <div class="single-product">
             <div class="product-f-image">
-                <img src="<?PHP echo $urlViews . $product['imagen']; ?>" width="90" height="90" class="imgRedonda">
+                <img src="<?PHP echo $urlViews . htmlspecialchars((string) $product['imagen']); ?>" width="90" height="90" class="imgRedonda">
                 <?PHP if ($stock > 0 && $tienePrecio) { ?>
                 <div class="product-hover">
-                    <a onclick="insertarPedido('<?PHP echo $product['idproducto'];?>')" style="text-decoration: none; cursor: pointer;"
+                    <a onclick="insertarPedido('<?PHP echo htmlspecialchars((string) $product['idproducto']);?>')" style="text-decoration: none; cursor: pointer;"
                        class="add-to-cart-link"><i class="icon_cart_alt"></i> Agregar</a>
                 </div>
                 <?PHP } ?>
 
                 <span style="color: #FFFFFF">
                 <b>
-                    <?PHP echo $product['nombreProducto'];
+                    <?PHP echo htmlspecialchars((string) $product['nombreProducto']);
                     echo '<br>';
                     echo dinero($product['precioVenta']);
                     echo '&nbsp;';
@@ -116,7 +116,7 @@ while ($product = mysqli_fetch_array($allProducto)) {
                     } ?>
                     <div class="stock-otras" title="Stock en otras tiendas"><?PHP echo implode('<br>', $otrasTiendas); ?></div>
                     <?PHP if ($esAdministrador && $stock <= 0) { ?>
-                        <a href="Traslados.php?pedir=<?PHP echo $product['idproducto']; ?>" class="btn btn-xs btn-info" style="margin-top: 3px;">
+                        <a href="Traslados.php?pedir=<?PHP echo htmlspecialchars((string) $product['idproducto']); ?>" class="btn btn-xs btn-info" style="margin-top: 3px;">
                             <i class="arrow_left-right_alt"></i> Pedir
                         </a>
                     <?PHP } ?>

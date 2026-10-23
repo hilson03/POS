@@ -98,7 +98,7 @@ include('Head.php');
                                                                 name="tipoproducto">
                                                             <?php
                                                             while ($tipoProducto = mysqli_fetch_array($tipoProductos)) {
-                                                                echo '<option value="' . $tipoProducto['tipoproducto'] . '">' . $tipoProducto['tipoproducto'] . '</option>';
+                                                                echo '<option value="' . htmlspecialchars($tipoProducto['tipoproducto']) . '">' . htmlspecialchars($tipoProducto['tipoproducto']) . '</option>';
                                                             }
                                                             ?>
                                                         </select>
@@ -190,15 +190,15 @@ include('Head.php');
                         ?>
 
                         <tr>
-                            <td><img src="<?php echo $urlViews . $product['imagen'] ?>" height="50"
+                            <td><img src="<?php echo $urlViews . htmlspecialchars((string) $product['imagen']) ?>" height="50"
                                      width="50"></td>
-                            <td> <?PHP echo $product['codigo']; ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $product['codigo']); ?></td>
                             <td> <?PHP echo htmlspecialchars($product['nombreProducto']); ?></td>
-                            <td> <?PHP echo $product['cantidad']; ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $product['cantidad']); ?></td>
                             <td> <?PHP echo dinero($product['precioCompra']); ?></td>
                             <td> <?PHP echo dinero($product['precioVenta']); ?></td>
-                            <td> <?PHP echo $product['tipo']; ?></td>
-                            <td> <?PHP echo $product['fechaRegistro']; ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $product['tipo']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $product['fechaRegistro']); ?></td>
                             <td>
                                 <a href="#a<?php echo $product[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
@@ -215,8 +215,8 @@ include('Head.php');
                                   action="RegistroProducto.php"
                                   method="post">
                                 <input type="hidden" id="idproducto" name="idproducto"
-                                       value="<?php echo $product['idproducto']; ?>">
-                                <input type="hidden" name="imagen" value="<?php echo $product['imagen']; ?>">
+                                       value="<?php echo htmlspecialchars((string) $product['idproducto']); ?>">
+                                <input type="hidden" name="imagen" value="<?php echo htmlspecialchars((string) $product['imagen']); ?>">
 
                                 <div class="modal-dialog" id="mdialTamanio">
                                     <div class="modal-content">
@@ -231,7 +231,7 @@ include('Head.php');
                                             <div class="row">
                                                 <div class="col-lg-4">
                                                     <section class="panel">
-                                                        <img src="<?PHP echo $urlViews . $product['imagen']; ?>" width="250"
+                                                        <img src="<?PHP echo $urlViews . htmlspecialchars((string) $product['imagen']); ?>" width="250"
                                                              height="250">
                                                         <br><br>
                                                         <div><strong>Cambiar Imagen</strong></div>
@@ -269,7 +269,7 @@ include('Head.php');
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="codigo"
                                                                        name="codigo" type="text"
-                                                                       value="<?php echo $product['codigo']; ?>"/>
+                                                                       value="<?php echo htmlspecialchars((string) $product['codigo']); ?>"/>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -289,7 +289,7 @@ include('Head.php');
                                                                 <input class="form-control input-lg m-bot15"
                                                                        id="cantidad" name="cantidad"
                                                                        placeholder="0" type="number" step="1" min="0" required
-                                                                       value="<?php echo $product['cantidad']; ?>"/>
+                                                                       value="<?php echo htmlspecialchars((string) $product['cantidad']); ?>"/>
                                                             </div>
                                                             <label for="pprofesional"
                                                                    class="control-label col-lg-2">Precio de

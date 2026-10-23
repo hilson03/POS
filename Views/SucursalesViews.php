@@ -87,18 +87,18 @@ include('Head.php');
                                     <td><?PHP echo htmlspecialchars($sucursal['telefono']); ?></td>
                                     <td>
                                         <span class="label <?PHP echo $sucursal['estado'] == 'Activo' ? 'label-success' : 'label-default'; ?>">
-                                            <?PHP echo $sucursal['estado']; ?>
+                                            <?PHP echo htmlspecialchars((string) $sucursal['estado']); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="#s<?PHP echo $sucursal['idSucursal']; ?>" role="button" class="btn btn-success" data-toggle="modal">
+                                        <a href="#s<?PHP echo htmlspecialchars((string) $sucursal['idSucursal']); ?>" role="button" class="btn btn-success" data-toggle="modal">
                                             <i class="fa fa-pencil" title="Editar"></i></a>
                                     </td>
                                 </tr>
 
-                                <div id="s<?PHP echo $sucursal['idSucursal']; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div id="s<?PHP echo htmlspecialchars((string) $sucursal['idSucursal']); ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                     <form class="form-validate form-horizontal" action="RegistroSucursal.php" method="post">
-                                        <input type="hidden" name="idSucursal" value="<?PHP echo $sucursal['idSucursal']; ?>">
+                                        <input type="hidden" name="idSucursal" value="<?PHP echo htmlspecialchars((string) $sucursal['idSucursal']); ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">

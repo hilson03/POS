@@ -122,7 +122,7 @@ include('Head.php');
                                                         <select class="form-control input-lg m-bot15" name="idSucursal" required>
                                                             <option value="" selected disabled>— Elige una sucursal —</option>
                                                             <?php foreach ($sucursales as $sucursal) { ?>
-                                                                <option value="<?php echo $sucursal['idSucursal']; ?>"><?php echo htmlspecialchars($sucursal['nombre']); ?></option>
+                                                                <option value="<?php echo htmlspecialchars((string) $sucursal['idSucursal']); ?>"><?php echo htmlspecialchars($sucursal['nombre']); ?></option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
@@ -200,11 +200,11 @@ include('Head.php');
 
                                     <tr<?php echo $usuarioActivo ? '' : ' style="opacity:0.6;"'; ?>>
 
-                                        <td><img src="<?php echo $urlViews . $datosUsuarios['foto'] ?>" height="50" width="50"></td>
+                                        <td><img src="<?php echo $urlViews . htmlspecialchars((string) $datosUsuarios['foto']) ?>" height="50" width="50"></td>
 
-                                        <td> <?PHP echo $datosUsuarios['nombre']; ?></td>
-                                                <td> <?PHP echo $datosUsuarios['tipo']; ?></td>
-                                                <td> <?PHP echo $datosUsuarios['login']; ?></td>
+                                        <td> <?PHP echo htmlspecialchars((string) $datosUsuarios['nombre']); ?></td>
+                                                <td> <?PHP echo htmlspecialchars((string) $datosUsuarios['tipo']); ?></td>
+                                                <td> <?PHP echo htmlspecialchars((string) $datosUsuarios['login']); ?></td>
                                                 <td> <?PHP echo htmlspecialchars($datosUsuarios['nombreSucursal']); ?></td>
                                                 <td><span class="label <?PHP echo $usuarioActivo ? 'label-success' : 'label-default'; ?>"><?PHP echo $usuarioActivo ? 'Activo' : 'Inactivo'; ?></span></td>
                                                 <td>
@@ -235,7 +235,7 @@ include('Head.php');
                                             <input type="hidden" name="idUsuario"
                                                        value="<?php echo $datosUsuarios['id_usu']; ?>">
                                             <input type="hidden" name="imagen"
-                                                       value="<?php echo $datosUsuarios['foto']; ?>">
+                                                       value="<?php echo htmlspecialchars((string) $datosUsuarios['foto']); ?>">
 
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
@@ -250,7 +250,7 @@ include('Head.php');
 
                                                     <div class="modal-body">
                                                         <img src="<?PHP echo $urlViews;
-                                                            echo $datosUsuarios['foto']; ?>" width="250" height="250">
+                                                            echo htmlspecialchars((string) $datosUsuarios['foto']); ?>" width="250" height="250">
                                                             <br><br>
                                                             <section class="panel" class="col-lg-6">
                                                                 <div><strong>Cambiar Imagen de usuario</strong></div>
@@ -265,7 +265,7 @@ include('Head.php');
                                                                 <div class="col-lg-10">
                                                                     <input class="form-control input-lg m-bot15"
                                                                            type="text" name="nombre"
-                                                                           value="<?php echo $datosUsuarios['nombre']; ?>">
+                                                                           value="<?php echo htmlspecialchars((string) $datosUsuarios['nombre']); ?>">
                                                                     <input type="hidden" name="idUsuario"
                                                                            value="<?php echo $datosUsuarios['id_usu']; ?>">
                                                                 </div>
@@ -277,7 +277,7 @@ include('Head.php');
                                                                 <div class="col-lg-10">
                                                                     <select class="form-control input-lg m-bot15"
                                                                             name="tipo">
-                                                                        <option value="<?php echo $datosUsuarios['tipo']; ?>"><?php echo $datosUsuarios['tipo']; ?></option>
+                                                                        <option value="<?php echo htmlspecialchars((string) $datosUsuarios['tipo']); ?>"><?php echo htmlspecialchars((string) $datosUsuarios['tipo']); ?></option>
                                                                         <option value="ADMINISTRADOR">
                                                                             ADMINISTRADOR
                                                                         </option>
@@ -291,7 +291,7 @@ include('Head.php');
                                                                 <div class="col-lg-10">
                                                                     <select class="form-control input-lg m-bot15" name="idSucursal" required>
                                                                         <?php foreach ($sucursales as $sucursal) { ?>
-                                                                            <option value="<?php echo $sucursal['idSucursal']; ?>"<?php echo $sucursal['idSucursal'] == $datosUsuarios['idSucursal'] ? ' selected' : ''; ?>><?php echo htmlspecialchars($sucursal['nombre']); ?></option>
+                                                                            <option value="<?php echo htmlspecialchars((string) $sucursal['idSucursal']); ?>"<?php echo $sucursal['idSucursal'] == $datosUsuarios['idSucursal'] ? ' selected' : ''; ?>><?php echo htmlspecialchars($sucursal['nombre']); ?></option>
                                                                         <?php } ?>
                                                                     </select>
                                                                 </div>
@@ -303,7 +303,7 @@ include('Head.php');
                                                                 <div class="col-lg-10">
                                                                     <input class="form-control input-lg m-bot15"
                                                                            type="text" name="login"
-                                                                           value="<?php echo $datosUsuarios['login']; ?>">
+                                                                           value="<?php echo htmlspecialchars((string) $datosUsuarios['login']); ?>">
                                                                 </div>
                                                         </div>
 

@@ -2,6 +2,7 @@
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
+require_once('Validar.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion('ADMINISTRADOR');
@@ -10,13 +11,16 @@ $usuario = $usuarioSesion['login'];
 $con = new conexion();
 
 if (isset($_POST['nuevo_Tipo'])) {
-    $tipoproducto = $_POST['tipoProducto'];
+    $tipoproducto = textoPost('tipoProducto', 150);
 
-    $mensaje = "Se registro un nuevo tipo producto  correctamente !!!";
-    $alerta = "alert alert-success";
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-    $regiestroNewTipoProducto = $con->registerNewTipoProduct($tipoproducto);
+    if ($tipoproducto == '') {
+        $con->updateMensajeAlert("No se registro el tipo de producto: el nombre es obligatorio.", "alert alert-danger");
+    } elseif ($con->tipoProductoExiste($tipoproducto)) {
+        $con->updateMensajeAlert("No se registro: ya existe el tipo de producto \"" . $tipoproducto . "\".", "alert alert-danger");
+    } else {
+        $con->registerNewTipoProduct($tipoproducto);
+        $con->updateMensajeAlert("Se registro un nuevo tipo producto  correctamente !!!", "alert alert-success");
+    }
 
 }
 
@@ -33,16 +37,17 @@ if (isset($_GET['idborrar'])) {
 }
 
 if (isset($_POST['update_tipo'])) {
-    $idproducto = $_POST['idtipoproducto'];
-    $tipoproducto = $_POST['tipoProducto'];
+    $idproducto = enteroPost('idtipoproducto');
+    $tipoproducto = textoPost('tipoProducto', 150);
 
-
-    $mensaje = "Se Actualizo  los datos del tipo Producto correctamente !!!";
-    $alerta = "alert alert-info";
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-
-    $updateTipoProducto = $con->updateTipoProducto($idproducto, $tipoproducto);
+    if ($tipoproducto == '') {
+        $con->updateMensajeAlert("No se actualizo el tipo de producto: el nombre es obligatorio.", "alert alert-danger");
+    } elseif ($con->tipoProductoExiste($tipoproducto, $idproducto)) {
+        $con->updateMensajeAlert("No se actualizo: ya existe el tipo de producto \"" . $tipoproducto . "\".", "alert alert-danger");
+    } else {
+        $con->updateTipoProducto($idproducto, $tipoproducto);
+        $con->updateMensajeAlert("Se Actualizo  los datos del tipo Producto correctamente !!!", "alert alert-info");
+    }
 }
 
 

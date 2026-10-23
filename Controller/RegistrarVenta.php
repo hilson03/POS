@@ -13,10 +13,11 @@ if (isset($_GET['RegistarVenta'])) {
 
     $usuario = $usuarioSesion['login'];
     $password = '';
-    $ci = $_GET['ci'];
-    $totalAPagar = isset($_GET['ingreso1']) ? (float) $_GET['ingreso1'] : 0;   // montos siempre numericos aunque alteren el enlace
-    $efectivo = isset($_GET['ingreso2']) ? (float) $_GET['ingreso2'] : 0;
-    $cambio = isset($_GET['resultado']) ? (float) $_GET['resultado'] : 0;
+    $ci = (isset($_GET['ci']) && is_string($_GET['ci'])) ? trim($_GET['ci']) : '';
+    // los montos (total, efectivo, cambio) se leen mas abajo de lo que guardo el servidor al cobrar, no del enlace
+    $totalAPagar = 0;
+    $efectivo = 0;
+    $cambio = 0;
     $fechaVenta = date("Y-m-d H:i:s");
     $estado = "NoConsolidado";
     $comentario = "";
@@ -96,6 +97,21 @@ if (isset($_GET['RegistarVenta'])) {
         $nombreTransfirio = $datosCliente['nombreTransfirio'];
         $pagosDetalle = $datosCliente['pagosDetalle'];
     }
+
+    /*
+     * Los montos de la venta son los que el servidor calculo al cobrar (RegistrarPreventa), no los del enlace.
+     * Si el pedido cambio despues de ver el comprobante, no se guarda: hay que volver a cobrar.
+     */
+    $totalPedido = 0;
+    foreach ($con->getTotalPreventa($id_usuario) as $preVentaTotal) {
+        $totalPedido = round((float) $preVentaTotal['total'], 2);
+    }
+    if (!isset($totalApagar) || $totalPedido <= 0 || abs($totalPedido - (float) $totalApagar) > 0.001) {
+        $con->updateMensajeAlert("No se guardó la venta: el pedido cambió después de cobrar. Vuelve a presionar Cobrar.", "alert alert-danger");
+        header("Location: Ventas.php?estado='Activo'");
+        exit;
+    }
+    $totalAPagar = (float) $totalApagar;
 
     $getDatosFecha = explode("-", $fechaLimite);
     $fechaLimiteAnio = $getDatosFecha[0];

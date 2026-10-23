@@ -37,9 +37,9 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
             ?>
 
                 <tr>
-                <td><img src="<?php echo $urlViews . $preventa['imagen'] ?>" height="60" width="60"></td>
-                <td><b> <?PHP echo $preventa['producto']; ?></b></td>
-                <td><?PHP echo $preventa['cantidad']; ?></td>
+                <td><img src="<?php echo $urlViews . htmlspecialchars((string) $preventa['imagen']) ?>" height="60" width="60"></td>
+                <td><b> <?PHP echo htmlspecialchars((string) $preventa['producto']); ?></b></td>
+                <td><?PHP echo htmlspecialchars((string) $preventa['cantidad']); ?></td>
                 <td><?PHP echo dinero($preventa['precio']); ?></td>
                 <td><?PHP echo dinero($preventa['totalPrecio']); ?></td>
                 <td>

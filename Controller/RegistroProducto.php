@@ -3,6 +3,7 @@ require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
 require_once('SubirFoto.php');
+require_once('Validar.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion('ADMINISTRADOR');
@@ -11,31 +12,41 @@ $usuario = $usuarioSesion['login'];
 $con = new conexion();
 
 // devuelve el motivo por el que los datos no son validos, o vacio si estan bien
-function validarDatosProducto($cantidad, $precioVenta, $precioCompra)
+function validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra)
 {
-    if (!is_numeric($precioVenta) || $precioVenta <= 0) {
+    if ($nombreProducto == '') {
+        return "el nombre del producto es obligatorio.";
+    }
+    if ($codigo == '') {
+        return "el codigo (IMEI o codigo de barras) es obligatorio.";
+    }
+    if ($tipoproducto == '' || !$con->tipoProductoExiste($tipoproducto)) {
+        return "elige un tipo de producto de la lista.";
+    }
+    if (!numeroValido($precioVenta, 0.01)) {
         return "el precio de venta debe ser un numero mayor a 0.";
     }
-    if (!is_numeric($precioCompra) || $precioCompra < 0) {
+    if (!numeroValido($precioCompra, 0)) {
         return "el precio de compra debe ser un numero.";
     }
-    if (!is_numeric($cantidad) || $cantidad < 0) {
-        return "la cantidad debe ser un numero igual o mayor a 0.";
+    if (!numeroValido($cantidad, 0, 999999) || floor($cantidad) != $cantidad) {
+        return "la cantidad debe ser un numero entero igual o mayor a 0.";
     }
     return "";
 }
 
 if (isset($_POST['nuevo_Producto'])) {
-    $tipoproducto = $_POST['tipoproducto'];
-    $codigo= $_POST['codigo'];
-    $nombreProducto= $_POST['descripcion'];
-    $cantidad = $_POST['cantidad'];
-    $precioVenta = $_POST['pventa'];
-    $precioCompra = $_POST['pcompra'];
-    $fechaRegistro = $_POST['fechaRegistro'];
+    $tipoproducto = textoPost('tipoproducto', 150);
+    $codigo = textoPost('codigo', 150);
+    $nombreProducto = textoPost('descripcion', 150);
+    $cantidad = textoPost('cantidad', 20);
+    $precioVenta = textoPost('pventa', 20);
+    $precioCompra = textoPost('pcompra', 20);
+    // la fecha de registro es la del dia (en el formulario es solo de lectura)
+    $fechaRegistro = date('Y-m-d');
     $proveedor =null;
 
-    $errorDatos = validarDatosProducto($cantidad, $precioVenta, $precioCompra);
+    $errorDatos = validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra);
 
     if ($errorDatos != "") {
         $updateMensaje = $con->updateMensajeAlert("No se registro el producto: " . $errorDatos, "alert alert-danger");
@@ -75,18 +86,22 @@ if (isset($_GET['idborrar'])) {
 
 
 if (isset($_POST['update_producto'])) {
-    $idproducto = $_POST['idproducto'];
-    $imagen = $_POST['imagen'];
-    $tipoproducto = $_POST['tipoproducto'];
-    $codigo= $_POST['codigo'];
-    $nombreProducto= $_POST['descripcion'];
-    $cantidad = $_POST['cantidad'];
-    $precioVenta = $_POST['pventa'];
-    $precioCompra = $_POST['pcompra'];
+    $idproducto = enteroPost('idproducto');
+    $tipoproducto = textoPost('tipoproducto', 150);
+    $codigo = textoPost('codigo', 150);
+    $nombreProducto = textoPost('descripcion', 150);
+    $cantidad = textoPost('cantidad', 20);
+    $precioVenta = textoPost('pventa', 20);
+    $precioCompra = textoPost('pcompra', 20);
     $fechaRegistro = date("Y-m-d");
     $proveedor =null;
 
-    $errorDatos = validarDatosProducto($cantidad, $precioVenta, $precioCompra);
+    // la foto actual se lee de la base (no del formulario, que se puede alterar)
+    $productoActual = $con->getProductoElegido($idproducto, $usuarioSesion['idSucursalActiva']);
+    $imagen = empty($productoActual) ? '' : $productoActual[0]['imagen'];
+
+    $errorDatos = empty($productoActual) ? "no se encontro el producto."
+        : validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra);
 
     if ($errorDatos != "") {
         $updateMensaje = $con->updateMensajeAlert("No se actualizo el producto: " . $errorDatos, "alert alert-danger");

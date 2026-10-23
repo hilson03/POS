@@ -138,7 +138,7 @@
                                     <option value="">-- ¿A cuál cuenta llegó? --</option>
                                 <?PHP } ?>
                                 <?PHP foreach ($cuentasTransferencia as $cuenta) { ?>
-                                    <option value="<?PHP echo $cuenta['idCuenta']; ?>"><?PHP echo htmlspecialchars($cuenta['banco'] . ' - ' . $cuenta['numero']); ?></option>
+                                    <option value="<?PHP echo htmlspecialchars((string) $cuenta['idCuenta']); ?>"><?PHP echo htmlspecialchars($cuenta['banco'] . ' - ' . $cuenta['numero']); ?></option>
                                 <?PHP } ?>
                             </template>
                         </td>
@@ -173,7 +173,7 @@
                                         <option value="">-- ¿A cuál cuenta llegó? --</option>
                                     <?PHP } ?>
                                     <?PHP foreach ($cuentasTransferencia as $cuenta) { ?>
-                                        <option value="<?PHP echo $cuenta['idCuenta']; ?>">
+                                        <option value="<?PHP echo htmlspecialchars((string) $cuenta['idCuenta']); ?>">
                                             <?PHP echo htmlspecialchars($cuenta['banco'] . ' - ' . $cuenta['numero'] . ($cuenta['titular'] != '' ? ' (' . $cuenta['titular'] . ')' : '')); ?>
                                         </option>
                                     <?PHP } ?>

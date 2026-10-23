@@ -98,18 +98,18 @@ include('Head.php');
                                     <td><?PHP echo htmlspecialchars($cuenta['titular']); ?></td>
                                     <td>
                                         <span class="label <?PHP echo $cuenta['estado'] == 'Activo' ? 'label-success' : 'label-default'; ?>">
-                                            <?PHP echo $cuenta['estado']; ?>
+                                            <?PHP echo htmlspecialchars((string) $cuenta['estado']); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="#c<?PHP echo $cuenta['idCuenta']; ?>" role="button" class="btn btn-success" data-toggle="modal">
+                                        <a href="#c<?PHP echo htmlspecialchars((string) $cuenta['idCuenta']); ?>" role="button" class="btn btn-success" data-toggle="modal">
                                             <i class="fa fa-pencil" title="Editar"></i></a>
                                     </td>
                                 </tr>
 
-                                <div id="c<?PHP echo $cuenta['idCuenta']; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div id="c<?PHP echo htmlspecialchars((string) $cuenta['idCuenta']); ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                     <form class="form-validate form-horizontal" action="RegistroCuentaBancaria.php" method="post">
-                                        <input type="hidden" name="idCuenta" value="<?PHP echo $cuenta['idCuenta']; ?>">
+                                        <input type="hidden" name="idCuenta" value="<?PHP echo htmlspecialchars((string) $cuenta['idCuenta']); ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">

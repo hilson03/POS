@@ -15,7 +15,7 @@ $menuMain = $con->getMenuMain();
 
 if (isset($_POST['update_data_moneda'])) {
     $idMoneda = $_POST['idMoneda'];
-    $moneda = $_POST['moneda'];
+    $moneda = is_string($_POST['moneda'] ?? null) ? $_POST['moneda'] : '';
 
 
     if ($moneda == "Argentina") {
@@ -90,11 +90,13 @@ if (isset($_POST['update_data_moneda'])) {
         $contexto = "Lempiras";
     }
 
-    $mensaje = "Se Actualizo  los datos de la Moneda correctamente !!!";
-    $alerta = "alert alert-info";
-
-    $updateMensaje = $con->updateMensajeAlert($mensaje, $alerta);
-    $updateDatosMoneda = $con->updateDataMoneda($idMoneda, $pais, $tipoMoneda, $contexto);
+    if (!isset($pais)) {
+        // solo se aceptan los paises de la lista
+        $con->updateMensajeAlert("No se actualizo la moneda: elige un pais de la lista.", "alert alert-danger");
+    } else {
+        $con->updateMensajeAlert("Se Actualizo  los datos de la Moneda correctamente !!!", "alert alert-info");
+        $con->updateDataMoneda((int) $idMoneda, $pais, $tipoMoneda, $contexto);
+    }
 
     header("Location: Moneda.php?estado='Activo'");
 

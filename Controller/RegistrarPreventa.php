@@ -3,6 +3,7 @@ require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
 require_once('PagoMixto.php');
+require_once('Validar.php');
 require_once('Codigo_control.class.php');
 
 iniciarSesionSegura();
@@ -13,26 +14,42 @@ $usuarioSesion = requerirSesion();
 $usuario = $usuarioSesion['login'];
 $password = '';
 
-$ci =$_POST['ci'];
-
-$totalAPagar = isset($_POST['ingreso1']) ? $_POST['ingreso1'] : 0;
-$efectivo = isset($_POST['ingreso2']) ? $_POST['ingreso2'] : 0;
-$cambio = isset($_POST['resultado']) ? $_POST['resultado'] : 0;
+$ci = textoPost('ci', 100);
 $fechaVenta = date("Y-m-d H:i:s");
 
 // forma de pago: con tarjeta o transferencia se cobra el total exacto, sin cambio, y se guardan los datos del comprobante
-$formaPago = (isset($_POST['formaPago']) && in_array($_POST['formaPago'], array('Tarjeta', 'Transferencia', 'Mixto'))) ? $_POST['formaPago'] : 'Efectivo';
+$formaPago = (isset($_POST['formaPago']) && in_array($_POST['formaPago'], array('Tarjeta', 'Transferencia', 'Mixto'), true)) ? $_POST['formaPago'] : 'Efectivo';
+
+// el total siempre se calcula con los productos del pedido guardado, nunca con el que manda el formulario
+$totalAPagar = 0;
+foreach ($con->getTotalPreventa($usuarioSesion['id_usu']) as $preVentaTotal) {
+    $totalAPagar = round((float) $preVentaTotal['total'], 2);
+}
+if ($totalAPagar <= 0) {
+    $con->updateMensajeAlert("No hay productos en el pedido para cobrar.", "alert alert-danger");
+    header("Location: Ventas.php?estado='Activo'");
+    exit;
+}
+$efectivo = $totalAPagar;
+$cambio = 0;
+if ($formaPago == 'Efectivo') {
+    // lo que entrega el cliente debe alcanzar para el total; el cambio lo calcula el servidor
+    $efectivo = str_replace(array(',', ' '), '', textoPost('ingreso2', 20));
+    if (!numeroValido($efectivo, $totalAPagar)) {
+        $con->updateMensajeAlert("El efectivo recibido debe ser un número igual o mayor al total (" . dinero($totalAPagar) . ").", "alert alert-danger");
+        header("Location: Ventas.php?estado='Activo'");
+        exit;
+    }
+    $efectivo = round((float) $efectivo, 2);
+    $cambio = round($efectivo - $totalAPagar, 2);
+}
 $referenciaPago = '';
 $ultimos4 = '';
 $bancoDestino = '';
 $nombreTransfirio = '';
 $pagosDetalle = '';
 if ($formaPago == 'Mixto') {
-    // el total se toma del pedido guardado (no del formulario) para que las partes cuadren con lo que realmente se vende
-    $totalAPagar = 0;
-    foreach ($con->getTotalPreventa($usuarioSesion['id_usu']) as $preVentaTotal) {
-        $totalAPagar = $preVentaTotal['total'];
-    }
+    // el total ya se calculo arriba con el pedido guardado: las partes tienen que cuadrar con lo que realmente se vende
     $cobroMixto = armarPagoMixto($con, $_POST, $totalAPagar, $faltante);
     if ($cobroMixto === null) {
         $con->updateMensajeAlert("Para cobrar con pago mixto " . $faltante . ".", "alert alert-danger");
@@ -84,7 +101,7 @@ if ($formaPago == 'Tarjeta') {
  * y no se registra ningun cliente. Tarjeta, transferencia y mixto siguen pidiendo el RTN/DNI.
  */
 $ci = trim((string) $ci);
-$nombreNewCliente = isset($_POST['nombreNewCliente']) ? trim((string) $_POST['nombreNewCliente']) : '';
+$nombreNewCliente = textoPost('nombreNewCliente', 200);
 if ($ci == '' && $formaPago != 'Efectivo') {
     $con->updateMensajeAlert("Escribe el RTN/DNI del cliente (solo en pagos en efectivo puede quedar vacío).", "alert alert-danger");
     header("Location: Ventas.php?estado='Activo'");

@@ -72,9 +72,9 @@ include('Head.php');
                                         ?>
 
                                         <tr>
-                                            <td> <?PHP echo $datosUsuarioMoneda['pais']; ?></td>
-                                            <td> <?PHP echo $datosUsuarioMoneda['contexto']; ?></td>
-                                            <td> <?PHP echo $datosUsuarioMoneda['tipoMoneda']; ?></td>
+                                            <td> <?PHP echo htmlspecialchars((string) $datosUsuarioMoneda['pais']); ?></td>
+                                            <td> <?PHP echo htmlspecialchars((string) $datosUsuarioMoneda['contexto']); ?></td>
+                                            <td> <?PHP echo htmlspecialchars((string) $datosUsuarioMoneda['tipoMoneda']); ?></td>
                                             <td>
                                                 <a href="#a<?php echo $datosUsuarioMoneda[0]; ?>" role="button"
                                                    class="btn btn-success" data-toggle="modal">
@@ -89,7 +89,7 @@ include('Head.php');
                                             <form class="form-validate form-horizontal" name="form2"
                                                   action="RegistrosDataMoneda.php" method="post">
                                                 <input type="hidden" name="idMoneda"
-                                                       value="<?php echo $datosUsuarioMoneda['idMoneda']; ?>">
+                                                       value="<?php echo htmlspecialchars((string) $datosUsuarioMoneda['idMoneda']); ?>">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">

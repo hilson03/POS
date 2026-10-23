@@ -206,15 +206,15 @@ include('Head.php');
                         ?>
 
                         <tr>
-                            <td><img src="<?php echo $urlViews . $client['foto'] ?>" height="50"
+                            <td><img src="<?php echo $urlViews . htmlspecialchars((string) $client['foto']) ?>" height="50"
                                      width="50"></td>
-                            <td> <?PHP echo $client['nombre'] . '' . $client['apellido']; ?></td>
-                            <td> <?PHP echo $client['ci']; ?></td>
-                            <td> <?PHP echo $client['direccion']; ?></td>
-                            <td> <?PHP echo $client['telefonoFijo']; ?></td>
-                            <td> <?PHP echo $client['telefonoCelular']; ?></td>
-                            <td> <?PHP echo $client['email']; ?></td>
-                            <td> <?PHP echo $client['fechaRegistro']; ?></td>
+                            <td> <?PHP echo htmlspecialchars($client['nombre'] . ' ' . $client['apellido']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $client['ci']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $client['direccion']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $client['telefonoFijo']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $client['telefonoCelular']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $client['email']); ?></td>
+                            <td> <?PHP echo htmlspecialchars((string) $client['fechaRegistro']); ?></td>
                             <td>
                                 <a href="#a<?php echo $client[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
@@ -231,9 +231,9 @@ include('Head.php');
                                   action="RegistroCliente.php"
                                   method="post" enctype="multipart/form-data">
                                 <input type="hidden" name="idcliente"
-                                       value="<?php echo $client['idcliente']; ?>">
+                                       value="<?php echo htmlspecialchars((string) $client['idcliente']); ?>">
                                 <input type="hidden" name="imagen"
-                                       value="<?php echo $client['foto']; ?>">
+                                       value="<?php echo htmlspecialchars((string) $client['foto']); ?>">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -248,7 +248,7 @@ include('Head.php');
                                                 <div class="col-lg-4">
 
                                                     <div><strong> Imagen</strong></div>
-                                                    <img src="<?PHP echo $urlViews . $client['foto']; ?>" width="250"
+                                                    <img src="<?PHP echo $urlViews . htmlspecialchars((string) $client['foto']); ?>" width="250"
                                                          height="250">
                                                     <br><br>
                                                     <section class="panel" class="col-lg-6">
@@ -266,7 +266,7 @@ include('Head.php');
                                                         <input class="form-control input-lg m-bot15"
                                                                id="nombre"
                                                                name="nombre" minlength="3" type="text"
-                                                               value="<?php echo $client['nombre']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['nombre']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -276,7 +276,7 @@ include('Head.php');
                                                         <input class="form-control input-lg m-bot15"
                                                                id="apellido"
                                                                name="apellido" minlength="3" type="text"
-                                                               value="<?php echo $client['apellido']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['apellido']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -286,7 +286,7 @@ include('Head.php');
                                                         <input class="form-control input-lg m-bot15"
                                                                id="ci" name="ci"
                                                                minlength="5" type="text"
-                                                               value="<?php echo $client['ci']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['ci']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -297,7 +297,7 @@ include('Head.php');
                                                                id="direccion"
                                                                name="direccion" minlength="5"
                                                                type="text"
-                                                               value="<?php echo $client['direccion']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['direccion']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -308,7 +308,7 @@ include('Head.php');
                                                                id="telefonoFijo"
                                                                name="telefonoFijo" minlength="5"
                                                                type="text"
-                                                               value="<?php echo $client['telefonoFijo']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['telefonoFijo']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -319,7 +319,7 @@ include('Head.php');
                                                                id="telefonoCelular"
                                                                name="telefonoCelular" minlength="5"
                                                                type="text"
-                                                               value="<?php echo $client['telefonoCelular']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['telefonoCelular']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -328,7 +328,7 @@ include('Head.php');
                                                         <input class="form-control input-lg m-bot15"
                                                                id="email" name="email"
                                                                minlength="5" type="text"
-                                                               value="<?php echo $client['email']; ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['email']); ?>"/>
                                                     </div>
                                                     <br><br>
 
@@ -338,7 +338,7 @@ include('Head.php');
                                                         <input class="form-control input-lg m-bot15"
                                                                type="date"
                                                                name="fechaRegistro" autocomplete="off"
-                                                               value="<?php echo $client['fechaRegistro']; ?>">
+                                                               value="<?php echo htmlspecialchars((string) $client['fechaRegistro']); ?>">
                                                     </div>
                                                 </div>
                                             </div>
