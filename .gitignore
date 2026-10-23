@@ -6,3 +6,7 @@ config.php
 
 # registros de errores del sistema en el hosting
 registros/
+
+# fotos que suben los usuarios desde el sistema (productos, clientes, usuarios): son datos de cada tienda, no codigo
+Views/fotoproducto/*
+!Views/fotoproducto/.htaccess
