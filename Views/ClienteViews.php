@@ -99,8 +99,7 @@ include('Head.php');
                                                    class="control-label col-lg-3">Nombre:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15" id="nombre"
-                                                       name="nombre" minlength="5" type="text"
-                                                       required/>
+                                                       name="nombre" type="text" required/>
                                             </div>
                                             <br><br>
 
@@ -108,16 +107,14 @@ include('Head.php');
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="apellido"
-                                                       name="apellido" minlength="5" type="text"
-                                                       required/>
+                                                       name="apellido" type="text"/>
                                             </div>
                                             <br><br>
 
                                             <label for="ci" class="control-label col-lg-3">DNI:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15" id="ci"
-                                                       name="ci"
-                                                       minlength="5" type="text" required/>
+                                                       name="ci" type="text" required/>
                                             </div>
                                             <br><br>
 
@@ -125,8 +122,7 @@ include('Head.php');
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="direccion"
-                                                       name="direccion" minlength="5" type="text"
-                                                       required/>
+                                                       name="direccion" type="text"/>
                                             </div>
                                             <br><br>
 
@@ -135,8 +131,7 @@ include('Head.php');
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="telefonoFijo"
-                                                       name="telefonoFijo" minlength="5" type="text"
-                                                       required/>
+                                                       name="telefonoFijo" type="text"/>
                                             </div>
                                             <br><br>
 
@@ -145,8 +140,7 @@ include('Head.php');
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="telefonoCelular"
-                                                       name="telefonoCelular" minlength="5" type="text"
-                                                       required/>
+                                                       name="telefonoCelular" type="text"/>
                                             </div>
                                             <br><br>
 
@@ -154,17 +148,7 @@ include('Head.php');
                                                    class="control-label col-lg-3">Email:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15" id="email"
-                                                       name="email"
-                                                       minlength="5" type="text" required/>
-                                            </div>
-                                            <br><br>
-
-                                            <label for="fechaRegistro" class="control-label col-lg-3">Fecha:</label>
-                                            <div class="col-lg-9">
-                                                <input class="form-control input-lg m-bot15" type="date"
-                                                       readonly
-                                                       name="fechaRegistro" autocomplete="off"
-                                                       value="<?php echo date('Y-m-d'); ?>">
+                                                       name="email" type="email"/>
                                             </div>
                                         </div>
                                     </div>
@@ -265,8 +249,8 @@ include('Head.php');
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="nombre"
-                                                               name="nombre" minlength="3" type="text"
-                                                               value="<?php echo htmlspecialchars((string) $client['nombre']); ?>"/>
+                                                               name="nombre" type="text"
+                                                               value="<?php echo htmlspecialchars((string) $client['nombre']); ?>" required/>
                                                     </div>
                                                     <br><br>
 
@@ -275,7 +259,7 @@ include('Head.php');
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="apellido"
-                                                               name="apellido" minlength="3" type="text"
+                                                               name="apellido" type="text"
                                                                value="<?php echo htmlspecialchars((string) $client['apellido']); ?>"/>
                                                     </div>
                                                     <br><br>
@@ -284,9 +268,8 @@ include('Head.php');
                                                            class="control-label col-lg-3">DNI:</label>
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
-                                                               id="ci" name="ci"
-                                                               minlength="5" type="text"
-                                                               value="<?php echo htmlspecialchars((string) $client['ci']); ?>"/>
+                                                               id="ci" name="ci" type="text"
+                                                               value="<?php echo htmlspecialchars((string) $client['ci']); ?>" required/>
                                                     </div>
                                                     <br><br>
 
@@ -295,8 +278,7 @@ include('Head.php');
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="direccion"
-                                                               name="direccion" minlength="5"
-                                                               type="text"
+                                                               name="direccion" type="text"
                                                                value="<?php echo htmlspecialchars((string) $client['direccion']); ?>"/>
                                                     </div>
                                                     <br><br>
@@ -306,8 +288,7 @@ include('Head.php');
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="telefonoFijo"
-                                                               name="telefonoFijo" minlength="5"
-                                                               type="text"
+                                                               name="telefonoFijo" type="text"
                                                                value="<?php echo htmlspecialchars((string) $client['telefonoFijo']); ?>"/>
                                                     </div>
                                                     <br><br>
@@ -317,8 +298,7 @@ include('Head.php');
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="telefonoCelular"
-                                                               name="telefonoCelular" minlength="5"
-                                                               type="text"
+                                                               name="telefonoCelular" type="text"
                                                                value="<?php echo htmlspecialchars((string) $client['telefonoCelular']); ?>"/>
                                                     </div>
                                                     <br><br>
@@ -326,19 +306,8 @@ include('Head.php');
                                                     <label for="email" class="control-label col-lg-3">Email:</label>
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
-                                                               id="email" name="email"
-                                                               minlength="5" type="text"
+                                                               id="email" name="email" type="email"
                                                                value="<?php echo htmlspecialchars((string) $client['email']); ?>"/>
-                                                    </div>
-                                                    <br><br>
-
-                                                    <label for="fechaRegistro"
-                                                           class="control-label col-lg-3">Fecha Registro:</label>
-                                                    <div class="col-lg-9">
-                                                        <input class="form-control input-lg m-bot15"
-                                                               type="date"
-                                                               name="fechaRegistro" autocomplete="off"
-                                                               value="<?php echo htmlspecialchars((string) $client['fechaRegistro']); ?>">
                                                     </div>
                                                 </div>
                                             </div>

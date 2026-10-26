@@ -31,6 +31,10 @@ function validarDatosCliente($cliente)
     if ($cliente['nombre'] == '') {
         return "el nombre es obligatorio.";
     }
+    if ($cliente['ci'] == '') {
+        // con el DNI se busca al cliente al cobrar en Ventas
+        return "el DNI es obligatorio.";
+    }
     if (!correoValido($cliente['email'])) {
         return "el correo no es valido (ejemplo: nombre@gmail.com).";
     }
@@ -83,9 +87,10 @@ if (isset($_POST['update_cliente'])) {
 
         $idcliente = enteroPost('idcliente');
         $cliente = datosClientePost();
-        $fechaRegistro = date('Y-m-d');
         // la foto actual se lee de la base (no del formulario, que se puede alterar)
         $clienteActual = $con->getCliente($idcliente);
+        // la fecha de registro no cambia al editar: es cuando se registro el cliente
+        $fechaRegistro = $clienteActual === null ? date('Y-m-d') : $clienteActual['fechaRegistro'];
         $errorDatos = $clienteActual === null ? "no se encontro el cliente." : validarDatosCliente($cliente);
         if ($errorDatos != "") {
             $con->updateMensajeAlert("No se actualizo el cliente: " . $errorDatos, "alert alert-danger");
