@@ -167,14 +167,14 @@ foreach ($ventasPorForma as $forma => $ventasForma) {
             $detalle = 'Pago mixto' . ($detalle != '' ? ' - ' . $detalle : '');
         }
         $pdf->SetFillColor($i % 2 == 1 ? 251 : 226, $i % 2 == 1 ? 251 : 226, $i % 2 == 1 ? 251 : 226);
-        $pdf->Row(array($i + 1, textoPdf($venta['cliente']), $venta['cantidad'], dinero($venta['total']), dinero($venta['monto']),
+        $pdf->Row(array($i + 1, textoPdf($venta['cliente']), $venta['cantidad'], montoHn($venta['total']), montoHn($venta['monto']),
                         textoPdf($detalle), fechaHn($venta['fechaVenta'])));
         $totalForma += $venta['monto'];
     }
 
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetTextColor($r, $g, $b);
-    $pdf->Cell(0, 7, textoPdf('Total ' . strtolower($forma) . ': ' . dinero($totalForma)), 0, 1, 'R');
+    $pdf->Cell(0, 7, textoPdf('Total ' . strtolower($forma) . ': ' . montoHn($totalForma)), 0, 1, 'R');
     $pdf->SetTextColor(0);
     $pdf->Ln(4);
 }

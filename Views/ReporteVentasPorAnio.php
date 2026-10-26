@@ -143,11 +143,11 @@ for ($i = 0; $i < $numfilas; $i++) {
     if ($i % 2 == 1) {
         $pdf->SetFillColor(251, 251, 251);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, "Mes : ". $fila['mes'], dinero($fila['total'])));
+        $pdf->Row(array($numlista, "Mes : ". $fila['mes'], montoHn($fila['total'])));
     } else {
         $pdf->SetFillColor(226, 226, 226);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, "Mes : ". $fila['mes'], dinero($fila['total'])));
+        $pdf->Row(array($numlista, "Mes : ". $fila['mes'], montoHn($fila['total'])));
     }
 }
 
@@ -159,7 +159,7 @@ $pdf->Ln(10);
 /*******TOTAL DE VENTAS********/
 $fila = mysqli_fetch_array($sumVentasByMes);
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 6, 'TOTAL DE VENTAS del Anio: ' . dinero($fila['totalVentas']), 0, 1);
+$pdf->Cell(0, 6, 'TOTAL DE VENTAS del Anio: ' . montoHn($fila['totalVentas']), 0, 1);
 
 $pdf->Ln(10);
 

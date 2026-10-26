@@ -85,7 +85,7 @@ function armarPagoMixto($con, $post, $totalAPagar, &$error)
     if ($restoEfectivo > 0) {
         $recibido = centavosMixto(isset($post['recibidoMixto']) ? $post['recibidoMixto'] : 0);
         if ($recibido < $restoEfectivo) {
-            $error = 'el efectivo recibido no alcanza para completar el total (faltan ' . dinero(($restoEfectivo - $recibido) / 100) . ')';
+            $error = 'el efectivo recibido no alcanza para completar el total (faltan ' . montoHn(($restoEfectivo - $recibido) / 100) . ')';
             return null;
         }
         $partes[] = array('forma' => 'Efectivo', 'monto' => $restoEfectivo / 100, 'referencia' => '', 'ultimos4' => '',

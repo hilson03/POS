@@ -65,12 +65,12 @@ function reporteResumenFormasPago($pdf, $totales, $etiquetaTotal = 'TOTAL')
         $pdf->SetTextColor($r, $g, $b);
         $pdf->Cell(80, 6, textoPdf($forma), 'B', 0);
         $pdf->SetTextColor(0);
-        $pdf->Cell(40, 6, dinero($total), 'B', 1, 'R');
+        $pdf->Cell(40, 6, montoHn($total), 'B', 1, 'R');
         $suma += $total;
     }
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->Cell(80, 7, textoPdf($etiquetaTotal), 0, 0);
-    $pdf->Cell(40, 7, dinero($suma), 0, 1, 'R');
+    $pdf->Cell(40, 7, montoHn($suma), 0, 1, 'R');
     $pdf->Ln(4);
 }
 
@@ -85,7 +85,7 @@ function reporteDesgloseSucursales($pdf, $desglose)
     $pdf->SetFont('Arial', '', 10);
     foreach ($desglose as $fila) {
         $pdf->Cell(80, 6, textoPdf($fila['nombre']), 'B', 0);
-        $pdf->Cell(40, 6, dinero($fila['total']), 'B', 1, 'R');
+        $pdf->Cell(40, 6, montoHn($fila['total']), 'B', 1, 'R');
     }
     $pdf->Ln(4);
 }

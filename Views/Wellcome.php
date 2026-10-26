@@ -81,7 +81,7 @@
             <?PHP
             // indicadores de la sucursal activa: [enlace, color, icono, numero, titulo, detalle]
             $indicadores = array(
-                array('ReportesVentas.php', 'blue-bg', 'fa fa-money', $tipoMonedaElegida . ' ' . dinero($indicadorVendidoHoy),
+                array('ReportesVentas.php', 'blue-bg', 'fa fa-money', montoHn($indicadorVendidoHoy),
                     'Vendido hoy', 'Ver reportes de ventas'),
                 array('Consolidar.php', 'brown-bg', 'icon_documents_alt', $indicadorPorConsolidar,
                     'Por cerrar', $indicadorPorConsolidar == 1 ? 'venta pendiente' : 'ventas pendientes'),
@@ -138,8 +138,8 @@
                                 <tr>
                                     <td><?PHP echo htmlspecialchars($venta['descripcion']); ?></td>
                                     <td><?PHP echo htmlspecialchars((string) $venta['cantidad']); ?></td>
-                                    <td><?PHP echo dinero($venta['precio']) . ' ' . $tipoMonedaElegida; ?></td>
-                                    <td><?PHP echo dinero($venta['totalVendido']) . ' ' . $tipoMonedaElegida; ?></td>
+                                    <td><?PHP echo montoHn($venta['precio']); ?></td>
+                                    <td><?PHP echo montoHn($venta['totalVendido']); ?></td>
                                     <td><?PHP echo date('d/m/Y', strtotime($venta['fecha'])); ?></td>
                                 </tr>
                             <?PHP } ?>
@@ -147,7 +147,7 @@
                             <tfoot>
                             <tr>
                                 <th colspan="3" style="text-align: right;">TOTAL DEL DIA :</th>
-                                <th colspan="2"><?PHP echo dinero($totalDelDia) . ' ' . $tipoMonedaElegida; ?></th>
+                                <th colspan="2"><?PHP echo montoHn($totalDelDia); ?></th>
                             </tr>
                             </tfoot>
 

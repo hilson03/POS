@@ -40,8 +40,8 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                 <td><img src="<?php echo $urlViews . htmlspecialchars((string) $preventa['imagen']) ?>" height="60" width="60"></td>
                 <td><b> <?PHP echo htmlspecialchars((string) $preventa['producto']); ?></b></td>
                 <td><?PHP echo htmlspecialchars((string) $preventa['cantidad']); ?></td>
-                <td><?PHP echo dinero($preventa['precio']); ?></td>
-                <td><?PHP echo dinero($preventa['totalPrecio']); ?></td>
+                <td><?PHP echo montoHn($preventa['precio']); ?></td>
+                <td><?PHP echo montoHn($preventa['totalPrecio']); ?></td>
                 <td>
 
 
@@ -75,7 +75,7 @@ $idUsuarioPedido = isset($idUsuario) ? $idUsuario : $id_usuario;
                         while ($totalVenta = mysqli_fetch_array($totalPreventaConsulta)) {
                             $userId = $totalVenta['idUser'];
                             $totalPedido = dinero($totalVenta['total']);
-                            echo $totalPedido;
+                            echo montoHn($totalVenta['total']);
                         }
                         ?>
                     </strong>

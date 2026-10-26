@@ -96,9 +96,7 @@ while ($product = mysqli_fetch_array($allProducto)) {
                 <b>
                     <?PHP echo htmlspecialchars((string) $product['nombreProducto']);
                     echo '<br>';
-                    echo dinero($product['precioVenta']);
-                    echo '&nbsp;';
-                    echo $tipoMonedaElegida; ?>   .
+                    echo montoHn($product['precioVenta']); ?>   .
                 </b>
                 </span>
                 <br>

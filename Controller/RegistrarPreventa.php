@@ -36,7 +36,7 @@ if ($formaPago == 'Efectivo') {
     // lo que entrega el cliente debe alcanzar para el total; el cambio lo calcula el servidor
     $efectivo = str_replace(array(',', ' '), '', textoPost('ingreso2', 20));
     if (!numeroValido($efectivo, $totalAPagar)) {
-        $con->updateMensajeAlert("El efectivo recibido debe ser un número igual o mayor al total (" . dinero($totalAPagar) . ").", "alert alert-danger");
+        $con->updateMensajeAlert("El efectivo recibido debe ser un número igual o mayor al total (" . montoHn($totalAPagar) . ").", "alert alert-danger");
         header("Location: Ventas.php?estado='Activo'");
         exit;
     }

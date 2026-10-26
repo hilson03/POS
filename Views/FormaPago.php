@@ -180,7 +180,8 @@
 
         // la llama el boton ACEPTAR del pedido
         window.abrirFormaPago = function (total) {
-            document.getElementById('totalFormaPago').textContent = total;
+            // total como se usa en Honduras: L 25,000.00
+            document.getElementById('totalFormaPago').textContent = <?PHP echo json_encode(simboloMoneda() . ' '); ?> + Number(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             ventana.hidden = false;
             document.getElementById('pagoEfectivo').focus();
         };

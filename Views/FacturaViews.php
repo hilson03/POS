@@ -311,6 +311,11 @@
         return isNaN(n) ? 0 : Math.round(n * 100);
     }
 
+    // monto para mostrar en los avisos, como se usa en Honduras: L 25,000.00
+    function montoHn(valor) {
+        return <?PHP echo json_encode(simboloMoneda() . ' '); ?> + Number(valor).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     function agregarPago(tipo) {
         var lista = document.getElementById('listaPagos');
         if (lista.children.length >= MAXIMO_PAGOS) {
@@ -413,9 +418,9 @@
         if (pagos.length === 0) {
             problema = 'Agrega al menos un pago con tarjeta o transferencia.';
         } else if (problema === '' && resto < 0) {
-            problema = 'Los pagos suman ' + ((-resto) / 100).toFixed(2) + ' más que el total.';
+            problema = 'Los pagos suman ' + montoHn(-resto / 100) + ' más que el total.';
         } else if (problema === '' && resto > 0 && recibido < resto) {
-            problema = 'Falta cobrar en efectivo: ' + ((resto - recibido) / 100).toFixed(2);
+            problema = 'Falta cobrar en efectivo: ' + montoHn((resto - recibido) / 100);
         } else if (problema === '' && formas < 2) {
             problema = 'Con un solo pago usa Tarjeta o Transferencia directamente.';
         }

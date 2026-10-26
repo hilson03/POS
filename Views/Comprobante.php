@@ -88,12 +88,12 @@ if (!function_exists('filaComprobante')) {
     for ($i = 0; $i < $pedido; $i++) {
         $detallePedido = mysqli_fetch_array($pedidoTotalPreventa);
         echo '<div class="c-producto">' . htmlspecialchars($detallePedido['producto']) . '</div>';
-        filaComprobante($detallePedido['cantidad'] . ' x ' . dinero($detallePedido['precio']), dinero($detallePedido['precio'] * $detallePedido['cantidad']), 'c-detalle');
+        filaComprobante($detallePedido['cantidad'] . ' x ' . miles($detallePedido['precio']), miles($detallePedido['precio'] * $detallePedido['cantidad']), 'c-detalle');
     }
     ?>
 
     <div class="c-linea"></div>
-    <?PHP filaComprobante('TOTAL', $moneda . ' ' . dinero($totalAPagar), 'c-total'); ?>
+    <?PHP filaComprobante('TOTAL', montoHn($totalAPagar), 'c-total'); ?>
 
     <?PHP if (isset($formaPago) && $formaPago == 'Tarjeta') { ?>
         <?PHP filaComprobante('Forma de pago', 'Tarjeta'); ?>
@@ -109,20 +109,20 @@ if (!function_exists('filaComprobante')) {
     <?PHP } elseif (isset($formaPago) && $formaPago == 'Mixto') { ?>
         <?PHP filaComprobante('Forma de pago', 'Mixto'); ?>
         <?PHP foreach (partesPagoMixto($pagosDetalle) as $parte) {
-            filaComprobante(htmlspecialchars($parte['forma']), $moneda . ' ' . dinero($parte['monto']));
+            filaComprobante(htmlspecialchars($parte['forma']), montoHn($parte['monto']));
             if ($parte['forma'] == 'Tarjeta') {
                 $detalleParte = 'Aut. ' . $parte['referencia'] . ($parte['ultimos4'] != '' ? '  **** ' . $parte['ultimos4'] : '');
             } elseif ($parte['forma'] == 'Transferencia') {
                 $detalleParte = 'Ref. ' . $parte['referencia'] . ' - ' . $parte['bancoDestino'] . ($parte['nombreTransfirio'] != '' ? ' (' . $parte['nombreTransfirio'] . ')' : '');
             } else {
-                $detalleParte = 'Recibido ' . dinero($parte['monto'] + $cambio) . '  Cambio ' . dinero($cambio);
+                $detalleParte = 'Recibido ' . miles($parte['monto'] + $cambio) . '  Cambio ' . miles($cambio);
             }
             echo '<div class="c-detalle">' . htmlspecialchars($detalleParte) . '</div>';
         } ?>
     <?PHP } else { ?>
         <?PHP filaComprobante('Forma de pago', 'Efectivo'); ?>
-        <?PHP filaComprobante('Efectivo', $moneda . ' ' . dinero($efectivo)); ?>
-        <?PHP filaComprobante('Cambio', $moneda . ' ' . dinero($cambio)); ?>
+        <?PHP filaComprobante('Efectivo', montoHn($efectivo)); ?>
+        <?PHP filaComprobante('Cambio', montoHn($cambio)); ?>
     <?PHP } ?>
 
     <div class="c-letras">

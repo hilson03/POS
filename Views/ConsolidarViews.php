@@ -71,7 +71,7 @@ include('Head.php');
         <?php if ($transferencias > 0) { ?>
             <div class="alert" style="background:#f3ecfb; border:1px solid #d9c6f1; color:#4a2a7a; margin:10px 15px 0;">
                 <i class="fa fa-university"></i>
-                <strong><?php echo $transferencias == 1 ? 'Hay 1 venta' : 'Hay ' . $transferencias . ' ventas'; ?> por transferencia (<?php echo dinero($totalTransferencias); ?>).</strong>
+                <strong><?php echo $transferencias == 1 ? 'Hay 1 venta' : 'Hay ' . $transferencias . ' ventas'; ?> por transferencia (<?php echo montoHn($totalTransferencias); ?>).</strong>
                 Antes de cerrarlas, revisa en la app o el estado de cuenta del banco que cada referencia haya llegado.
                 Pasa el mouse sobre la etiqueta <span class="label label-transferencia">Transferencia</span> para ver la referencia y la cuenta.
             </div>
@@ -104,7 +104,7 @@ include('Head.php');
                             <td align="center"><?php echo htmlspecialchars((string) $ventas['idVentas']); ?></td>
                             <td data-order="<?php echo htmlspecialchars((string) $ventas['fechaVenta']); ?>"><?php echo htmlspecialchars(fechaHn($ventas['fechaVenta'])); ?></td>
                             <td><?php echo htmlspecialchars((string) $ventas['cliente']); ?></td>
-                            <td align="center" ><?php echo dinero($ventas['total']); ?></td>
+                            <td align="center" data-order="<?php echo (float) $ventas['total']; ?>"><?php echo montoHn($ventas['total']); ?></td>
                             <td><?php echo htmlspecialchars($ventas['vendedor']); ?></td>
                             <td><?php
                                 $esTarjeta = strpos($ventas['formaPago'], 'Tarjeta') !== false;
@@ -130,7 +130,7 @@ include('Head.php');
                                    data-toggle="modal"><i class="icon_pencil-edit_alt"></i></a>
                                 <a href="ConsolidarVenta.php?idConsolidar=<?php echo $ventas[0]; ?>"
                                    data-confirmar-tipo="consolidar"
-                                   data-confirmar="la venta #<?php echo htmlspecialchars((string) $ventas['idVentas']); ?> de <?php echo htmlspecialchars($ventas['cliente']); ?> por <?php echo dinero($ventas['total']); ?>"
+                                   data-confirmar="la venta #<?php echo htmlspecialchars((string) $ventas['idVentas']); ?> de <?php echo htmlspecialchars($ventas['cliente']); ?> por <?php echo montoHn($ventas['total']); ?>"
                                    class="btn btn-success" title="Cerrar venta"><i class="icon_box-checked"></i></a>
                             </td>
                         </tr>

@@ -183,8 +183,8 @@ include('Head.php');
                             <td> <?PHP echo htmlspecialchars((string) $product['codigo']); ?></td>
                             <td> <?PHP echo htmlspecialchars($product['nombreProducto']); ?></td>
                             <td> <?PHP echo htmlspecialchars((string) $product['cantidad']); ?></td>
-                            <td> <?PHP echo dinero($product['precioCompra']); ?></td>
-                            <td> <?PHP echo dinero($product['precioVenta']); ?></td>
+                            <td data-order="<?PHP echo (float) $product['precioCompra']; ?>"> <?PHP echo montoHn($product['precioCompra']); ?></td>
+                            <td data-order="<?PHP echo (float) $product['precioVenta']; ?>"> <?PHP echo montoHn($product['precioVenta']); ?></td>
                             <td> <?PHP echo htmlspecialchars((string) $product['tipo']); ?></td>
                             <td data-order="<?PHP echo htmlspecialchars((string) $product['fechaRegistro']); ?>"> <?PHP echo htmlspecialchars(fechaHn($product['fechaRegistro'])); ?></td>
                             <td>
