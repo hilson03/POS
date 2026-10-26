@@ -35,5 +35,6 @@ $userLogueado = $nombres;
 $imageUser = $foto;
 
 $cuentas = $con->getCuentasBancarias();
+$bancos = $con->getBancos();
 $menuMain = $con->getMenuMain();
 require("../Views/CuentasBancariasViews.php");

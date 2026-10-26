@@ -687,27 +687,78 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
             array((int) $idVenta, $formaPago, (float) $monto, $referencia, $ultimos4, $fecha, (int) $idSucursal, (int) $idUsuario, $bancoDestino, $nombreTransfirio));
     }
 
-    // cuentas de la tienda donde los clientes transfieren (Configuracion > Cuentas bancarias)
-    public function getCuentasBancarias($soloActivas = false)
+    // catalogo de bancos (Configuracion > Cuentas bancarias): cada banco existe una sola vez
+    public function getBancos($soloActivos = false)
     {
-        return $this->filas($this->ejecutar("SELECT * FROM cuenta_bancaria" . ($soloActivas ? " WHERE estado = 'Activo'" : "") . " ORDER BY banco, numero"));
+        return $this->filas($this->ejecutar("SELECT b.*, (SELECT count(*) FROM cuenta_bancaria c WHERE c.idBanco = b.idBanco) AS cuentas
+                                             FROM banco b" . ($soloActivos ? " WHERE b.estado = 'Activo'" : "") . " ORDER BY b.nombre"));
     }
 
-    public function getCuentaBancaria($idCuenta)
+    public function getBanco($idBanco)
     {
-        $filas = $this->filas($this->ejecutar("SELECT * FROM cuenta_bancaria WHERE idCuenta = ?", array((int) $idCuenta)));
+        $filas = $this->filas($this->ejecutar("SELECT * FROM banco WHERE idBanco = ?", array((int) $idBanco)));
         return empty($filas) ? null : $filas[0];
     }
 
-    public function registrarCuentaBancaria($banco, $numero, $titular)
+    // true si ya hay otro banco con ese nombre (sin distinguir mayusculas ni tildes, igual que la tabla)
+    public function bancoExiste($nombre, $exceptoIdBanco = 0)
     {
-        return $this->ejecutar("INSERT INTO cuenta_bancaria (banco, numero, titular, estado) VALUES (?, ?, ?, 'Activo')", array($banco, $numero, $titular));
+        return (int) $this->ejecutar("SELECT count(*) c FROM banco WHERE nombre = ? AND idBanco <> ?", array(trim((string) $nombre), (int) $exceptoIdBanco))->fetch_assoc()['c'] > 0;
     }
 
-    public function updateCuentaBancaria($idCuenta, $banco, $numero, $titular, $estado)
+    public function registrarBanco($nombre)
     {
-        return $this->ejecutar("UPDATE cuenta_bancaria SET banco = ?, numero = ?, titular = ?, estado = ? WHERE idCuenta = ?",
-            array($banco, $numero, $titular, $estado, (int) $idCuenta));
+        return $this->ejecutar("INSERT INTO banco (nombre, estado) VALUES (?, 'Activo')", array($nombre));
+    }
+
+    public function updateBanco($idBanco, $nombre, $estado)
+    {
+        return $this->ejecutar("UPDATE banco SET nombre = ?, estado = ? WHERE idBanco = ?", array($nombre, $estado, (int) $idBanco));
+    }
+
+    /*
+     * Cuentas de la tienda donde los clientes transfieren, con el nombre de su banco.
+     * Con $soloActivas solo las que se pueden elegir al cobrar: cuenta activa y banco activo.
+     */
+    private function sqlCuentas()
+    {
+        return "SELECT c.idCuenta, c.idBanco, b.nombre AS banco, b.estado AS estadoBanco, c.numero, c.titular,
+                       IF(b.estado = 'Activo', c.estado, 'Inactivo') AS estadoCobro, c.estado
+                FROM cuenta_bancaria c JOIN banco b ON b.idBanco = c.idBanco";
+    }
+
+    public function getCuentasBancarias($soloActivas = false)
+    {
+        return $this->filas($this->ejecutar($this->sqlCuentas() . ($soloActivas ? " WHERE c.estado = 'Activo' AND b.estado = 'Activo'" : "") . " ORDER BY b.nombre, c.numero"));
+    }
+
+    // una cuenta; su 'estado' es Inactivo si la cuenta o su banco estan inactivos (asi no se puede cobrar con ella)
+    public function getCuentaBancaria($idCuenta)
+    {
+        $filas = $this->filas($this->ejecutar($this->sqlCuentas() . " WHERE c.idCuenta = ?", array((int) $idCuenta)));
+        if (empty($filas)) {
+            return null;
+        }
+        $filas[0]['estado'] = $filas[0]['estadoCobro'];
+        return $filas[0];
+    }
+
+    // true si ese numero de cuenta ya esta registrado en ese banco (sin contar la cuenta que se esta editando)
+    public function cuentaRepetida($idBanco, $numero, $exceptoIdCuenta = 0)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM cuenta_bancaria WHERE idBanco = ? AND numero = ? AND idCuenta <> ?",
+            array((int) $idBanco, $numero, (int) $exceptoIdCuenta))->fetch_assoc()['c'] > 0;
+    }
+
+    public function registrarCuentaBancaria($idBanco, $numero, $titular)
+    {
+        return $this->ejecutar("INSERT INTO cuenta_bancaria (idBanco, numero, titular, estado) VALUES (?, ?, ?, 'Activo')", array((int) $idBanco, $numero, $titular));
+    }
+
+    public function updateCuentaBancaria($idCuenta, $idBanco, $numero, $titular, $estado)
+    {
+        return $this->ejecutar("UPDATE cuenta_bancaria SET idBanco = ?, numero = ?, titular = ?, estado = ? WHERE idCuenta = ?",
+            array((int) $idBanco, $numero, $titular, $estado, (int) $idCuenta));
     }
 
 

@@ -8,7 +8,7 @@ Hay dos caminos. **Usa solo uno.**
 
 ### Camino A (recomendado): exportar la base local completa
 
-La base local ya tiene aplicadas todas las migraciones de esta carpeta (001 a 010).
+La base local ya tiene aplicadas todas las migraciones de esta carpeta (001 a 014).
 
 1. En la computadora local, abrir phpMyAdmin (Laragon → Database) y exportar la base `icontpos` completa (formato SQL).
 2. En el hosting, crear una base de datos nueva y su usuario desde el panel.
@@ -33,6 +33,10 @@ Si en el hosting ya hay una base con datos reales, ejecutar en orden **solo las 
 | 008_apariencia.sql | Logos personalizados y ancho del rollo de la impresora |
 | 009_transferencias.sql | Cuentas bancarias y pago por transferencia |
 | 010_pago_mixto.sql | Pago mixto |
+| 011_datos_negocio.sql | Datos del negocio (ciudad, correo, mensaje al pie) |
+| 012_usuarios_estado.sql | Usuarios activos e inactivos |
+| 013_cierre_de_ventas.sql | "Consolidar" pasa a llamarse "Cierre de ventas" |
+| 014_bancos.sql | Catálogo de bancos, cuentas sin repetir y número solo con dígitos |
 
 Cada archivo se ejecuta **una sola vez**. Si al ejecutar uno sale "Duplicate column" o "Table already exists", esa migración ya estaba aplicada: se salta y se sigue con la siguiente.
 
