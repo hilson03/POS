@@ -13,7 +13,7 @@ if (mysqli_num_rows($showContact) == 0) {
     echo '<input class="form-control input-lg m-bot15"   size="25"  type="text"   name="nombreNewCliente"  />';
 } else {
     while ($fila = mysqli_fetch_array($showContact)) {
-        echo '<div onclick="myFunction2(' . (int) $fila["idcliente"] . ')">' . htmlspecialchars($fila['apellido']) . '</div>';
+        echo '<div onclick="myFunction2(' . (int) $fila["idcliente"] . ')">' . htmlspecialchars(nombreCliente($fila)) . '</div>';
     }
 }
 

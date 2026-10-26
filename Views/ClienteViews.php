@@ -107,14 +107,14 @@ include('Head.php');
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="apellido"
-                                                       name="apellido" type="text"/>
+                                                       name="apellido" type="text" required/>
                                             </div>
                                             <br><br>
 
                                             <label for="ci" class="control-label col-lg-3">DNI:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15" id="ci"
-                                                       name="ci" type="text" required/>
+                                                       name="ci" type="text"/>
                                             </div>
                                             <br><br>
 
@@ -260,7 +260,7 @@ include('Head.php');
                                                         <input class="form-control input-lg m-bot15"
                                                                id="apellido"
                                                                name="apellido" type="text"
-                                                               value="<?php echo htmlspecialchars((string) $client['apellido']); ?>"/>
+                                                               value="<?php echo htmlspecialchars((string) $client['apellido']); ?>" required/>
                                                     </div>
                                                     <br><br>
 
@@ -269,7 +269,7 @@ include('Head.php');
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="ci" name="ci" type="text"
-                                                               value="<?php echo htmlspecialchars((string) $client['ci']); ?>" required/>
+                                                               value="<?php echo htmlspecialchars((string) $client['ci']); ?>"/>
                                                     </div>
                                                     <br><br>
 

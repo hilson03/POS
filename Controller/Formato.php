@@ -13,3 +13,14 @@ if (!function_exists('dinero')) {
         return number_format((float) $monto, 2, '.', '');
     }
 }
+
+/*
+ * Nombre completo de un cliente: "Nombre Apellido". Los clientes registrados desde Ventas tienen todo el nombre
+ * en el apellido (y el nombre vacio); asi salen bien los dos casos en el recibo, la busqueda y el cierre de ventas.
+ */
+if (!function_exists('nombreCliente')) {
+    function nombreCliente($cliente)
+    {
+        return trim(preg_replace('/\s+/u', ' ', $cliente['nombre'] . ' ' . $cliente['apellido']));
+    }
+}

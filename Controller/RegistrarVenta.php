@@ -29,7 +29,7 @@ if (isset($_GET['RegistarVenta'])) {
     $searchClient = trim($ci) == '' ? array() : $con->getClienteDatos($ci);
 
     foreach ($searchClient as $cliente) {
-        $nombreClienteDato = $cliente['apellido'];
+        $nombreClienteDato = nombreCliente($cliente);
         $idClientei = $cliente['idcliente'];
     }
 

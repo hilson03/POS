@@ -26,24 +26,31 @@ function datosClientePost()
 }
 
 // motivo por el que los datos del cliente no son validos, o vacio si estan bien
-function validarDatosCliente($cliente)
+function validarDatosCliente($con, $cliente, $idCliente = 0)
 {
     if ($cliente['nombre'] == '') {
         return "el nombre es obligatorio.";
     }
-    if ($cliente['ci'] == '') {
-        // con el DNI se busca al cliente al cobrar en Ventas
-        return "el DNI es obligatorio.";
+    if ($cliente['apellido'] == '') {
+        return "el apellido es obligatorio.";
     }
     if (!correoValido($cliente['email'])) {
         return "el correo no es valido (ejemplo: nombre@gmail.com).";
+    }
+    // el DNI es opcional, pero si se escribe no se puede repetir: con el se busca al cliente al cobrar en Ventas
+    if ($cliente['ci'] != '') {
+        foreach ($con->getClienteDatos($cliente['ci']) as $otro) {
+            if ((int) $otro['idcliente'] !== (int) $idCliente) {
+                return "ya hay un cliente con el DNI " . $cliente['ci'] . " (" . nombreCliente($otro) . ").";
+            }
+        }
     }
     return "";
 }
 
 if (isset($_POST['nuevo_cliente'])) {
     $cliente = datosClientePost();
-    $errorDatos = validarDatosCliente($cliente);
+    $errorDatos = validarDatosCliente($con, $cliente);
     // la fecha de registro es la del dia (en el formulario es solo de lectura)
     $fechaRegistro = date('Y-m-d');
 
@@ -91,7 +98,7 @@ if (isset($_POST['update_cliente'])) {
         $clienteActual = $con->getCliente($idcliente);
         // la fecha de registro no cambia al editar: es cuando se registro el cliente
         $fechaRegistro = $clienteActual === null ? date('Y-m-d') : $clienteActual['fechaRegistro'];
-        $errorDatos = $clienteActual === null ? "no se encontro el cliente." : validarDatosCliente($cliente);
+        $errorDatos = $clienteActual === null ? "no se encontro el cliente." : validarDatosCliente($con, $cliente, $idcliente);
         if ($errorDatos != "") {
             $con->updateMensajeAlert("No se actualizo el cliente: " . $errorDatos, "alert alert-danger");
             header("Location: Cliente.php?estado='Activo'");

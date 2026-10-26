@@ -119,7 +119,7 @@ if ($ci != '') {
     }
 
     foreach ($searchClient as $cliente) {
-        $nombreClienteDato = $cliente['apellido'];
+        $nombreClienteDato = nombreCliente($cliente);
     }
 }
 

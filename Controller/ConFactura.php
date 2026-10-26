@@ -24,7 +24,7 @@ $nombreClienteDato = CONSUMIDOR_FINAL;
 $searchClient = trim($ci) == '' ? array() : $con->getClienteDatos($ci);
 
 foreach ($searchClient as $cliente) {
-    $nombreClienteDato = $cliente['apellido'];
+    $nombreClienteDato = nombreCliente($cliente);
 }
 
 // usuario que esta cobrando: sus datos de cobro se guardan aparte de los de otros vendedores
