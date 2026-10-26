@@ -40,6 +40,16 @@ Si en el hosting ya hay una base con datos reales, ejecutar en orden **solo las 
 
 Cada archivo se ejecuta **una sola vez**. Si al ejecutar uno sale "Duplicate column" o "Table already exists", esa migración ya estaba aplicada: se salta y se sigue con la siguiente.
 
+### Moneda
+
+El sistema trabaja en **Lempiras** (símbolo `L`, y "Lempiras" en el monto escrito en letras del recibo). Ya no hay pantalla para cambiarla: cambiar la moneda no convierte los montos y dejaba mal todos los recibos, también los viejos.
+
+Solo si el sistema se instala para un negocio de **otro país**, cambiar la moneda **antes de registrar ventas**, en phpMyAdmin → SQL (ejemplo para Guatemala):
+
+```sql
+UPDATE `moneda` SET `pais` = 'Guatemala', `tipoMoneda` = 'Q', `contexto` = 'quetzales';
+```
+
 ## 2. Archivos
 
 1. Subir todos los archivos del proyecto a la carpeta pública del dominio (`public_html`).

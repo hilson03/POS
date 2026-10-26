@@ -192,19 +192,12 @@ class conexion{
     }
 
 
-//******************************metodo para que puedan funcionar el cambio de moneda****************************
+// moneda del sistema (una sola fila; en Honduras: L / Lempiras). Ya no se cambia desde la pantalla: ver LEEME.md
 
     public function getMoneda()
         {
             return $this->ejecutar("SELECT * FROM `moneda`");
         }
-
-    public function updateDataMoneda($idMoneda, $pais, $tipoMoneda, $contexto){
-
-        return $this->ejecutar("UPDATE `moneda` SET `pais` = ?, `tipoMoneda` = ?, `contexto` = ? WHERE `moneda`.`idMoneda` = ?",
-            array($pais, $tipoMoneda, $contexto, (int) $idMoneda));
-
-    }
 
 /**Funciones de proveedores que nos permiten obtener, crear, actualizar y borrar proveedores de la base de datos
 fueron borradas ya que el cliente no necesitaba ese modulo en esta version del POS************************/
