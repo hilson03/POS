@@ -29,10 +29,10 @@
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                 <span class="profile-ava">
 
-                <img src="<?PHP echo $urlViews .$imageUser;?>" alt="Usuario" height="35" width="35">
+                <img src="<?PHP echo $urlViews . htmlspecialchars((string) $imageUser); ?>" alt="Usuario" height="35" width="35">
 
                 </span>
-                <span class="username"> <?PHP echo $userLogueado; ?> </span>
+                <span class="username"> <?PHP echo htmlspecialchars((string) $userLogueado); ?> </span>
                 <b class="caret"></b>
             </a>
             <?PHP include ("MenuOpciones.php"); ?>

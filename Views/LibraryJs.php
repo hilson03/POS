@@ -59,6 +59,23 @@
 <script src="<?php echo $urlViews; ?>js/dataTables.bootstrap.min.js"></script>
 
 <script>
+    // textos de todas las tablas (buscar, paginas, "mostrando 1 a 10 de...") en espanol
+    $.extend(true, $.fn.dataTable.defaults, {
+        language: {
+            emptyTable: 'No hay datos en la tabla',
+            info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+            infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+            infoFiltered: '(filtrado de _MAX_ registros en total)',
+            lengthMenu: 'Mostrar _MENU_ registros',
+            loadingRecords: 'Cargando...',
+            processing: 'Procesando...',
+            search: 'Buscar:',
+            zeroRecords: 'No se encontraron resultados',
+            thousands: ',',
+            paginate: { first: 'Primero', last: 'Último', next: 'Siguiente', previous: 'Anterior' },
+            aria: { sortAscending: ': ordenar de menor a mayor', sortDescending: ': ordenar de mayor a menor' }
+        }
+    });
     $(document).ready(function () {
         $('#dataTables-example').DataTable({
             responsive: true

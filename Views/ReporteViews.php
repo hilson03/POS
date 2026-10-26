@@ -15,7 +15,7 @@ if ($usuarioSesion['tipo'] == 'ADMINISTRADOR') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <?php
 include('Head.php');
 ?>
