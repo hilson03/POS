@@ -29,6 +29,10 @@ function validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $ca
     if (!numeroValido($precioCompra, 0)) {
         return "el precio de compra debe ser un numero.";
     }
+    if ((float) $precioCompra > (float) $precioVenta) {
+        // se venderia con perdida: casi siempre es un error al escribir los precios
+        return "el precio de compra (" . dinero($precioCompra) . ") no puede ser mayor que el precio de venta (" . dinero($precioVenta) . ").";
+    }
     if (!numeroValido($cantidad, 0, 999999) || floor($cantidad) != $cantidad) {
         return "la cantidad debe ser un numero entero igual o mayor a 0.";
     }

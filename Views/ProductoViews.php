@@ -355,6 +355,22 @@ include('Head.php');
 
 <?PHP include("LibraryJs.php"); ?>
 
+<script>
+    // el precio de compra no puede pasar al de venta (el servidor lo vuelve a revisar al guardar)
+    function revisarPrecios(form) {
+        var compra = form.querySelector('[name="pcompra"]');
+        var venta = form.querySelector('[name="pventa"]');
+        var malo = compra.value !== '' && venta.value !== '' && parseFloat(compra.value) > parseFloat(venta.value);
+        compra.setCustomValidity(malo ? 'El precio de compra no puede ser mayor que el precio de venta (' + venta.value + ').' : '');
+    }
+    document.querySelectorAll('[name="pcompra"]').forEach(function (compra) {
+        var form = compra.form;
+        ['pcompra', 'pventa'].forEach(function (campo) {
+            form.querySelector('[name="' + campo + '"]').addEventListener('input', function () { revisarPrecios(form); });
+        });
+        revisarPrecios(form);
+    });
+</script>
 
 </body>
 </html>

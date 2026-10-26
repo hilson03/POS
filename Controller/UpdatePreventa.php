@@ -18,21 +18,23 @@ foreach ($onlyUserSession as $user) {
 }
 $urlViews = URL_VIEWS;
 
-$idProducto = $_GET['idProducto'];
-$imagen = $_GET['imagen'];
-$precio = $_GET['precio'];
-$precioVenta = $_GET['pventa'];
-$tipoUser = $_GET['tipo'];
-$tipoPedido = $_GET['tipoPedido'];
-$idpreventa = $_GET['idpreventa'];
-$nombreProducto = $_GET['producto'];
-$cantidadUpdated = $_GET['cantidadUpdated'];
-$nuevoPrecio = $_GET['nuevoPrecio'];
+$idProducto = isset($_GET['idProducto']) ? (int) $_GET['idProducto'] : 0;
+// tienda de celulares: un solo tipo de venta
+$tipoPedido = 'Venta';
+$cantidadUpdated = (isset($_GET['cantidadUpdated']) && ctype_digit(trim((string) $_GET['cantidadUpdated']))) ? (int) $_GET['cantidadUpdated'] : 0;
 
 $parametroStock = '';
 $productElegido = $con->getProductoElegido($idProducto, $usuarioSesion['idSucursalActiva']);
+if (empty($productElegido) || $cantidadUpdated < 1) {
+    header("Location: Ventas.php");
+    exit;
+}
+// nombre, foto y precio salen siempre del producto guardado, nunca del enlace (se podria alterar el precio)
 foreach ($productElegido as $product) {
     $stockProducto = (int) $product['cantidad'];
+    $imagen = $product['imagen'];
+    $nombreProducto = $product['nombreProducto'];
+    $precioVenta = $product['precioVenta'];
 }
 // unidades disponibles = stock - lo apartado en los pedidos de otros usuarios y en el otro tipo (Mesa/Llevar) de este usuario
 $cantidadDisponible = $stockProducto - $con->getCantidadEnPreventa($idProducto, $usuarioSesion['idSucursalActiva'], $idUsuario, $tipoPedido);
