@@ -81,7 +81,7 @@ include('Head.php');
                                     <button type="button" class="close" data-dismiss="modal"
                                             aria-hidden="true">×
                                     </button>
-                                    <h3 id="myModalLabel" align="center">Registrar Informacion del
+                                    <h3 id="myModalLabel" align="center">Registrar Información del
                                         Cliente</h3>
                                 </div>
                                 <div class="modal-body">
@@ -121,7 +121,7 @@ include('Head.php');
                                             </div>
                                             <br><br>
 
-                                            <label for="direccion" class="control-label col-lg-3">Direccion:</label>
+                                            <label for="direccion" class="control-label col-lg-3">Dirección:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="direccion"
@@ -131,7 +131,7 @@ include('Head.php');
                                             <br><br>
 
                                             <label for="telefonoFijo"
-                                                   class="control-label col-lg-3">Telefono:</label>
+                                                   class="control-label col-lg-3">Teléfono fijo:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="telefonoFijo"
@@ -141,7 +141,7 @@ include('Head.php');
                                             <br><br>
 
                                             <label for="telefonoCelular"
-                                                   class="control-label col-lg-3">Celular:</label>
+                                                   class="control-label col-lg-3">Teléfono móvil:</label>
                                             <div class="col-lg-9">
                                                 <input class="form-control input-lg m-bot15"
                                                        id="telefonoCelular"
@@ -193,9 +193,9 @@ include('Head.php');
                         <th><i class="icon_images"></i> FOTO</th>
                         <th><i class="icon_contacts"></i> NOMBRE</th>
                         <th><i class="icon_folder"></i> DNI</th>
-                        <th><i class="icon_contacts_alt"></i> DIRECCION</th>
-                        <th><i class="icon_contacts_alt"></i> TELEFONO FIJO</th>
-                        <th><i class="icon_contacts_alt"></i> TELEFONO MOBIL</th>
+                        <th><i class="icon_contacts_alt"></i> DIRECCIÓN</th>
+                        <th><i class="icon_contacts_alt"></i> TELÉFONO FIJO</th>
+                        <th><i class="icon_contacts_alt"></i> TELÉFONO MÓVIL</th>
                         <th><i class="icon_contacts_alt"></i> EMAIL</th>
                         <th><i class="icon_key"></i> FECHA DE REGISTRO</th>
                         <th><i class="icon_cog"></i> ACCIONES</th>
@@ -240,7 +240,7 @@ include('Head.php');
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-hidden="true">×
                                             </button>
-                                            <h3 id="myModalLabel" align="center">Cambiar Informacion del
+                                            <h3 id="myModalLabel" align="center">Cambiar Información del
                                                 Cliente</h3>
                                         </div>
                                         <div class="modal-body">
@@ -291,7 +291,7 @@ include('Head.php');
                                                     <br><br>
 
                                                     <label for="direccion"
-                                                           class="control-label col-lg-3">Direccion:</label>
+                                                           class="control-label col-lg-3">Dirección:</label>
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="direccion"
@@ -302,7 +302,7 @@ include('Head.php');
                                                     <br><br>
 
                                                     <label for="telefonoFijo"
-                                                           class="control-label col-lg-3">Telefono:</label>
+                                                           class="control-label col-lg-3">Teléfono fijo:</label>
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="telefonoFijo"
@@ -313,7 +313,7 @@ include('Head.php');
                                                     <br><br>
 
                                                     <label for="telefonoCelular"
-                                                           class="control-label col-lg-3">Telefono Mobil:</label>
+                                                           class="control-label col-lg-3">Teléfono móvil:</label>
                                                     <div class="col-lg-9">
                                                         <input class="form-control input-lg m-bot15"
                                                                id="telefonoCelular"
