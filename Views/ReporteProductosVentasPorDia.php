@@ -143,11 +143,11 @@ for ($i = 0; $i < $numfilas; $i++) {
     if ($i % 2 == 1) {
         $pdf->SetFillColor(251, 251, 251);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, textoPdf($fila['descripcion']), $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']), $fila['fechaVenta']));
+        $pdf->Row(array($numlista, textoPdf($fila['descripcion']), $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']), fechaHn($fila['fechaVenta'])));
     } else {
         $pdf->SetFillColor(226, 226, 226);
         $pdf->SetTextColor(0);
-        $pdf->Row(array($numlista, textoPdf($fila['descripcion']), $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']), $fila['fechaVenta']));
+        $pdf->Row(array($numlista, textoPdf($fila['descripcion']), $fila['cantidad'],  dinero($fila['precio']), dinero($fila['total']), fechaHn($fila['fechaVenta'])));
     }
 }
 

@@ -76,7 +76,7 @@ if (!function_exists('filaComprobante')) {
         </div>
 
     <div class="c-linea"></div>
-    <div><b>Fecha:</b> <?PHP echo htmlspecialchars($fecha); ?></div>
+    <div><b>Fecha:</b> <?PHP echo htmlspecialchars(fechaHn($fecha)); ?></div>
     <?PHP if (trim($ci) != '') { ?>
         <div><b>RTN/DNI:</b> <?PHP echo htmlspecialchars($ci); ?></div>
     <?PHP } ?>

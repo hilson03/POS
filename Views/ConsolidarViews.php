@@ -102,7 +102,7 @@ include('Head.php');
 
                         <tr<?php echo $esTransferencia ? ' class="fila-transferencia"' : ''; ?>>
                             <td align="center"><?php echo htmlspecialchars((string) $ventas['idVentas']); ?></td>
-                            <td><?php echo htmlspecialchars((string) $ventas['fechaVenta']); ?></td>
+                            <td data-order="<?php echo htmlspecialchars((string) $ventas['fechaVenta']); ?>"><?php echo htmlspecialchars(fechaHn($ventas['fechaVenta'])); ?></td>
                             <td><?php echo htmlspecialchars((string) $ventas['cliente']); ?></td>
                             <td align="center" ><?php echo dinero($ventas['total']); ?></td>
                             <td><?php echo htmlspecialchars($ventas['vendedor']); ?></td>

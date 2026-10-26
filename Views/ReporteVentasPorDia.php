@@ -168,7 +168,7 @@ foreach ($ventasPorForma as $forma => $ventasForma) {
         }
         $pdf->SetFillColor($i % 2 == 1 ? 251 : 226, $i % 2 == 1 ? 251 : 226, $i % 2 == 1 ? 251 : 226);
         $pdf->Row(array($i + 1, textoPdf($venta['cliente']), $venta['cantidad'], dinero($venta['total']), dinero($venta['monto']),
-                        textoPdf($detalle), $venta['fechaVenta']));
+                        textoPdf($detalle), fechaHn($venta['fechaVenta'])));
         $totalForma += $venta['monto'];
     }
 

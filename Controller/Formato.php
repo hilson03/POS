@@ -24,3 +24,19 @@ if (!function_exists('nombreCliente')) {
         return trim(preg_replace('/\s+/u', ' ', $cliente['nombre'] . ' ' . $cliente['apellido']));
     }
 }
+
+/*
+ * Fecha como se usa en Honduras: dia/mes/ano ("26/10/2026"); si trae hora, tambien la hora ("26/10/2026 14:05").
+ * En la base se siguen guardando como AAAA-MM-DD (asi se ordenan y se buscan bien).
+ */
+if (!function_exists('fechaHn')) {
+    function fechaHn($fecha)
+    {
+        $fecha = trim((string) $fecha);
+        $tiempo = $fecha === '' ? false : strtotime($fecha);
+        if ($tiempo === false) {
+            return $fecha;
+        }
+        return date(strlen($fecha) > 10 ? 'd/m/Y H:i' : 'd/m/Y', $tiempo);
+    }
+}

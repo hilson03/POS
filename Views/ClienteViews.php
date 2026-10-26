@@ -171,7 +171,8 @@ include('Head.php');
 
         <div class="panel-body">
             <div class="dataTable_wrapper">
-                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                <!-- data-order="[]": la tabla respeta el orden de la base (mas recientes primero) en vez de ordenar por la primera columna -->
+                <table class="table table-striped table-bordered table-hover" id="dataTables-example" data-order="[]">
                     <thead>
                     <tr>
                         <th><i class="icon_images"></i> FOTO</th>
@@ -198,7 +199,7 @@ include('Head.php');
                             <td> <?PHP echo htmlspecialchars((string) $client['telefonoFijo']); ?></td>
                             <td> <?PHP echo htmlspecialchars((string) $client['telefonoCelular']); ?></td>
                             <td> <?PHP echo htmlspecialchars((string) $client['email']); ?></td>
-                            <td> <?PHP echo htmlspecialchars((string) $client['fechaRegistro']); ?></td>
+                            <td data-order="<?PHP echo htmlspecialchars((string) $client['fechaRegistro']); ?>"> <?PHP echo htmlspecialchars(fechaHn($client['fechaRegistro'])); ?></td>
                             <td>
                                 <a href="#a<?php echo $client[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">

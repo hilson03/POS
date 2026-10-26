@@ -210,10 +210,10 @@ class conexion{
 fueron borradas ya que el cliente no necesitaba ese modulo en esta version del POS************************/
 
 //funcion sql para obtener una lista de todos los clientes tambien para crear, modificar y borrar
+    // los clientes registrados mas recientemente primero
     public function getAllCliente()
     {
-
-        return $this->ejecutar("SELECT * FROM cliente ");
+        return $this->ejecutar("SELECT * FROM cliente ORDER BY idcliente DESC");
     }
 
 

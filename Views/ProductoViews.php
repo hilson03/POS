@@ -186,7 +186,7 @@ include('Head.php');
                             <td> <?PHP echo dinero($product['precioCompra']); ?></td>
                             <td> <?PHP echo dinero($product['precioVenta']); ?></td>
                             <td> <?PHP echo htmlspecialchars((string) $product['tipo']); ?></td>
-                            <td> <?PHP echo htmlspecialchars((string) $product['fechaRegistro']); ?></td>
+                            <td data-order="<?PHP echo htmlspecialchars((string) $product['fechaRegistro']); ?>"> <?PHP echo htmlspecialchars(fechaHn($product['fechaRegistro'])); ?></td>
                             <td>
                                 <a href="#a<?php echo $product[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
