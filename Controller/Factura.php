@@ -36,5 +36,7 @@ $formaPago = (isset($_GET['forma']) && isset($formasCobro[$_GET['forma']])) ? $f
 // transferencia (sola o en pago mixto): el vendedor elige en cual cuenta de la tienda llego el dinero
 $cuentasTransferencia = in_array($formaPago, array('Transferencia', 'Mixto')) ? $con->getCuentasBancarias(true) : array();
 
+// la ventana de cobro siempre se pide nueva (si el navegador guardara una copia vieja, podria cobrar con un formulario desactualizado)
+header('Cache-Control: no-store, no-cache, must-revalidate');
 require('../Views/FacturaViews.php');
 ?>

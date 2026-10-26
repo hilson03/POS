@@ -1,20 +1,24 @@
 <?php
+/*
+ * Buscador de clientes del formulario de cobro: recibe lo que escribe el vendedor (DNI o nombre, 3 letras o mas)
+ * y devuelve en JSON los clientes que coinciden. Los textos se arman en el navegador con textContent (sin html).
+ */
 require_once('../Model/Conexion.php');
 require('Constans.php');
 require_once('Sesion.php');
+require_once('Validar.php');
 $con = new conexion();
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion('', true);
-$nitCliente = (isset($_POST['nitClient']) && is_string($_POST['nitClient'])) ? trim($_POST['nitClient']) : '';
-$showContact = $con->getContact($nitCliente);
 
-if (mysqli_num_rows($showContact) == 0) {
-    echo '<input class="form-control input-lg m-bot15"   size="25"  type="text"   name="nombreNewCliente"  />';
-} else {
-    while ($fila = mysqli_fetch_array($showContact)) {
-        echo '<div onclick="myFunction2(' . (int) $fila["idcliente"] . ')">' . htmlspecialchars(nombreCliente($fila)) . '</div>';
+$texto = textoPost('texto', 60);
+$clientes = array();
+if (mb_strlen($texto, 'UTF-8') >= 3) {
+    foreach ($con->buscarClientes($texto) as $fila) {
+        $clientes[] = array('ci' => trim((string) $fila['ci']), 'nombre' => nombreCliente($fila));
     }
 }
 
-?>
+header('Content-Type: application/json; charset=utf-8');
+echo json_encode($clientes);

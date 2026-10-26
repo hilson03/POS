@@ -97,13 +97,17 @@ if ($formaPago == 'Tarjeta') {
 }
 
 /*
- * Cliente: en efectivo el RTN/DNI y el nombre son opcionales; sin ellos la venta sale a "Consumidor Final"
- * y no se registra ningun cliente. Tarjeta, transferencia y mixto siguen pidiendo el RTN/DNI.
+ * Cliente: se elige de la lista de Clientes (buscador del cobro) o se registra ahi mismo con DNI, nombre y apellido.
+ * En efectivo es opcional: sin cliente la venta sale a "Consumidor Final". Tarjeta, transferencia y mixto piden el DNI.
  */
 $ci = trim((string) $ci);
-$nombreNewCliente = textoPost('nombreNewCliente', 200);
+if ($ci == '') {
+    $ci = textoPost('dniNuevo', 100);
+}
+$nombreNuevo = textoPost('nombreNuevo', 200);
+$apellidoNuevo = textoPost('apellidoNuevo', 200);
 if ($ci == '' && $formaPago != 'Efectivo') {
-    $con->updateMensajeAlert("Escribe el RTN/DNI del cliente (solo en pagos en efectivo puede quedar vacío).", "alert alert-danger");
+    $con->updateMensajeAlert("Elige al cliente o regístralo con su DNI (solo en pagos en efectivo puede quedar sin cliente).", "alert alert-danger");
     header("Location: Ventas.php?estado='Activo'");
     exit;
 }
@@ -112,10 +116,16 @@ $nombreClienteDato = CONSUMIDOR_FINAL;
 if ($ci != '') {
     $searchClient = $con->getClienteDatos($ci);
 
-    // cliente nuevo: se registra si se escribio su nombre (o si no es efectivo, como antes)
-    if (empty($searchClient) && ($nombreNewCliente != '' || $formaPago != 'Efectivo')) {
-        $registrarNewProveedor = $con->registerNewCliente("img/user.png","",$nombreNewCliente,"","","","",$fechaVenta,$ci);
-        $searchClient = $con->getClienteDatos($ci);
+    // cliente nuevo: se registra con nombre y apellido (como en Clientes); sin ellos, solo se permite en efectivo
+    if (empty($searchClient)) {
+        if ($nombreNuevo != '' && $apellidoNuevo != '') {
+            $con->registerNewCliente("img/user.png", $nombreNuevo, $apellidoNuevo, "", "", "", "", date('Y-m-d'), $ci);
+            $searchClient = $con->getClienteDatos($ci);
+        } elseif ($formaPago != 'Efectivo') {
+            $con->updateMensajeAlert("El DNI " . $ci . " no está en Clientes: escribe el nombre y el apellido para registrarlo.", "alert alert-danger");
+            header("Location: Ventas.php?estado='Activo'");
+            exit;
+        }
     }
 
     foreach ($searchClient as $cliente) {

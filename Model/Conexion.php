@@ -633,10 +633,19 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return (int) $fila['cantidadTotal'];
     }
 
-     public function getContact($nitClient)
+    /*
+     * Buscador de clientes del cobro: DNI que empieza con el texto, o nombre/apellido que lo contienen.
+     * Los % y _ que escriba el vendedor se buscan como letras, no como comodines.
+     */
+    public function buscarClientes($texto, $limite = 8)
     {
-        return $this->ejecutar("SELECT * FROM `cliente`  where  ci = ?", array($nitClient));
+        $texto = addcslashes(trim((string) $texto), '\\%_');
+        return $this->filas($this->ejecutar("SELECT idcliente, ci, nombre, apellido FROM cliente
+                                             WHERE ci LIKE ? OR CONCAT_WS(' ', nombre, apellido) LIKE ?
+                                             ORDER BY (ci LIKE ?) DESC, apellido, nombre LIMIT " . (int) $limite,
+            array($texto . '%', '%' . $texto . '%', $texto . '%')));
     }
+
 
     public function getClienteDatos($nitClient)
     {

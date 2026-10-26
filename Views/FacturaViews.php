@@ -1,4 +1,4 @@
-<div class="modal-dialog">
+<div class="modal-dialog" style="width: 720px; max-width: 96%;"><?PHP /* mas ancho que el normal: total, efectivo y cambio caben completos */ ?>
     <div class="modal-content">
         <div class="modal-header">
             <form class="form-validate form-horizontal" name="calculadora<?PHP echo isset($formaPago) ? $formaPago : 'Efectivo'; ?>" id="formCobro<?PHP echo isset($formaPago) ? $formaPago : 'Efectivo'; ?>" action="RegistrarPreventa.php" method="post">
@@ -33,32 +33,55 @@
                     <tr>
                         <td>
                             <label>
-                                RTN / DNI :
+                                CLIENTE :
                             </label>
                         </td>
                         <td colspan="7">
-                            <div class="col-lg-10">
-                                <?PHP // en efectivo el cliente es opcional: sin RTN/DNI ni nombre la venta sale a "Consumidor Final" ?>
-                                <input class="form-control input-lg m-bot15" type="text"<?PHP echo $modoCobro == 'Efectivo' ? ' placeholder="Opcional"' : ' required'; ?> name="ci" autocomplete="off"  onkeyup="myFunctionSearch(this)">
+                            <?PHP
+                            // cliente de la lista de Clientes (buscador por DNI o nombre) o nuevo con DNI, nombre y apellido;
+                            // en efectivo es opcional (sin cliente la venta sale a "Consumidor Final")
+                            ?>
+                            <style>
+                                .cliente-cobro { margin-bottom: 12px; }
+                                .cliente-lista { border: 1px solid #ccd; border-top: 0; border-radius: 0 0 4px 4px; max-height: 220px; overflow-y: auto; background: #fff; }
+                                .cliente-lista:empty { display: none; }
+                                .cliente-opcion { padding: 8px 12px; cursor: pointer; border-top: 1px solid #eef; font-size: 14px; }
+                                .cliente-opcion:hover { background: #eef4ff; }
+                                .cliente-opcion.sin-dni { cursor: not-allowed; color: #999; background: #fafafa; }
+                                .cliente-opcion.nuevo { color: #1f6b3a; font-weight: bold; }
+                                .cliente-elegido { padding: 10px 12px; border-radius: 6px; background: #e3f4e9; border: 1px solid #a9dbb9; font-size: 15px; }
+                                .cliente-nuevo { padding: 10px 12px; border-radius: 6px; background: #f6f8fc; border: 1px solid #ccd; }
+                                .cliente-nuevo .form-control { margin-bottom: 6px; }
+                                .cliente-nuevo-titulo { font-weight: bold; margin-bottom: 6px; }
+                                /* total, efectivo y cambio: antes median 62px y "25000.00" se veia cortado como "2500" */
+                                .modal [name=ingreso1], .modal [name=ingreso2], .modal [name=resultado] { min-width: 115px; padding-left: 8px; padding-right: 8px; }
+                            </style>
+                            <div class="col-lg-10 cliente-cobro" data-obligatorio="<?PHP echo $modoCobro == 'Efectivo' ? '0' : '1'; ?>">
+                                <input type="hidden" name="ci" class="cliente-ci" value="">
+                                <div class="cliente-buscar">
+                                    <input class="form-control input-lg cliente-texto" type="text" autocomplete="off"
+                                           placeholder="Buscar por DNI o nombre<?PHP echo $modoCobro == 'Efectivo' ? ' (opcional)' : ''; ?>"
+                                           oninput="buscarClienteCobro(this)">
+                                    <div class="cliente-lista"></div>
+                                </div>
+                                <div class="cliente-elegido" hidden>
+                                    <i class="fa fa-user"></i> <b class="cliente-nombre"></b> &middot; DNI <span class="cliente-dni"></span>
+                                    <button type="button" class="btn btn-default btn-xs" onclick="quitarClienteCobro(this)">&times; Cambiar</button>
+                                </div>
+                                <div class="cliente-nuevo" hidden>
+                                    <div class="cliente-nuevo-titulo"><i class="fa fa-user-plus"></i> Cliente nuevo (se guarda en Clientes)</div>
+                                    <input class="form-control" type="text" name="dniNuevo" maxlength="100" placeholder="DNI / RTN" disabled>
+                                    <input class="form-control" type="text" name="nombreNuevo" maxlength="200" placeholder="Nombre" disabled>
+                                    <input class="form-control" type="text" name="apellidoNuevo" maxlength="200" placeholder="Apellido" disabled>
+                                    <button type="button" class="btn btn-default btn-xs" onclick="quitarClienteCobro(this)">Cancelar</button>
+                                </div>
                                 <?PHP if ($modoCobro == 'Efectivo') { ?>
-                                    <small class="help-block" style="margin-top:-10px;">Si no escribe RTN/DNI ni nombre, la venta sale a <b>Consumidor Final</b>.</small>
+                                    <small class="help-block">Si no elige cliente, la venta sale a <b>Consumidor Final</b>.</small>
                                 <?PHP } ?>
                             </div>
                         </td>
                     </tr>
 
-                    <tr>
-                        <td>
-                            <label>
-                                NOMBRE :
-                            </label>
-                        </td>
-                        <td colspan="7">
-                            <div class="col-lg-10">
-                                <div  class="textbox2 resultado-cliente" size="25" readonly name="nombreCliente"></div>
-                            </div>
-                        </td>
-                    </tr>
 
                     <tr>
                         <td><label>TOTAL A PAGAR :</label></td>
@@ -276,29 +299,107 @@
     // (antes aqui se aplicaba DataTables a la tabla del formulario: no es una lista de datos y fallaba al abrir
     // el cobro desde Ventas, cortando este script; por eso el pago mixto mandaba los pagos sin numero)
 
-    function myFunctionSearch(campo) {
-
-        var clientSearch = campo.value;
-        var resultado = campo.form.querySelector('.resultado-cliente');
-
-        if (clientSearch == '') {
-
-            resultado.innerHTML = "";
-            resultado.style.border = "0px";
+    /*
+     * Cliente del cobro: buscador en la lista de Clientes (DNI o nombre, 3 letras o mas). Al elegir uno queda su DNI
+     * en el campo oculto "ci"; si no esta, se registra ahi mismo con DNI, nombre y apellido.
+     */
+    var esperaBusquedaCliente = null;
+    function buscarClienteCobro(campo) {
+        var caja = campo.closest('.cliente-cobro');
+        var lista = caja.querySelector('.cliente-lista');
+        var texto = campo.value.trim();
+        clearTimeout(esperaBusquedaCliente);
+        if (texto.length < 3) {
+            lista.innerHTML = '';
             return;
         }
+        esperaBusquedaCliente = setTimeout(function () {
+            fetch('SearchContact.php', {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'texto=' + encodeURIComponent(texto)
+            }).then(function (r) { return r.json(); }).then(function (clientes) {
+                if (campo.value.trim() !== texto) { return; }   // ya escribio otra cosa
+                lista.innerHTML = '';
+                clientes.forEach(function (cliente) {
+                    var fila = document.createElement('div');
+                    fila.className = 'cliente-opcion' + (cliente.ci === '' ? ' sin-dni' : '');
+                    var nombre = document.createElement('b');
+                    nombre.textContent = cliente.nombre || '(sin nombre)';
+                    fila.appendChild(nombre);
+                    fila.appendChild(document.createTextNode(cliente.ci === '' ? ' · sin DNI (agrégalo en Clientes para elegirlo)' : ' · DNI ' + cliente.ci));
+                    if (cliente.ci !== '') {
+                        fila.addEventListener('click', function () { elegirClienteCobro(caja, cliente); });
+                    }
+                    lista.appendChild(fila);
+                });
+                var nuevo = document.createElement('div');
+                nuevo.className = 'cliente-opcion nuevo';
+                nuevo.textContent = clientes.length ? '+ No es ninguno: registrar cliente nuevo' : 'No está en Clientes. + Registrar cliente nuevo';
+                nuevo.addEventListener('click', function () { clienteNuevoCobro(caja, texto); });
+                lista.appendChild(nuevo);
+            }).catch(function () {
+                lista.innerHTML = '';
+            });
+        }, 250);
+    }
 
-        loadDoc("nitClient=" + clientSearch, "SearchContact.php", function () {
-
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-
-                resultado.innerHTML = xmlhttp.responseText;
-                resultado.style.border = "1px solid #A5ACB2";
-
-            }
-
+    function mostrarParteCliente(caja, parte) {
+        caja.querySelector('.cliente-buscar').hidden = parte !== 'buscar';
+        caja.querySelector('.cliente-elegido').hidden = parte !== 'elegido';
+        caja.querySelector('.cliente-nuevo').hidden = parte !== 'nuevo';
+        // los campos del cliente nuevo solo se envian (y son obligatorios) cuando se esta registrando uno
+        caja.querySelectorAll('.cliente-nuevo input').forEach(function (campo) {
+            campo.disabled = parte !== 'nuevo';
+            campo.required = parte === 'nuevo';
         });
     }
+
+    function elegirClienteCobro(caja, cliente) {
+        caja.querySelector('.cliente-ci').value = cliente.ci;
+        caja.querySelector('.cliente-nombre').textContent = cliente.nombre;
+        caja.querySelector('.cliente-dni').textContent = cliente.ci;
+        caja.querySelector('.cliente-lista').innerHTML = '';
+        mostrarParteCliente(caja, 'elegido');
+    }
+
+    function clienteNuevoCobro(caja, texto) {
+        caja.querySelector('.cliente-ci').value = '';
+        caja.querySelector('.cliente-lista').innerHTML = '';
+        mostrarParteCliente(caja, 'nuevo');
+        // si lo que buscaba parece un DNI, se pasa al campo DNI; si no, al nombre
+        var pareceDni = /^[0-9\-\s]+$/.test(texto);
+        caja.querySelector('[name=dniNuevo]').value = pareceDni ? texto.replace(/\s/g, '') : '';
+        caja.querySelector('[name=nombreNuevo]').value = pareceDni ? '' : texto;
+        caja.querySelector(pareceDni ? '[name=nombreNuevo]' : '[name=dniNuevo]').focus();
+    }
+
+    function quitarClienteCobro(boton) {
+        var caja = boton.closest('.cliente-cobro');
+        caja.querySelector('.cliente-ci').value = '';
+        caja.querySelector('.cliente-texto').value = '';
+        caja.querySelector('.cliente-lista').innerHTML = '';
+        mostrarParteCliente(caja, 'buscar');
+        caja.querySelector('.cliente-texto').focus();
+    }
+
+    // al enviar: con tarjeta, transferencia o mixto el cliente es obligatorio (el servidor lo vuelve a revisar)
+    (function () {
+        var form = formCobro('<?PHP echo $modoCobro; ?>');
+        if (!form || form.dataset.clienteListo) { return; }
+        form.dataset.clienteListo = '1';
+        form.addEventListener('submit', function (evento) {
+            var caja = form.querySelector('.cliente-cobro');
+            var texto = caja.querySelector('.cliente-texto');
+            var hayCliente = caja.querySelector('.cliente-ci').value !== '' || !caja.querySelector('.cliente-nuevo').hidden;
+            if (caja.dataset.obligatorio === '1' && !hayCliente) {
+                evento.preventDefault();
+                texto.setCustomValidity('Elige al cliente o regístralo (con tarjeta, transferencia o mixto el cliente es obligatorio).');
+                texto.reportValidity();
+                texto.setCustomValidity('');
+            }
+        });
+    })();
 
 
     // pago mixto: hasta 5 pagos con tarjeta o transferencia; el efectivo es lo que falta para el total.
