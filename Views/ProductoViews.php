@@ -119,37 +119,25 @@ include('Head.php');
 
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="cantidad" class="control-label col-lg-2">Stock en <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?> :</label>
+                                                    <label class="control-label col-lg-2">Stock en <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?> :</label>
                                                     <div class="col-lg-4">
-                                                        <input class="form-control input-lg m-bot15"
-                                                               id="cantidad" name="cantidad"
-                                                               placeholder="0" type="number" step="1" min="0" required/>
+                                                        <input class="form-control input-lg m-bot15" name="cantidad" placeholder="0" type="number" step="1" min="0" required/>
                                                     </div>
-                                                    <label for="pVenta" class="control-label col-lg-2">Precio
-                                                        de Venta:</label>
+                                                    <label class="control-label col-lg-2">Fecha:</label>
                                                     <div class="col-lg-4">
-                                                        <input class="form-control input-lg m-bot15"
-                                                               id="pventa" name="pventa"
-                                                               placeholder="0.00" type="number" step="0.01" min="0.01" required/>
-                                                    </div>
-
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="pCompra" class="control-label col-lg-2">Precio
-                                                        Compra:</label>
-                                                    <div class="col-lg-4">
-                                                        <input class="form-control input-lg m-bot15" id="pcompra"
-                                                               name="pcompra" placeholder="0.00" type="number" step="0.01" min="0"
-                                                               required/>
-                                                    </div>
-                                                    <label for="fechaRegistr"
-                                                           class="control-label col-lg-2">Fecha:</label>
-                                                    <div class="col-lg-4">
-                                                        <input class="form-control input-lg m-bot15" type="date"
-                                                               readonly name="fechaRegistro" autocomplete="off"
+                                                        <input class="form-control input-lg m-bot15" type="date" readonly name="fechaRegistro" autocomplete="off"
                                                                value="<?php echo date('Y-m-d'); ?>">
                                                     </div>
-
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-lg-2">Precio de Compra:</label>
+                                                    <div class="col-lg-4">
+                                                        <input class="form-control input-lg m-bot15" name="pcompra" placeholder="0.00" type="number" step="0.01" min="0" required/>
+                                                    </div>
+                                                    <label class="control-label col-lg-2">Precio de Venta:</label>
+                                                    <div class="col-lg-4">
+                                                        <input class="form-control input-lg m-bot15" name="pventa" placeholder="0.00" type="number" step="0.01" min="0.01" required/>
+                                                    </div>
                                                 </div>
 
                                             </section>
@@ -283,46 +271,27 @@ include('Head.php');
 
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="pdistribuidor"
-                                                                   class="control-label col-lg-2">Stock en <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?> :</label>
+                                                            <label class="control-label col-lg-2">Stock en <?php echo htmlspecialchars($usuarioSesion['nombreSucursal']); ?> :</label>
                                                             <div class="col-lg-4">
-                                                                <input class="form-control input-lg m-bot15"
-                                                                       id="cantidad" name="cantidad"
-                                                                       placeholder="0" type="number" step="1" min="0" required
+                                                                <input class="form-control input-lg m-bot15" name="cantidad" placeholder="0" type="number" step="1" min="0" required
                                                                        value="<?php echo htmlspecialchars((string) $product['cantidad']); ?>"/>
                                                             </div>
-                                                            <label for="pprofesional"
-                                                                   class="control-label col-lg-2">Precio de
-                                                                Compra:</label>
+                                                            <label class="control-label col-lg-2">Fecha:</label>
                                                             <div class="col-lg-4">
-                                                                <input class="form-control input-lg m-bot15"
-                                                                       id="pcompra" name="pcompra"
-                                                                       placeholder="0.00" type="number" step="0.01" min="0" required
+                                                                <input class="form-control input-lg m-bot15" type="date" readonly name="fechaRegistro" autocomplete="off"
+                                                                       value="<?php echo date('Y-m-d'); ?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-lg-2">Precio de Compra:</label>
+                                                            <div class="col-lg-4">
+                                                                <input class="form-control input-lg m-bot15" name="pcompra" placeholder="0.00" type="number" step="0.01" min="0" required
                                                                        value="<?php echo dinero($product['precioCompra']); ?>"/>
                                                             </div>
-
-                                                        </div>
-
-
-                                                        <div class="form-group">
-                                                            <label for="ppublico" class="control-label col-lg-2">Precio
-                                                                de
-                                                                Venta:</label>
+                                                            <label class="control-label col-lg-2">Precio de Venta:</label>
                                                             <div class="col-lg-4">
-                                                                <input class="form-control input-lg m-bot15"
-                                                                       id="pventa"
-                                                                       name="pventa" placeholder="0.00"
-                                                                       type="number" step="0.01" min="0.01" required
+                                                                <input class="form-control input-lg m-bot15" name="pventa" placeholder="0.00" type="number" step="0.01" min="0.01" required
                                                                        value="<?php echo dinero($product['precioVenta']); ?>"/>
-                                                            </div>
-                                                            <label for="pventa"
-                                                                   class="control-label col-lg-2">Fecha:</label>
-                                                            <div class="col-lg-4">
-                                                                <input class="form-control input-lg m-bot15"
-                                                                       type="date"
-                                                                       readonly name="fechaRegistro"
-                                                                       autocomplete="off"
-                                                                       value="<?php echo date('Y-m-d'); ?>">
                                                             </div>
                                                         </div>
                                                     </section>
