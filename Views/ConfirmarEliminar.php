@@ -1,6 +1,7 @@
 <!--
     Ventana de confirmacion. Cualquier enlace con el atributo data-confirmar="texto" muestra esta ventana;
     solo si se confirma se hace la accion, enviada por POST con el codigo de proteccion de la sesion (tokenCsrf).
+    data-confirmar-aviso cambia el texto de advertencia de la ventana.
     data-confirmar-tipo elige el modo: "eliminar" (por defecto, roja), "consolidar" (verde), "desactivar" o "activar" (usuarios).
 -->
 <style>
@@ -127,7 +128,8 @@
             document.getElementById('confirmarTituloTexto').textContent = modo.titulo;
             document.getElementById('confirmarTitulo').className = 'confirmar-cabecera' + (modo.verde ? ' verde' : '');
             document.getElementById('confirmarPregunta').textContent = modo.pregunta;
-            document.getElementById('confirmarAviso').textContent = modo.aviso;
+            // un enlace puede traer su propio aviso (data-confirmar-aviso), por ejemplo al borrar un producto de todas las tiendas
+            document.getElementById('confirmarAviso').textContent = enlace.getAttribute('data-confirmar-aviso') || modo.aviso;
             document.getElementById('confirmarAceptar').textContent = modo.boton;
             document.getElementById('confirmarAceptar').className = modo.claseBoton;
             document.getElementById('confirmarNombre').textContent = enlace.getAttribute('data-confirmar');

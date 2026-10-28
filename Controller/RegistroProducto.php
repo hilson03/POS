@@ -74,8 +74,22 @@ if (isset($_POST['nuevo_Producto'])) {
 if (isset($_GET['idborrar'])) {
     $idborrar = (int) $_GET['idborrar'];
     $trasladosActivos = $con->contarTrasladosActivosProducto($idborrar);
+    // el producto es del catalogo de TODAS las tiendas: solo se borra si ya no tiene existencias en ninguna
+    $existencias = $con->getExistenciasProducto($idborrar);
+    $enPedidos = $con->contarProductoEnPedidos($idborrar);
 
-    if ($trasladosActivos > 0) {
+    if (empty($con->getProductoElegido($idborrar, $usuarioSesion['idSucursalActiva']))) {
+        $updateMensaje = $con->updateMensajeAlert("Ese producto ya no existe.", "alert alert-warning");
+    } elseif (!empty($existencias)) {
+        $donde = array();
+        foreach ($existencias as $existencia) {
+            $donde[] = (int) $existencia['cantidad'] . " en " . $existencia['nombre'];
+        }
+        $updateMensaje = $con->updateMensajeAlert("No se puede eliminar el producto: todavía tiene existencias (" . implode(", ", $donde) . "). "
+            . "El producto es de todas las tiendas: véndelo, trasládalo o pon su stock en 0 en cada tienda antes de eliminarlo.", "alert alert-danger");
+    } elseif ($enPedidos > 0) {
+        $updateMensaje = $con->updateMensajeAlert("No se puede eliminar el producto: está en un pedido abierto de Ventas. Que lo cobren o lo quiten del pedido primero.", "alert alert-danger");
+    } elseif ($trasladosActivos > 0) {
         // si se borrara, esas unidades quedarian pendientes o en camino sin un producto al que sumarse
         $updateMensaje = $con->updateMensajeAlert("No se puede eliminar el producto: tiene $trasladosActivos traslado(s) en curso entre tiendas. Terminalos o cancelalos primero.", "alert alert-danger");
     } else {

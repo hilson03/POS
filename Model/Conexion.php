@@ -550,6 +550,19 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
         return $this->setStockSucursal($idProducto, $idSucursal, $cantidad);
     }
 
+    // tiendas donde el producto todavia tiene existencias (el catalogo es uno solo para todas las tiendas)
+    public function getExistenciasProducto($idProducto)
+    {
+        return $this->filas($this->ejecutar("SELECT s.nombre, ss.cantidad FROM stock_sucursal ss JOIN sucursal s ON s.idSucursal = ss.idSucursal
+                                             WHERE ss.idProducto = ? AND ss.cantidad > 0 ORDER BY s.nombre", array((int) $idProducto)));
+    }
+
+    // cuantas unidades del producto estan en pedidos abiertos de los vendedores (todavia sin cobrar)
+    public function contarProductoEnPedidos($idProducto)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM preventa WHERE idProducto = ?", array((int) $idProducto))->fetch_assoc()['c'];
+    }
+
     public function deleteProduct($idproducto)
     {
         $this->ejecutar("DELETE FROM stock_sucursal WHERE idProducto = ?", array((int) $idproducto));

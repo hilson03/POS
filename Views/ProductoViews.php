@@ -191,7 +191,7 @@ include('Head.php');
                                 <a href="#a<?php echo $product[0]; ?>" role="button"
                                    class="btn btn-success" data-toggle="modal">
                                     <i class="fa fa-pencil" title="Editar"></i> </a>
-                                <a href="RegistroProducto.php?idborrar=<?PHP echo $product[0]; ?>" data-confirmar="el producto <?php echo htmlspecialchars($product['nombreProducto']); ?>"
+                                <a href="RegistroProducto.php?idborrar=<?PHP echo $product[0]; ?>" data-confirmar="el producto <?php echo htmlspecialchars($product['nombreProducto']); ?>" data-confirmar-aviso="Se eliminará del catálogo de TODAS las tiendas. Solo se puede si no tiene existencias en ninguna tienda. No se puede deshacer."
                                    role="button" class="btn btn-danger"> <i class="icon_close_alt2"></i>
                                 </a>
                             </td>
