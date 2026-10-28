@@ -6,6 +6,7 @@ require_once('Validar.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion('ADMINISTRADOR');
+exigirCsrf('CuentasBancarias.php');   // solo acciones enviadas desde el sistema (proteccion contra enlaces trampa)
 
 $con = new conexion();
 

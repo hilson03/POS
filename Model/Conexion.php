@@ -56,6 +56,51 @@ class conexion{
      * Las contrasenas se guardan cifradas con password_hash; si una todavia esta en texto plano
      * (usuarios creados antes de este cambio) se valida igual y se cifra en ese momento.
      */
+    /*
+     * Limite de intentos de inicio de sesion (tabla intento_login, migracion 015): con 5 fallos de un usuario,
+     * o 20 desde una misma conexion, en 15 minutos, el inicio de sesion queda bloqueado hasta que el fallo mas
+     * viejo de esos cumpla 15 minutos. Devuelve los minutos que faltan (0 = no esta bloqueado).
+     */
+    const LOGIN_MINUTOS = 15;
+    const LOGIN_FALLOS_USUARIO = 5;
+    const LOGIN_FALLOS_IP = 20;
+
+    public function minutosBloqueoLogin($login, $ip)
+    {
+        $minutos = 0;
+        foreach (array(array('login', $login, self::LOGIN_FALLOS_USUARIO), array('ip', $ip, self::LOGIN_FALLOS_IP)) as $regla) {
+            // el fallo numero N contando desde el mas reciente: mientras tenga menos de 15 minutos, sigue bloqueado
+            $fila = $this->ejecutar("SELECT CEIL(TIMESTAMPDIFF(SECOND, NOW(), fecha + INTERVAL " . self::LOGIN_MINUTOS . " MINUTE) / 60) AS faltan
+                                     FROM intento_login WHERE " . $regla[0] . " = ? AND fecha > NOW() - INTERVAL " . self::LOGIN_MINUTOS . " MINUTE
+                                     ORDER BY fecha DESC LIMIT 1 OFFSET " . ($regla[2] - 1), array((string) $regla[1]))->fetch_assoc();
+            if ($fila !== null) {
+                $minutos = max($minutos, (int) $fila['faltan'], 1);
+            }
+        }
+        return $minutos;
+    }
+
+    // intentos que le quedan a un usuario antes del bloqueo
+    public function intentosLoginRestantes($login)
+    {
+        $fallos = (int) $this->ejecutar("SELECT count(*) c FROM intento_login WHERE login = ? AND fecha > NOW() - INTERVAL " . self::LOGIN_MINUTOS . " MINUTE",
+            array((string) $login))->fetch_assoc()['c'];
+        return max(0, self::LOGIN_FALLOS_USUARIO - $fallos);
+    }
+
+    public function registrarIntentoFallido($login, $ip)
+    {
+        // de paso se borran los intentos de mas de un dia (ya no sirven para nada)
+        $this->ejecutar("DELETE FROM intento_login WHERE fecha < NOW() - INTERVAL 1 DAY");
+        return $this->ejecutar("INSERT INTO intento_login (login, ip, fecha) VALUES (?, ?, NOW())", array((string) $login, (string) $ip));
+    }
+
+    // al entrar bien se olvidan los fallos de ese usuario
+    public function limpiarIntentosLogin($login)
+    {
+        return $this->ejecutar("DELETE FROM intento_login WHERE login = ?", array((string) $login));
+    }
+
     public function getUser($usuario, $password){
         $usuarios = $this->filas($this->ejecutar("SELECT * FROM usuarios WHERE login = ?", array($usuario)));
 

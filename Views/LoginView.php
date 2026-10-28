@@ -127,6 +127,15 @@ require_once(__DIR__ . '/../Controller/Marca.php');
                     <?php
                     if ($_GET['error'] == 'login') {
                         echo 'Usuario o contraseña incorrectos, intenta de nuevo.';
+                        // aviso antes del bloqueo por intentos fallidos
+                        if (isset($_GET['quedan']) && ctype_digit((string) $_GET['quedan'])) {
+                            $quedan = (int) $_GET['quedan'];
+                            echo '<br><b>' . ($quedan == 1 ? 'Te queda 1 intento' : 'Te quedan ' . $quedan . ' intentos') . '</b> antes de que se bloquee por 15 minutos.';
+                        }
+                    } elseif ($_GET['error'] == 'bloqueado') {
+                        $minutos = (isset($_GET['min']) && ctype_digit((string) $_GET['min'])) ? max(1, min(15, (int) $_GET['min'])) : 15;
+                        echo 'Demasiados intentos fallidos. Por seguridad, el inicio de sesión está bloqueado. '
+                            . 'Intenta de nuevo en <b>' . ($minutos == 1 ? '1 minuto' : $minutos . ' minutos') . '</b>.';
                     } elseif ($_GET['error'] == 'inactivo') {
                         echo 'Este usuario está desactivado. Habla con el administrador.';
                     } else {

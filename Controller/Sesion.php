@@ -23,6 +23,61 @@ function iniciarSesionSegura()
     ));
     session_name('VENTASPOS');
     session_start();
+
+    // todos los formularios POST de la pagina llevan el codigo de proteccion (ver insertarCsrfEnFormularios)
+    ob_start('insertarCsrfEnFormularios');
+}
+
+/*
+ * Proteccion contra "enlaces trampa" (CSRF): cada sesion tiene un codigo secreto que va oculto en los formularios.
+ * Una pagina o un enlace de afuera no conoce ese codigo, asi que no puede hacer que el navegador del usuario
+ * guarde, borre o desactive algo sin que el usuario lo haya pedido desde el sistema.
+ */
+function tokenCsrf()
+{
+    iniciarSesionSegura();
+    if (empty($_SESSION['csrf'])) {
+        $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf'];
+}
+
+// agrega el campo oculto con el codigo a cada <form method="post"> del html que se envia al navegador
+function insertarCsrfEnFormularios($html)
+{
+    foreach (headers_list() as $cabecera) {
+        // los PDF y las respuestas JSON se envian tal cual
+        if (stripos($cabecera, 'Content-Type:') === 0 && stripos($cabecera, 'text/html') === false) {
+            return $html;
+        }
+    }
+    if (stripos($html, '<form') === false || empty($_SESSION['csrf']) && session_status() !== PHP_SESSION_ACTIVE) {
+        return $html;
+    }
+    $campo = '<input type="hidden" name="csrf" value="' . htmlspecialchars(tokenCsrf()) . '">';
+    return preg_replace('/<form\b[^>]*\bmethod\s*=\s*["\']?post\b[^>]*>/i', '$0' . $campo, $html);
+}
+
+/*
+ * Para los controladores que guardan, borran o desactivan: la accion solo se hace si llega por POST con el codigo
+ * correcto. Si no, no se hace nada y se vuelve a $volverA con un aviso.
+ */
+function exigirCsrf($volverA)
+{
+    $enviado = isset($_POST['csrf']) && is_string($_POST['csrf']) ? $_POST['csrf'] : '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $enviado)) {
+        return;
+    }
+    // si el formulario traia un archivo mas pesado que lo que acepta el servidor, PHP descarta todo el formulario
+    $maximo = ini_get('post_max_size');
+    $mensaje = "No se realizó la acción: la página estaba vencida o la orden no salió del sistema. Vuelve a intentarlo desde la pantalla.";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && !empty($_SERVER['CONTENT_LENGTH'])) {
+        $mensaje = "No se guardó: lo que enviaste es demasiado pesado (el servidor acepta hasta " . $maximo . "). Usa una foto más liviana.";
+    }
+    $con = new conexion();
+    $con->updateMensajeAlert($mensaje, "alert alert-danger");
+    header("Location: " . $volverA . "?estado='Activo'");
+    exit;
 }
 
 // guarda al usuario en la sesion despues de validar su contrasena; empieza trabajando en su propia sucursal
@@ -30,6 +85,7 @@ function guardarSesion($idUsuario, $idSucursal)
 {
     iniciarSesionSegura();
     session_regenerate_id(true); // evita que alguien reutilice un identificador de sesion anterior
+    unset($_SESSION['csrf']);    // codigo de proteccion nuevo para esta sesion
     $_SESSION['id_usu'] = (int) $idUsuario;
     $_SESSION['idSucursal'] = (int) $idSucursal;
 }

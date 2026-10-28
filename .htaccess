@@ -11,3 +11,14 @@ Options -Indexes
 
 # carpetas internas: el sistema las usa por dentro, pero nadie debe entrar a ellas desde el navegador
 RedirectMatch 403 /(database|registros|Model|\.git)(/|$)
+
+# cabeceras de seguridad para el navegador
+<IfModule mod_headers.c>
+    # otra pagina no puede mostrar el sistema dentro de la suya para enganar al usuario a hacer clic (clickjacking);
+    # el mismo sistema si puede (la impresion del comprobante usa un marco interno)
+    Header always set X-Frame-Options "SAMEORIGIN"
+    # el navegador no adivina el tipo de un archivo: una "foto" con codigo adentro no se ejecuta como pagina
+    Header always set X-Content-Type-Options "nosniff"
+    # al abrir un enlace externo no se manda la direccion completa de la pantalla donde estaba el usuario
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

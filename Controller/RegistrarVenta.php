@@ -10,6 +10,7 @@ if (isset($_GET['RegistarVenta'])) {
     $con = new conexion();
 
     $usuarioSesion = requerirSesion();
+    exigirCsrf('Ventas.php');   // solo acciones enviadas desde el sistema (proteccion contra enlaces trampa)
 
     $usuario = $usuarioSesion['login'];
     $password = '';

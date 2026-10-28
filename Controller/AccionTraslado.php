@@ -5,6 +5,7 @@ require_once('Sesion.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion();
+exigirCsrf('Traslados.php');   // solo acciones enviadas desde el sistema (proteccion contra enlaces trampa)
 
 $con = new conexion();
 

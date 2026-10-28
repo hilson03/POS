@@ -46,9 +46,10 @@ include('LiteralMoney.php');
                             href="#">Vista previa del comprobante</a>
                     </li>
                     <li>
-                        <i class="fa fa-save"></i><a
-                                href="RegistrarVenta.php?RegistarVenta=1&<?PHP echo 'ci=' . urlencode($ci) . '&ingreso1=' . urlencode($totalApagar) . '&ingreso2=' . urlencode($efectivo) . '&resultado=' . urlencode($cambio); ?>">
-                             Guardar venta</a>
+                        <i class="fa fa-save"></i>
+                        <form method="post" action="RegistrarVenta.php?RegistarVenta=1&amp;ci=<?PHP echo urlencode($ci); ?>" style="display:inline;">
+                            <button type="submit" class="btn btn-link" style="padding:0; vertical-align:baseline;">Guardar venta</button>
+                        </form>
                     </li>
                 </ol>
             </div>
@@ -76,10 +77,12 @@ include('LiteralMoney.php');
                 <span><strong>IMPRIMIR COMPROBANTE</strong><small>Con los datos de la tienda</small></span>
             </a>
             <!-- la venta se registra aqui (descuenta stock y pasa a Cierre de ventas); imprimir no la guarda -->
-            <a class="accion-venta guardar" href="RegistrarVenta.php?RegistarVenta=1&<?PHP echo $datosCobro; ?>">
-                <i class="fa fa-check-circle"></i>
-                <span><strong>GUARDAR VENTA</strong><small>Registra la venta y empieza otro pedido</small></span>
-            </a>
+            <form method="post" action="RegistrarVenta.php?RegistarVenta=1&amp;ci=<?PHP echo urlencode($ci); ?>" style="display:contents;">
+                <button type="submit" class="accion-venta guardar" style="border:0; font:inherit; text-align:left; cursor:pointer;">
+                    <i class="fa fa-check-circle"></i>
+                    <span><strong>GUARDAR VENTA</strong><small>Registra la venta y empieza otro pedido</small></span>
+                </button>
+            </form>
         </div>
         <br>
 

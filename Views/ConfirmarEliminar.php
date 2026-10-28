@@ -1,6 +1,6 @@
 <!--
     Ventana de confirmacion. Cualquier enlace con el atributo data-confirmar="texto" muestra esta ventana;
-    solo si se confirma se sigue el enlace.
+    solo si se confirma se hace la accion, enviada por POST con el codigo de proteccion de la sesion (tokenCsrf).
     data-confirmar-tipo elige el modo: "eliminar" (por defecto, roja), "consolidar" (verde), "desactivar" o "activar" (usuarios).
 -->
 <style>
@@ -135,10 +135,21 @@
             document.getElementById('confirmarCancelar').focus();
         });
 
+        // al confirmar se envia por POST con el codigo de proteccion de la sesion (un enlace suelto ya no borra nada)
         document.getElementById('confirmarAceptar').addEventListener('click', function () {
-            if (destino) {
-                window.location.href = destino;
+            if (!destino) {
+                return;
             }
+            var form = document.createElement('form');
+            form.method = 'post';
+            form.action = destino;
+            var codigo = document.createElement('input');
+            codigo.type = 'hidden';
+            codigo.name = 'csrf';
+            codigo.value = <?PHP echo json_encode(tokenCsrf()); ?>;
+            form.appendChild(codigo);
+            document.body.appendChild(form);
+            form.submit();
         });
         document.getElementById('confirmarCancelar').addEventListener('click', cerrar);
 

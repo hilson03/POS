@@ -6,13 +6,31 @@ require_once('Sesion.php');
 $con = new conexion();
 
 // el formulario de login envia los datos por POST: se validan, se guarda la sesion y se recarga sin datos en la URL
-if (isset($_POST['usuario'], $_POST['password'])) {
-    $searchUser = $con->getUser($_POST['usuario'], $_POST['password']);
+if (isset($_POST['usuario'], $_POST['password']) && is_string($_POST['usuario']) && is_string($_POST['password'])) {
+    $loginEnviado = mb_substr(trim($_POST['usuario']), 0, 50, 'UTF-8');
+    $ipCliente = isset($_SERVER['REMOTE_ADDR']) ? substr($_SERVER['REMOTE_ADDR'], 0, 45) : '';
 
-    if (empty($searchUser)) {
-        header("Location: ../index.php?error=login");
+    // demasiados intentos fallidos: ni siquiera se revisa la contrasena hasta que pase el bloqueo
+    $minutosBloqueo = $con->minutosBloqueoLogin($loginEnviado, $ipCliente);
+    if ($minutosBloqueo > 0) {
+        header("Location: ../index.php?error=bloqueado&min=" . $minutosBloqueo);
         exit;
     }
+
+    $searchUser = $con->getUser($loginEnviado, $_POST['password']);
+
+    if (empty($searchUser)) {
+        $con->registrarIntentoFallido($loginEnviado, $ipCliente);
+        $minutosBloqueo = $con->minutosBloqueoLogin($loginEnviado, $ipCliente);
+        if ($minutosBloqueo > 0) {
+            header("Location: ../index.php?error=bloqueado&min=" . $minutosBloqueo);
+            exit;
+        }
+        $quedan = $con->intentosLoginRestantes($loginEnviado);
+        header("Location: ../index.php?error=login" . ($quedan <= 2 ? "&quedan=" . $quedan : ""));
+        exit;
+    }
+    $con->limpiarIntentosLogin($loginEnviado);
     // usuario desactivado: sus datos siguen en el historial, pero ya no puede entrar
     if (isset($searchUser[0]['estado']) && $searchUser[0]['estado'] == 'Inactivo') {
         header("Location: ../index.php?error=inactivo");

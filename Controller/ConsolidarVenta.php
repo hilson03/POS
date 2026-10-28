@@ -6,6 +6,7 @@ require_once('Validar.php');
 
 iniciarSesionSegura();
 $usuarioSesion = requerirSesion();
+exigirCsrf('Consolidar.php');   // solo acciones enviadas desde el sistema (proteccion contra enlaces trampa)
 $usuario = $usuarioSesion['login'];
 
 $con = new conexion();
