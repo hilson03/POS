@@ -68,6 +68,7 @@ $allProducto =$con->getAllProducto($usuarioSesion['idSucursalActiva']);
 // stock en las otras tiendas, para saber a cual pedir un producto agotado
 $stockOtras = $con->getStockOtrasSucursales($usuarioSesion['idSucursalActiva']);
 $esAdministrador = $usuarioSesion['tipo'] == 'ADMINISTRADOR';
+$tiposUnicos = $con->getTiposUnicos();   // celulares: en la tarjeta el codigo se muestra como IMEI
 $menuMain = $con->getMenuMain();
 require("../Views/VentasViews.php");
 

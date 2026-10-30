@@ -1,4 +1,21 @@
 <style>
+    /* IMEI o codigo debajo del nombre en la tarjeta del producto */
+    .codigo-producto {
+        color: #d9e4ff;
+        font-size: 11px;
+        font-family: Consolas, monospace;
+        white-space: nowrap;   /* el IMEI completo en un solo renglon, para compararlo con el del telefono */
+        line-height: 1.2;
+    }
+
+    .codigo-producto small {
+        display: block;
+        font-size: 9px;
+        font-family: Arial, sans-serif;
+        letter-spacing: 1px;
+        opacity: 0.8;
+    }
+
     .buscador-productos {
         position: relative;
         margin-bottom: 12px;
@@ -70,7 +87,7 @@
 
 <div class="buscador-productos">
     <i class="icon_search"></i>
-    <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto por nombre..."
+    <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar por nombre, código o IMEI..."
            autocomplete="off" oninput="filtrarProductos()">
 </div>
 
@@ -80,7 +97,7 @@ while ($product = mysqli_fetch_array($allProducto)) {
     $stock = (int) $product['cantidad'];
     $tienePrecio = is_numeric($product['precioVenta']) && $product['precioVenta'] > 0;
     ?>
-    <div class="tarjeta-producto" data-buscar="<?PHP echo htmlspecialchars($product['nombreProducto']); ?>"
+    <div class="tarjeta-producto" data-buscar="<?PHP echo htmlspecialchars($product['nombreProducto'] . ' ' . $product['codigo']); ?>"
          style="background-image: url('<?PHP echo $urlViews; ?>img/fondoCelulares.svg');">
         <div class="single-product">
             <div class="product-f-image">
@@ -99,6 +116,9 @@ while ($product = mysqli_fetch_array($allProducto)) {
                     echo montoHn($product['precioVenta']); ?>   .
                 </b>
                 </span>
+                <?PHP if (trim((string) $product['codigo']) !== '') { ?>
+                    <div class="codigo-producto"><small><?PHP echo in_array($product['tipo'], $tiposUnicos, true) ? 'IMEI' : 'Código'; ?></small><?PHP echo htmlspecialchars((string) $product['codigo']); ?></div>
+                <?PHP } ?>
                 <br>
                 <?PHP if (!$tienePrecio) { ?>
                     <span class="label label-warning">SIN PRECIO</span>
