@@ -581,10 +581,54 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 //*****************************************Funcion SQL para registrar nuevos tipos de producto******************************************
-    public function registerNewTipoProduct($tipoProducto)
+    // $codigoUnico = 1: cada producto de este tipo es un equipo unico (celulares: IMEI que no se repite, stock 0 o 1)
+    public function registerNewTipoProduct($tipoProducto, $codigoUnico = 0)
     {
-        return $this->ejecutar("INSERT INTO `tipoproducto` (`idtipoproducto`, `tipoproducto`) VALUES (NULL, ?)", array($tipoProducto));
+        return $this->ejecutar("INSERT INTO `tipoproducto` (`idtipoproducto`, `tipoproducto`, `codigoUnico`) VALUES (NULL, ?, ?)",
+            array($tipoProducto, $codigoUnico ? 1 : 0));
+    }
 
+    public function getTipoProducto($idTipo)
+    {
+        $filas = $this->filas($this->ejecutar("SELECT * FROM tipoproducto WHERE idtipoproducto = ?", array((int) $idTipo)));
+        return empty($filas) ? null : $filas[0];
+    }
+
+    // el producto guarda el NOMBRE de su tipo; devuelve la fila del tipo (con codigoUnico) o null
+    public function getTipoProductoPorNombre($nombre)
+    {
+        $filas = $this->filas($this->ejecutar("SELECT * FROM tipoproducto WHERE tipoproducto = ?", array(trim((string) $nombre))));
+        return empty($filas) ? null : $filas[0];
+    }
+
+    // nombres de los tipos marcados como equipo unico (para los avisos del formulario de productos)
+    public function getTiposUnicos()
+    {
+        $nombres = array();
+        foreach ($this->filas($this->ejecutar("SELECT tipoproducto FROM tipoproducto WHERE codigoUnico = 1")) as $fila) {
+            $nombres[] = $fila['tipoproducto'];
+        }
+        return $nombres;
+    }
+
+    public function contarProductosDeTipo($nombreTipo)
+    {
+        return (int) $this->ejecutar("SELECT count(*) c FROM producto WHERE tipo = ?", array((string) $nombreTipo))->fetch_assoc()['c'];
+    }
+
+    // otro producto (de cualquier tienda) que ya usa ese codigo/IMEI, o null
+    public function productoConCodigo($codigo, $exceptoIdProducto = 0)
+    {
+        $filas = $this->filas($this->ejecutar("SELECT idproducto, nombreProducto FROM producto WHERE codigo = ? AND idproducto <> ? LIMIT 1",
+            array((string) $codigo, (int) $exceptoIdProducto)));
+        return empty($filas) ? null : $filas[0];
+    }
+
+    // existencias del producto en las OTRAS tiendas (un equipo unico solo puede estar en una)
+    public function getStockOtrasTiendas($idProducto, $idSucursal)
+    {
+        return $this->filas($this->ejecutar("SELECT s.nombre, ss.cantidad FROM stock_sucursal ss JOIN sucursal s ON s.idSucursal = ss.idSucursal
+                                             WHERE ss.idProducto = ? AND ss.idSucursal <> ? AND ss.cantidad > 0", array((int) $idProducto, (int) $idSucursal)));
     }
 
     // true si ya hay un tipo de producto con ese nombre (sin contar el que se esta editando)
@@ -599,10 +643,15 @@ fueron borradas ya que el cliente no necesitaba ese modulo en esta version del P
     }
 
 
-    public function updateTipoProducto($tipoProductoId, $tipoproducto)
+    public function updateTipoProducto($tipoProductoId, $tipoproducto, $codigoUnico = 0)
     {
-        return $this->ejecutar("UPDATE `tipoproducto` SET `tipoproducto` = ? WHERE `tipoproducto`.`idtipoproducto` = ?",
-            array($tipoproducto, (int) $tipoProductoId));
+        // los productos guardan el nombre del tipo: si se renombra, se renombra tambien en sus productos
+        $anterior = $this->getTipoProducto($tipoProductoId);
+        if ($anterior !== null && $anterior['tipoproducto'] !== $tipoproducto) {
+            $this->ejecutar("UPDATE producto SET tipo = ? WHERE tipo = ?", array($tipoproducto, $anterior['tipoproducto']));
+        }
+        return $this->ejecutar("UPDATE `tipoproducto` SET `tipoproducto` = ?, `codigoUnico` = ? WHERE `tipoproducto`.`idtipoproducto` = ?",
+            array($tipoproducto, $codigoUnico ? 1 : 0, (int) $tipoProductoId));
     }
 
 //*************************************metodo para obtener todos los tipos de monedas**************************************

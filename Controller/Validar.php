@@ -52,3 +52,24 @@ function passwordValido($password)
 {
     return is_string($password) && strlen($password) >= 6 && strlen($password) <= 72;
 }
+
+// IMEI de un telefono: 15 digitos y el ultimo es el digito de control (formula de Luhn, como las tarjetas);
+// asi se detecta casi cualquier error al escribirlo
+function imeiValido($imei)
+{
+    if (!is_string($imei) || !preg_match('/^[0-9]{15}$/', $imei)) {
+        return false;
+    }
+    $suma = 0;
+    for ($i = 0; $i < 15; $i++) {
+        $digito = (int) $imei[14 - $i];
+        if ($i % 2 == 1) {
+            $digito *= 2;
+            if ($digito > 9) {
+                $digito -= 9;
+            }
+        }
+        $suma += $digito;
+    }
+    return $suma % 10 == 0;
+}

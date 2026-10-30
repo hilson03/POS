@@ -8,7 +8,7 @@ Hay dos caminos. **Usa solo uno.**
 
 ### Camino A (recomendado): exportar la base local completa
 
-La base local ya tiene aplicadas todas las migraciones de esta carpeta (001 a 015).
+La base local ya tiene aplicadas todas las migraciones de esta carpeta (001 a 016).
 
 1. En la computadora local, abrir phpMyAdmin (Laragon → Database) y exportar la base `icontpos` completa (formato SQL).
 2. En el hosting, crear una base de datos nueva y su usuario desde el panel.
@@ -38,6 +38,7 @@ Si en el hosting ya hay una base con datos reales, ejecutar en orden **solo las 
 | 013_cierre_de_ventas.sql | "Consolidar" pasa a llamarse "Cierre de ventas" |
 | 014_bancos.sql | Catálogo de bancos, cuentas sin repetir y número solo con dígitos |
 | 015_intentos_login.sql | Límite de intentos de inicio de sesión (bloqueo de 15 minutos) |
+| 016_equipos_unicos.sql | Celulares con IMEI único (15 dígitos) y stock 0 o 1 |
 
 Cada archivo se ejecuta **una sola vez**. Si al ejecutar uno sale "Duplicate column" o "Table already exists", esa migración ya estaba aplicada: se salta y se sigue con la siguiente.
 

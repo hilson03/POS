@@ -84,10 +84,16 @@ include('Head.php');
 
                                     <div class="col-lg-10">
                                         <input class="form-control input-lg m-bot15" id="tipoProducto"
-                                               name="tipoProducto" type="text"/>
+                                               name="tipoProducto" type="text" required maxlength="150"/>
                                     </div>
-
-                                    <br><br><br><br>
+                                    <div class="col-lg-10 col-lg-offset-2" style="margin-top:8px;">
+                                        <label style="font-weight:normal;">
+                                            <input type="checkbox" name="codigoUnico" value="1">
+                                            <b>Cada producto es un equipo único (IMEI)</b>
+                                        </label>
+                                        <div class="help-block" style="margin-top:0;">Para celulares: el IMEI lleva 15 números y no se repite, y cada producto tiene stock 0 o 1. Déjala sin marcar para accesorios (cargadores, cables, fundas…), que pueden repetir código y tener muchas unidades.</div>
+                                    </div>
+                                    <div style="clear:both;"></div>
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-default" data-dismiss="modal" aria-hidden="true"><strong>Cerrar</strong>
@@ -108,6 +114,7 @@ include('Head.php');
                     <thead>
                     <tr>
                         <th> TIPO DE PRODUCTO</th>
+                        <th> EQUIPO ÚNICO (IMEI)</th>
                         <th> ACCIONES</th>
                     </tr>
                     </thead>
@@ -117,6 +124,7 @@ include('Head.php');
 
                         <tr>
                             <td><?php echo htmlspecialchars((string) $tipoProducto['tipoproducto']); ?></td>
+                            <td><?php echo (int) $tipoProducto['codigoUnico'] === 1 ? '<span class="label label-primary">Sí: IMEI único, stock 0 o 1</span>' : '<span class="text-muted">No</span>'; ?></td>
                             <td>
                                 <a href="#a<?php echo $tipoProducto[0]; ?>" role="button" class="btn btn-success"
                                    data-toggle="modal"><i class="fa fa-pencil" title="Editar"></i></a>
@@ -150,9 +158,16 @@ include('Head.php');
                                                 <div class="col-lg-10">
                                                     <input class="form-control input-lg m-bot15"
                                                            id="tipoProducto"
-                                                           name="tipoProducto" type="text"
+                                                           name="tipoProducto" type="text" required maxlength="150"
                                                            value="<?php echo htmlspecialchars((string) $tipoProducto['tipoproducto']); ?>"/>
                                                 </div>
+                                    <div class="col-lg-10 col-lg-offset-2" style="margin-top:8px;">
+                                        <label style="font-weight:normal;">
+                                            <input type="checkbox" name="codigoUnico" value="1"<?php echo (int) $tipoProducto['codigoUnico'] === 1 ? ' checked' : ''; ?>>
+                                            <b>Cada producto es un equipo único (IMEI)</b>
+                                        </label>
+                                        <div class="help-block" style="margin-top:0;">Para celulares: el IMEI lleva 15 números y no se repite, y cada producto tiene stock 0 o 1. Déjala sin marcar para accesorios (cargadores, cables, fundas…), que pueden repetir código y tener muchas unidades.</div>
+                                    </div>
 
                                             </div>
 

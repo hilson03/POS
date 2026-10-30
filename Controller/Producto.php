@@ -54,6 +54,7 @@ $imageUser = $foto;
 
 $allProducto =$con->getAllProducto($usuarioSesion['idSucursalActiva']);
 $tipoProductos = $con->getAllTipoProducto();
+$tiposUnicos = $con->getTiposUnicos();   // celulares: IMEI unico y stock 0 o 1
 
 $menuMain = $con->getMenuMain();
 require("../Views/ProductoViews.php");

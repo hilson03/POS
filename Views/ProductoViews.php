@@ -338,6 +338,39 @@ include('Head.php');
         venta.addEventListener('input', revisarPrecios);
         revisarPrecios();
     });
+
+    // equipos unicos (celulares): IMEI de 15 numeros y stock 0 o 1 (el servidor lo vuelve a revisar, con el digito de control)
+    var tiposUnicos = <?PHP echo json_encode(array_values($tiposUnicos)); ?>;
+    document.querySelectorAll('[name="tipoproducto"]').forEach(function (tipo) {
+        var form = tipo.form;
+        if (!form) { return; }
+        var codigo = form.elements['codigo'];
+        var cantidad = form.elements['cantidad'];
+        var aviso = document.createElement('div');
+        aviso.className = 'help-block';
+        aviso.style.cssText = 'margin-top:-10px; color:#31708f;';
+        aviso.textContent = 'Celular: el IMEI tiene 15 números (en la caja o marcando *#06#) y no se repite. Stock 0 o 1: cada teléfono se registra aparte.';
+        codigo.parentNode.appendChild(aviso);
+        function aplicar() {
+            var unico = tiposUnicos.indexOf(tipo.value) >= 0;
+            aviso.hidden = !unico;
+            if (unico) {
+                codigo.setAttribute('pattern', '[0-9]{15}');
+                codigo.setAttribute('maxlength', '15');
+                codigo.setAttribute('inputmode', 'numeric');
+                codigo.title = 'El IMEI tiene 15 números';
+                cantidad.setAttribute('max', '1');
+            } else {
+                codigo.removeAttribute('pattern');
+                codigo.setAttribute('maxlength', '150');
+                codigo.removeAttribute('inputmode');
+                codigo.title = '';
+                cantidad.removeAttribute('max');
+            }
+        }
+        tipo.addEventListener('change', aplicar);
+        aplicar();
+    });
 </script>
 
 </body>

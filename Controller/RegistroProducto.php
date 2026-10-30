@@ -13,7 +13,9 @@ $usuario = $usuarioSesion['login'];
 $con = new conexion();
 
 // devuelve el motivo por el que los datos no son validos, o vacio si estan bien
-function validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra)
+// $idProducto: 0 al registrar; al editar, el producto que se edita. $idSucursal: la tienda donde se pone el stock
+// $codigoAnterior: al editar, el IMEI que ya tenia (si no lo cambian no se vuelve a revisar su formato)
+function validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra, $idProducto, $idSucursal, $codigoAnterior = null)
 {
     if ($nombreProducto == '') {
         return "el nombre del producto es obligatorio.";
@@ -37,6 +39,29 @@ function validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $ca
     if (!numeroValido($cantidad, 0, 999999) || floor($cantidad) != $cantidad) {
         return "la cantidad debe ser un numero entero igual o mayor a 0.";
     }
+
+    // equipos unicos (celulares): el IMEI identifica un solo telefono
+    $tipo = $con->getTipoProductoPorNombre($tipoproducto);
+    if ($tipo !== null && (int) $tipo['codigoUnico'] === 1) {
+        // el formato se revisa solo si el IMEI es nuevo o lo cambiaron: asi un producto viejo con un IMEI mal
+        // escrito se puede seguir editando (por ejemplo, para bajarle el stock) y corregirle el IMEI despues
+        if ($codigo !== $codigoAnterior && !imeiValido($codigo)) {
+            return "el IMEI debe tener 15 números y ser válido (revisa que no tenga un número equivocado; está en la caja o marcando *#06# en el teléfono).";
+        }
+        $otro = $con->productoConCodigo($codigo, $idProducto);
+        if ($otro !== null) {
+            return "el IMEI " . $codigo . " ya es del producto \"" . $otro['nombreProducto'] . "\". Cada teléfono tiene su propio IMEI.";
+        }
+        if ((int) $cantidad > 1) {
+            return "un teléfono es un solo equipo: el stock debe ser 0 o 1. Si tienes varios iguales, registra cada uno con su IMEI.";
+        }
+        if ((int) $cantidad == 1 && $idProducto > 0) {
+            $enOtras = $con->getStockOtrasTiendas($idProducto, $idSucursal);
+            if (!empty($enOtras)) {
+                return "este teléfono ya está en " . $enOtras[0]['nombre'] . ". Un equipo está en una sola tienda: para traerlo usa Traslados.";
+            }
+        }
+    }
     return "";
 }
 
@@ -51,7 +76,7 @@ if (isset($_POST['nuevo_Producto'])) {
     $fechaRegistro = date('Y-m-d');
     $proveedor =null;
 
-    $errorDatos = validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra);
+    $errorDatos = validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra, 0, $usuarioSesion['idSucursalActiva']);
 
     if ($errorDatos != "") {
         $updateMensaje = $con->updateMensajeAlert("No se registro el producto: " . $errorDatos, "alert alert-danger");
@@ -120,7 +145,7 @@ if (isset($_POST['update_producto'])) {
     $imagen = empty($productoActual) ? '' : $productoActual[0]['imagen'];
 
     $errorDatos = empty($productoActual) ? "no se encontro el producto."
-        : validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra);
+        : validarDatosProducto($con, $nombreProducto, $codigo, $tipoproducto, $cantidad, $precioVenta, $precioCompra, $idproducto, $usuarioSesion['idSucursalActiva'], $productoActual[0]['codigo']);
 
     if ($errorDatos != "") {
         $updateMensaje = $con->updateMensajeAlert("No se actualizo el producto: " . $errorDatos, "alert alert-danger");
